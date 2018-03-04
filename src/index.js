@@ -7,13 +7,14 @@ var endpoint = "https://models.physiomeproject.org/pmr2_virtuoso_search";
 var sodium = "http://identifiers.org/chebi/CHEBI:29101";
 var potassium = "http://identifiers.org/chebi/CHEBI:29103";
 var chloride = "http://identifiers.org/chebi/CHEBI:17996";
-var apicalID = "http://identifiers.org/fma/FMA:84666";
-var basolateralID = "http://identifiers.org/fma/FMA:84669";
 var luminalID = "http://identifiers.org/fma/FMA:74550";
 var cytosolID = "http://identifiers.org/fma/FMA:66836";
 var interstitialID = "http://identifiers.org/fma/FMA:9673";
+var apicalID = "http://identifiers.org/fma/FMA:84666";
+var basolateralID = "http://identifiers.org/fma/FMA:84669";
 
-var counter = 0, data = [], modelEntityObj = [];
+var counter = 0;
+var data = [];
 var dictionary = [
     {
         "cellmlmodel": "weinstein_1995",
@@ -316,6 +317,80 @@ var dictionary = [
         "status": "1", "uri": "http://identifiers.org/chebi/CHEBI:29103"
     }
 ];
+var modelEntityObj = [
+    {
+        "solute": sodium,
+        "source": luminalID,
+        "sink": cytosolID,
+        "mediator": apicalID
+    },
+    {
+        "solute": potassium,
+        "source": luminalID,
+        "sink": cytosolID,
+        "mediator": apicalID
+    },
+    {
+        "solute": chloride,
+        "source": luminalID,
+        "sink": cytosolID,
+        "mediator": apicalID
+    },
+    {
+        "solute": sodium,
+        "source": cytosolID,
+        "sink": luminalID,
+        "mediator": apicalID
+    },
+    {
+        "solute": potassium,
+        "source": cytosolID,
+        "sink": luminalID,
+        "mediator": apicalID
+    },
+    {
+        "solute": chloride,
+        "source": cytosolID,
+        "sink": luminalID,
+        "mediator": apicalID
+    },
+    {
+        "solute": sodium,
+        "source": cytosolID,
+        "sink": interstitialID,
+        "mediator": basolateralID
+    },
+    {
+        "solute": potassium,
+        "source": cytosolID,
+        "sink": interstitialID,
+        "mediator": basolateralID
+    },
+    {
+        "solute": chloride,
+        "source": cytosolID,
+        "sink": interstitialID,
+        "mediator": basolateralID
+    },
+    {
+        "solute": sodium,
+        "source": interstitialID,
+        "sink": cytosolID,
+        "mediator": basolateralID
+    },
+    {
+        "solute": potassium,
+        "source": interstitialID,
+        "sink": cytosolID,
+        "mediator": basolateralID
+    },
+    {
+        "solute": chloride,
+        "source": interstitialID,
+        "sink": cytosolID,
+        "mediator": basolateralID
+    }
+];
 
 var modelSimilarity = function () {
 
@@ -380,66 +455,55 @@ var modelSimilarity = function () {
         }
     };
 
-    var discoverModelSimilarity = function (cellmlModelEntity) {
+    var discoverModelSimilarity = function (modelEntityObjElem) {
 
-        var query = 'PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> ' +
-            'SELECT ?Located_in ' +
-            'WHERE { <' + cellmlModelEntity + '> ro:located_in ?Located_in .' +
+        var query = 'PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> ' +
+            'PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> ' +
+            'SELECT ?model_entity ' +
+            'WHERE { ' +
+            '?model_entity semsim:isComputationalComponentFor ?model_prop. ' +
+            '?model_prop semsim:physicalPropertyOf ?model_proc. ' +
+            '?model_proc semsim:hasSourceParticipant ?model_srcparticipant. ' +
+            '?model_srcparticipant semsim:hasPhysicalEntityReference ?source_entity. ' +
+            '?source_entity ro:part_of ?source_part_of_entity. ' +
+            '?source_part_of_entity semsim:hasPhysicalDefinition <' + modelEntityObjElem.source + '>. ' +
+            '?source_entity semsim:hasPhysicalDefinition <' + modelEntityObjElem.solute + '>. ' +
+            '?model_proc semsim:hasSinkParticipant ?model_sinkparticipant. ' +
+            '?model_sinkparticipant semsim:hasPhysicalEntityReference ?sink_entity. ' +
+            '?sink_entity ro:part_of ?sink_part_of_entity. ' +
+            '?sink_part_of_entity semsim:hasPhysicalDefinition <' + modelEntityObjElem.sink + '>. ' +
+            '?model_proc semsim:hasMediatorParticipant ?model_medparticipant. ' +
+            '?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. ' +
+            '?med_entity semsim:hasPhysicalDefinition <' + modelEntityObjElem.mediator + '>. ' +
             '}';
 
         sendPostRequest(
             endpoint,
             query,
-            function (jsonObjLocation) {
+            function (jsonObjModel) {
 
-                var query = 'PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> ' +
-                    'SELECT ?Compartment ' +
-                    'WHERE { <' + cellmlModelEntity + '> ro:compartmentOf ?Compartment . ' +
-                    '}';
+                console.log("source, sink, mediator, solute: ",
+                    modelEntityObj[counter].source,
+                    modelEntityObj[counter].sink,
+                    modelEntityObj[counter].mediator,
+                    modelEntityObj[counter].solute);
 
-                sendPostRequest(
-                    endpoint,
-                    query,
-                    function (jsonObjCompartment) {
+                for (var i = 0; i < jsonObjModel.results.bindings.length; i++) {
+                    console.log("model_entity: ", jsonObjModel.results.bindings[i].model_entity.value);
+                }
 
-                        var query = 'PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> ' +
-                            'PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> ' +
-                            'SELECT DISTINCT ?g ?solute_chebi ' +
-                            'WHERE { GRAPH ?g { ' +
-                            '<' + cellmlModelEntity + '> ro:compartmentOf ?Compartment . ' +
-                            '?entity3 semsim:hasPhysicalDefinition ?Compartment . ' +
-                            '?entity2 ro:part_of ?entity3 . ' +
-                            '?entity2 semsim:hasPhysicalDefinition ?solute_chebi . ' +
-                            '}}';
+                ++counter;
+                if (counter == modelEntityObj.length) {
+                    // showModelSimilarity(modelEntityObj);
+                    return;
+                }
 
-                        sendPostRequest(
-                            endpoint,
-                            query,
-                            function (jsonObjCHEBI) {
-
-                                ++counter;
-                                modelEntityObj.push({
-                                    "cellmlmodel": cellmlModelEntity,
-                                    "location": jsonObjLocation,
-                                    "compartment": jsonObjCompartment,
-                                    "chebi": jsonObjCHEBI
-                                });
-
-                                if (counter == modelEntity.length) {
-                                    showModelSimilarity(modelEntityObj);
-                                    return;
-                                }
-
-                                discoverModelSimilarity(modelEntity[counter]); // callback
-                            },
-                            true);
-                    },
-                    true);
+                discoverModelSimilarity(modelEntityObj[counter]); // call back
             },
             true);
     };
 
-    discoverModelSimilarity(modelEntity[0]); // first call
+    discoverModelSimilarity(modelEntityObj[counter]); // first call
 
     var showModelSimilarity = function (modelEntityObj) {
 
@@ -507,41 +571,6 @@ var modelSimilarity = function () {
         table.append(tbody);
         $("#main-content").append(table);
 
-        drawChart(data);
+        // drawChart(data);
     };
-
-    var drawChart = function (data) {
-
-        var width = 420,
-            barHeight = 20;
-
-        var x = d3.scaleLinear()
-            .domain([0, d3.max(data)])
-            .range([0, width]);
-
-        var chart = d3.select(".chart")
-            .attr("width", width)
-            .attr("height", barHeight * data.length);
-
-        var bar = chart.selectAll("g")
-            .data(data)
-            .enter().append("g")
-            .attr("transform", function (d, i) {
-                return "translate(0," + i * barHeight + ")";
-            });
-
-        bar.append("rect")
-            .attr("width", x)
-            .attr("height", barHeight - 1);
-
-        bar.append("text")
-            .attr("x", function (d) {
-                return x(d) - 3;
-            })
-            .attr("y", barHeight / 2)
-            .attr("dy", ".35em")
-            .text(function (d) {
-                return d;
-            });
-    }
 }();
