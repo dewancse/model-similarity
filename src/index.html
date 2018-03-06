@@ -14,11 +14,30 @@
     <script src="../libs/bootstrap.min.js"></script>
     <script src="../libs/d3.min.js"></script>
     <script src="../libs/d3-selection-multi.v1.min.js" charset="utf-8"></script>
+
+    <style>
+        .chart {
+            position: fixed;
+            top: 70px;
+            margin-left: 300px;
+        }
+    </style>
+
 </head>
 
 <body>
 
+<div class="container">
+    <input id="searchTxt" name="searchTxt" value="" type="text" placeholder="Search Models"
+           class="form-control input-lg" aria-label="...">
+    <hr/>
+
+    <div id="searchList" class="container"></div>
+</div>
+
 <div id="main-content" class="container content"></div>
+
+<!--<svg id="chart" class="chart"></svg>-->
 <svg id="chart" class="chart"></svg>
 
 <script src="index.js"></script>

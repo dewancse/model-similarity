@@ -7,3 +7,18 @@
     font: 10px sans-serif;
     text-anchor: end;
 }
+
+/*table, th, td {*/
+    /*border: 1px solid black;*/
+    /*background-position: center;*/
+/*}*/
+
+/*.chart {*/
+/*float: right;*/
+/*}*/
+
+#searchTxt {
+    width: 200px;
+    height: 25px;
+    background-position: center;
+}

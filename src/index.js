@@ -395,13 +395,34 @@ var modelEntityObj = [
 var modelSimilarity = function () {
 
     var modelEntity = [
-        "weinstein_1995.cellml#weinstein_1995",
-        "mackenzie_1996.cellml#mackenzie_1996",
-        "chang_fujita_b_1999.cellml#chang_fujita_b_1999",
-        "eskandari_2005.cellml#eskandari_2005",
-        "chang_fujita_1999.cellml#chang_fujita_1999",
-        "moss_2009.cellml#moss_2009",
-        "thomas_2000.cellml#thomas_2000"
+        {
+            model: "weinstein_1995.cellml",
+            concentration: [],
+            flux: [],
+            score: 0
+
+        },
+        {
+            model: "mackenzie_1996.cellml",
+            concentration: [],
+            flux: [],
+            score: 0
+
+        },
+        {
+            model: "chang_fujita_b_1999.cellml",
+            concentration: [],
+            flux: [],
+            score: 0
+
+        },
+        {
+            model: "chang_fujita_1999.cellml",
+            concentration: [],
+            flux: [],
+            score: 0
+
+        }
     ];
 
     function getRequestObject() {
@@ -455,61 +476,134 @@ var modelSimilarity = function () {
         }
     };
 
-    var discoverModelSimilarity = function (modelEntityObjElem) {
+    var isExist = function (model, modelEntityList) {
+        // remove duplicate components with same variable and cellml model
+        var indexOfHash = model.search("#"),
+            cellmlModelName = model.slice(0, indexOfHash), // weinstein_1995.cellml
+            componentVariableName = model.slice(indexOfHash + 1), // NHE3.J_NHE3_Na
+            indexOfDot = componentVariableName.indexOf("."),
+            variableName = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
+
+        for (var i = 0; i < modelEntityList.length; i++) {
+            var indexOfHash2 = modelEntityList[i].model_entity.search("#"),
+                cellmlModelName2 = modelEntityList[i].model_entity.slice(0, indexOfHash2), // weinstein_1995.cellml
+                componentVariableName2 = modelEntityList[i].model_entity.slice(indexOfHash2 + 1), // NHE3.J_NHE3_Na
+                indexOfDot2 = componentVariableName2.indexOf("."),
+                variableName2 = componentVariableName2.slice(indexOfDot2 + 1); // J_NHE3_Na
+
+            if (cellmlModelName == cellmlModelName2 && variableName == variableName2) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    var discoverModelSimilarity = function () {
 
         var query = 'PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> ' +
             'PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> ' +
-            'SELECT ?model_entity ' +
-            'WHERE { ' +
-            '?model_entity semsim:isComputationalComponentFor ?model_prop. ' +
-            '?model_prop semsim:physicalPropertyOf ?model_proc. ' +
-            '?model_proc semsim:hasSourceParticipant ?model_srcparticipant. ' +
-            '?model_srcparticipant semsim:hasPhysicalEntityReference ?source_entity. ' +
-            '?source_entity ro:part_of ?source_part_of_entity. ' +
-            '?source_part_of_entity semsim:hasPhysicalDefinition <' + modelEntityObjElem.source + '>. ' +
-            '?source_entity semsim:hasPhysicalDefinition <' + modelEntityObjElem.solute + '>. ' +
-            '?model_proc semsim:hasSinkParticipant ?model_sinkparticipant. ' +
-            '?model_sinkparticipant semsim:hasPhysicalEntityReference ?sink_entity. ' +
-            '?sink_entity ro:part_of ?sink_part_of_entity. ' +
-            '?sink_part_of_entity semsim:hasPhysicalDefinition <' + modelEntityObjElem.sink + '>. ' +
-            '?model_proc semsim:hasMediatorParticipant ?model_medparticipant. ' +
-            '?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. ' +
-            '?med_entity semsim:hasPhysicalDefinition <' + modelEntityObjElem.mediator + '>. ' +
-            '}';
+            'SELECT DISTINCT ?g ?model_entity ?chebi ?fma ' +
+            'WHERE { GRAPH ?g { ' +
+            '?property semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. ' +
+            '?model_entity semsim:isComputationalComponentFor ?property. ' +
+            '?property semsim:physicalPropertyOf ?entity. ' +
+            '?entity semsim:hasPhysicalDefinition ?chebi. ' +
+            '?entity ro:part_of ?entity2. ' +
+            '?entity2 semsim:hasPhysicalDefinition ?fma. ' +
+            '}}';
 
         sendPostRequest(
             endpoint,
             query,
-            function (jsonObjModel) {
+            function (jsonObj) {
 
-                console.log("source, sink, mediator, solute: ",
-                    modelEntityObj[counter].source,
-                    modelEntityObj[counter].sink,
-                    modelEntityObj[counter].mediator,
-                    modelEntityObj[counter].solute);
+                console.log("jsonObj: ", jsonObj);
 
-                for (var i = 0; i < jsonObjModel.results.bindings.length; i++) {
-                    console.log("model_entity: ", jsonObjModel.results.bindings[i].model_entity.value);
-                }
+                var query = 'PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> ' +
+                    'PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> ' +
+                    'SELECT DISTINCT ?g ?model_entity ?sourceCHEBI ?sourceFMA ?sinkFMA ?mediatorFMA ' +
+                    'WHERE { GRAPH ?g { ' +
+                    '?property semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00593>. ' +
+                    '?model_entity semsim:isComputationalComponentFor ?property. ' +
+                    '?property semsim:physicalPropertyOf ?process. ' +
+                    '?process semsim:hasSourceParticipant ?source. ' +
+                    '?process semsim:hasSinkParticipant ?sink. ' +
+                    '?process semsim:hasMediatorParticipant ?mediator. ' +
+                    '?source semsim:hasPhysicalEntityReference ?entitySRC. ' +
+                    '?entitySRC semsim:hasPhysicalDefinition ?sourceCHEBI. ' +
+                    '?source semsim:hasPhysicalEntityReference ?entitySRC. ' +
+                    '?entitySRC ro:part_of ?entity11. ' +
+                    '?entity11 semsim:hasPhysicalDefinition ?sourceFMA. ' +
+                    '?sink semsim:hasPhysicalEntityReference ?entityDST. ' +
+                    '?entityDST ro:part_of ?entity22. ' +
+                    '?entity22 semsim:hasPhysicalDefinition ?sinkFMA. ' +
+                    '?mediator semsim:hasPhysicalEntityReference ?entityMED. ' +
+                    '?entityMED semsim:hasPhysicalDefinition ?mediatorFMA. ' +
+                    '}}';
 
-                ++counter;
-                if (counter == modelEntityObj.length) {
-                    // showModelSimilarity(modelEntityObj);
-                    return;
-                }
+                sendPostRequest(
+                    endpoint,
+                    query,
+                    function (jsonObjFlux) {
 
-                discoverModelSimilarity(modelEntityObj[counter]); // call back
+                        console.log("jsonObjFlux: ", jsonObjFlux);
+
+                        // CHEBI term and anatomical locations for a solute concentration
+                        for (var i in modelEntity) {
+                            for (var j in jsonObj.results.bindings) {
+                                var indexOfHash = jsonObj.results.bindings[j].model_entity.value.search("#"),
+                                    cellmlname = jsonObj.results.bindings[j].model_entity.value.slice(0, indexOfHash);
+
+                                if (modelEntity[i].model == cellmlname) {
+                                    if (!isExist(jsonObj.results.bindings[j].model_entity.value, modelEntity[i].concentration)) {
+                                        modelEntity[i].concentration.push({
+                                            model_entity: jsonObj.results.bindings[j].model_entity.value,
+                                            chebi: jsonObj.results.bindings[j].chebi.value,
+                                            fma: jsonObj.results.bindings[j].fma.value
+                                        });
+                                    }
+                                }
+                            }
+                        }
+
+                        // CHEBI term and anatomical locations of sources, sinks and mediators
+                        for (var i in modelEntity) {
+                            for (var j in jsonObjFlux.results.bindings) {
+                                var indexOfHash = jsonObjFlux.results.bindings[j].model_entity.value.search("#"),
+                                    cellmlname = jsonObjFlux.results.bindings[j].model_entity.value.slice(0, indexOfHash);
+
+                                if (modelEntity[i].model == cellmlname) {
+                                    // Exceptional: J_Na (TODOs)
+                                    if (!isExist(jsonObjFlux.results.bindings[j].model_entity.value, modelEntity[i].flux)) {
+                                        modelEntity[i].flux.push({
+                                            model_entity: jsonObjFlux.results.bindings[j].model_entity.value,
+                                            sourceCHEBI: jsonObjFlux.results.bindings[j].sourceCHEBI.value,
+                                            sourceFMA: jsonObjFlux.results.bindings[j].sourceFMA.value,
+                                            sinkFMA: jsonObjFlux.results.bindings[j].sinkFMA.value,
+                                            mediatorFMA: jsonObjFlux.results.bindings[j].mediatorFMA.value
+                                        });
+                                    }
+                                }
+                            }
+                        }
+
+                        console.log("modelEntity: ", modelEntity);
+                    },
+                    true);
             },
             true);
     };
 
-    discoverModelSimilarity(modelEntityObj[counter]); // first call
+    discoverModelSimilarity();
 
-    var showModelSimilarity = function (modelEntityObj) {
+    var showModelSimilarity = function () {
 
-        var head = ["CellML document", "Similarity score", "Graph"];
+        $("#main-content").html("");
 
-        var table = $("<table/>").addClass("table table-hover table-condensed"); //table-bordered table-striped
+        // var head = ["CellML document", "Score", "Graph"];
+        var head = [];
+        var table = $("<table/>").addClass("table table-hover");
 
         // Table header
         var thead = $("<thead/>"), tr = $("<tr/>");
@@ -522,55 +616,112 @@ var modelSimilarity = function () {
 
         // Table body
         var tbody = $("<tbody/>");
-        for (var c = 0; c < modelEntityObj.length; c++) {
+        for (var c = 0; c < modelEntity.length; c++) {
             tr = $("<tr/>"); // row
-            var sum = 0;
-            $.each(modelEntityObj[c].location.results.bindings, function (i, location) {
-                $.each(modelEntityObj[c].compartment.results.bindings, function (j, compartment) {
-                    $.each(modelEntityObj[c].chebi.results.bindings, function (k, solutechebi) {
-                        if (location.Located_in.value == luminalID || compartment.Compartment.value == luminalID) {
-                            if (solutechebi.solute_chebi.value == sodium) sum += 1;
-                            if (solutechebi.solute_chebi.value == chloride) sum += 6;
-                            if (solutechebi.solute_chebi.value == potassium) sum += 11;
-                        }
-                        else if (location.Located_in.value == apicalID || compartment.Compartment.value == apicalID) {
-                            if (solutechebi.solute_chebi.value == sodium) sum += 2;
-                            if (solutechebi.solute_chebi.value == chloride) sum += 7;
-                            if (solutechebi.solute_chebi.value == potassium) sum += 12;
-                        }
-                        else if (location.Located_in.value == cytosolID || compartment.Compartment.value == cytosolID) {
-                            if (solutechebi.solute_chebi.value == sodium) sum += 3;
-                            if (solutechebi.solute_chebi.value == chloride) sum += 8;
-                            if (solutechebi.solute_chebi.value == potassium) sum += 13;
-                        }
-                        else if (location.Located_in.value == basolateralID || compartment.Compartment.value == basolateralID) {
-                            if (solutechebi.solute_chebi.value == sodium) sum += 4;
-                            if (solutechebi.solute_chebi.value == chloride) sum += 9;
-                            if (solutechebi.solute_chebi.value == potassium) sum += 14;
-                        }
-                        else if (location.Located_in.value == interstitialID || compartment.Compartment.value == interstitialID) {
-                            if (solutechebi.solute_chebi.value == sodium) sum += 5;
-                            if (solutechebi.solute_chebi.value == chloride) sum += 10;
-                            if (solutechebi.solute_chebi.value == potassium) sum += 15;
-                        }
-                    });
-                });
-            });
 
             // CellML document
-            tr.append($("<td/>").append(modelEntityObj[c].cellmlmodel));
+            tr.append($("<td/>").append(modelEntity[c].model));
 
-            // Similarity score
-            tr.append($("<td/>").append(sum));
+            // Score
+            tr.append($("<td/>").append(modelEntity[c].score));
             tbody.append(tr);
 
             // data for SVG diagram
-            data.push(sum);
+            data.push(modelEntity[c].score);
         }
 
         table.append(tbody);
         $("#main-content").append(table);
 
-        // drawChart(data);
+        drawChart(data);
     };
+
+    var drawChart = function (data) {
+
+        var width = 420,
+            barHeight = 20;
+
+        var x = d3.scaleLinear()
+            .domain([0, d3.max(data)])
+            .range([0, width]);
+
+        var chart = d3.select(".chart")
+            .attr("width", width)
+            .attr("height", barHeight * data.length);
+
+        var bar = chart.selectAll("g")
+            .data(data)
+            .enter().append("g")
+            .attr("transform", function (d, i) {
+                return "translate(0," + i * barHeight + ")";
+            });
+
+        bar.append("rect")
+            .attr("width", x)
+            .attr("height", barHeight - 1);
+
+        bar.append("text")
+            .attr("x", function (d) {
+                return x(d) - 3;
+            })
+            .attr("y", barHeight / 2)
+            .attr("dy", ".35em") // .35em
+            .text(function (d) {
+                return d;
+            });
+    }
+
+    $(document).on("keydown", function () {
+        if (event.key == "Enter") {
+
+            // d3.select("svg").remove();
+
+            console.log("event key and value: ", event.key, event.srcElement.value);
+
+            // function isModel(cellmlModel) {
+            //     return cellmlModel.model === event.srcElement.value;
+            // }
+            //
+            // var enteredModel = modelEntity.find(isModel);
+            // enteredModel.score = enteredModel.concentration.length + enteredModel.flux.length;
+
+            var indexes = $.map(modelEntity, function (obj, index) {
+                if (obj.model == event.srcElement.value) {
+                    return index;
+                }
+            });
+
+            var enteredIndex = indexes[0];
+            // console.log("enteredIndex, enteredModel: ", enteredIndex, enteredModel);
+            console.log("enteredIndex: ", enteredIndex);
+            console.log("modelEntity: ", modelEntity);
+
+            var tempArr = [];
+            for (var i in modelEntity[enteredIndex].concentration) {
+                tempArr.push([modelEntity[enteredIndex].concentration[i].chebi, modelEntity[enteredIndex].concentration[i].fma]);
+            }
+            console.log("Testing tempArr: ", tempArr);
+            modelEntity[enteredIndex].score = (tempArr.length / tempArr.length).toFixed(3); // entered score
+
+            for (var i in modelEntity) {
+                if (i == enteredIndex) continue;
+
+                var sum = 0;
+                for (var j in modelEntity[i].concentration) {
+                    for (var k in tempArr) {
+                        if (tempArr[k][0] == modelEntity[i].concentration[j].chebi &&
+                            tempArr[k][1] == modelEntity[i].concentration[j].fma) {
+                            sum += 1;
+                        }
+                    }
+                }
+
+                modelEntity[i].score = (sum / tempArr.length).toFixed(3);
+            }
+
+            console.log("Testing modelEntity: ", modelEntity);
+
+            showModelSimilarity();
+        }
+    });
 }();
