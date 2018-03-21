@@ -18,8 +18,8 @@
     <style>
         .chart {
             position: fixed;
-            top: 70px;
-            margin-left: 300px;
+            top: 100px;
+            margin-left: 400px;
         }
     </style>
 
@@ -28,14 +28,28 @@
 <body>
 
 <div class="container">
-    <input id="searchTxt" name="searchTxt" value="" type="text" placeholder="Search Models"
-           class="form-control input-lg" aria-label="...">
+    <!-- The second value will be selected initially -->
+    <select id="searchTxt" name="searchTxt">
+        <option value="..select a CellML model" selected>..select a CellML model</option>
+        <option value="weinstein_1995.cellml">weinstein_1995.cellml</option>
+        <option value="chang_fujita_b_1999.cellml">chang_fujita_b_1999.cellml</option>
+    </select>
+
     <hr/>
 
     <div id="searchList" class="container"></div>
 </div>
 
 <div id="main-content" class="container content"></div>
+
+<div id="svgSimilarityModels" class="graphSimilarityModels"></div>
+
+<!--<div>-->
+<!--<fieldset class="majorpoints">-->
+<!--<legend class="majorpointslegend">Expand</legend>-->
+<!--<div class="hiders" style="display:none">sample text</div>-->
+<!--</fieldset>-->
+<!--</div>-->
 
 <!--<svg id="chart" class="chart"></svg>-->
 <svg id="chart" class="chart"></svg>
