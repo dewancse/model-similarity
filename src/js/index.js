@@ -2,186 +2,80 @@
  * Model Similarity Measurements
  * Created by dsar941 on 6/2/2018.
  */
-var endpoint = "https://models.physiomeproject.org/pmr2_virtuoso_search";
+var ajaxUtils = require("./../libs/ajax-utils.js");
+var miscellaneous = require("./miscellaneous.js");
+var sparqlUtils = require("./sparqlUtils.js");
 
-var sodium = "http://identifiers.org/chebi/CHEBI:29101";
-var potassium = "http://identifiers.org/chebi/CHEBI:29103";
-var chloride = "http://identifiers.org/chebi/CHEBI:17996";
-var luminalID = "http://identifiers.org/fma/FMA:74550";
-var cytosolID = "http://identifiers.org/fma/FMA:66836";
-var interstitialID = "http://identifiers.org/fma/FMA:9673";
-var apicalID = "http://identifiers.org/fma/FMA:84666";
-var basolateralID = "http://identifiers.org/fma/FMA:84669";
+"use strict";
 
-var partOfCHEBIUri = "http://identifiers.org/chebi/CHEBI";
-var partOfFMAUri = "http://identifiers.org/fma/FMA";
-
-var abiOntoEndpoint = "http://ontology.cer.auckland.ac.nz/ols-boot/api/ontologies";
-
-var counter = 0, idCounter = 0;
-var data = [];
-
-var modelSimilarity = function () {
+var modelSimilarity = (function (global) {
 
     var modelEntity = [
         {
             model: "weinstein_1995.cellml",
             concentration: [],
             flux: [],
-            score: 0
-
+            score: 0,
+            scoreEBI: 0
         },
         {
             model: "chang_fujita_b_1999.cellml",
             concentration: [],
             flux: [],
-            score: 0
-
+            score: 0,
+            scoreEBI: 0
         },
         {
             model: "chang_fujita_1999.cellml",
             concentration: [],
             flux: [],
-            score: 0
-
+            score: 0,
+            scoreEBI: 0
         },
         {
             model: "mackenzie_1996.cellml",
             concentration: [],
             flux: [],
-            score: 0
-
+            score: 0,
+            scoreEBI: 0
         }
     ];
+    var idCounter = 0;
+    var data = [];
+    var mainUtils = {};
 
-    function getRequestObject() {
-        if (window.XMLHttpRequest) {
-            return (new XMLHttpRequest());
-        }
-        else if (window.ActiveXObject) {
-            // For very old IE browsers (optional)
-            return (new ActiveXObject("Microsoft.XMLHTTP"));
-        }
-        else {
-            alert("Ajax is not supported!");
-            return (null);
-        }
+    mainUtils.loadHomeHtml = function () {
+        miscellaneous.showLoading("#main-content");
+        ajaxUtils.sendGetRequest(
+            sparqlUtils.homeHtml,
+            function (homeHtmlContent) {
+                $("#main-content").html(homeHtmlContent);
+            },
+            false);
     };
 
-    var sendGetRequest = function (requestUrl, responseHandler, isJsonResponse) {
-        var request = getRequestObject();
-        request.onreadystatechange = function () {
-            handleResponse(request, responseHandler, isJsonResponse);
-        };
-        request.open("GET", requestUrl, true);
-        request.send(null); // for POST only
-    };
-
-    var sendPostRequest = function (requestUrl, query, responseHandler, isJsonResponse) {
-        var request = getRequestObject();
-
-        request.onreadystatechange = function () {
-            handleResponse(request, responseHandler, isJsonResponse);
-        };
-
-        request.open("POST", requestUrl, true);
-
-        request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        request.setRequestHeader("Accept", "application/sparql-results+json");
-
-        request.send(query); // for POST only
-    };
-
-    function handleResponse(request, responseHandler, isJsonResponse) {
-        if ((request.readyState == 4) && (request.status == 200)) {
-
-            // Default to isJsonResponse = true
-            if (isJsonResponse == undefined) {
-                isJsonResponse = true;
-            }
-
-            if (isJsonResponse) {
-                responseHandler(JSON.parse(request.responseText));
-            }
-            else {
-                responseHandler(request.responseText);
-            }
-        }
-
-        else if (request.readyState == 4) {
-            console.log("ERROR!");
-            console.error(request.responseText);
-        }
-    };
-
-    var isExist = function (model, modelEntityList) {
-        // remove duplicate components with same variable and cellml model
-        var indexOfHash = model.search("#"),
-            cellmlModelName = model.slice(0, indexOfHash), // weinstein_1995.cellml
-            componentVariableName = model.slice(indexOfHash + 1), // NHE3.J_NHE3_Na
-            indexOfDot = componentVariableName.indexOf("."),
-            variableName = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
-
-        for (var i = 0; i < modelEntityList.length; i++) {
-            var indexOfHash2 = modelEntityList[i].model_entity.search("#"),
-                cellmlModelName2 = modelEntityList[i].model_entity.slice(0, indexOfHash2), // weinstein_1995.cellml
-                componentVariableName2 = modelEntityList[i].model_entity.slice(indexOfHash2 + 1), // NHE3.J_NHE3_Na
-                indexOfDot2 = componentVariableName2.indexOf("."),
-                variableName2 = componentVariableName2.slice(indexOfDot2 + 1); // J_NHE3_Na
-
-            if (cellmlModelName == cellmlModelName2 && variableName == variableName2) {
-                return true;
-            }
-        }
-
-        return false;
-    };
+    // mainUtils.loadChartHtml = function () {
+    //     ajaxUtils.sendGetRequest(
+    //         sparqlUtils.chartHtml,
+    //         function (chartHtmlContent) {
+    //             $("#main-content td").html(chartHtmlContent);
+    //         },
+    //         false);
+    // };
 
     var discoverModelSimilarity = function () {
 
-        var query = 'PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> ' +
-            'PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> ' +
-            'SELECT DISTINCT ?g ?model_entity ?chebi ?fma ' +
-            'WHERE { GRAPH ?g { ' +
-            '?property semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. ' +
-            '?model_entity semsim:isComputationalComponentFor ?property. ' +
-            '?property semsim:physicalPropertyOf ?entity. ' +
-            '?entity semsim:hasPhysicalDefinition ?chebi. ' +
-            '?entity ro:part_of ?entity2. ' +
-            '?entity2 semsim:hasPhysicalDefinition ?fma. ' +
-            '}}';
-
-        sendPostRequest(
-            endpoint,
+        var query = sparqlUtils.concentrationOPB();
+        ajaxUtils.sendPostRequest(
+            sparqlUtils.endpoint,
             query,
             function (jsonObj) {
 
-                console.log("jsonObj: ", jsonObj);
+                console.log("jsonObjCons: ", jsonObj);
 
-                var query = 'PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> ' +
-                    'PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> ' +
-                    'SELECT DISTINCT ?g ?model_entity ?sourceCHEBI ?sourceFMA ?sinkFMA ?mediatorFMA ' +
-                    'WHERE { GRAPH ?g { ' +
-                    '?property semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00593>. ' +
-                    '?model_entity semsim:isComputationalComponentFor ?property. ' +
-                    '?property semsim:physicalPropertyOf ?process. ' +
-                    '?process semsim:hasSourceParticipant ?source. ' +
-                    '?process semsim:hasSinkParticipant ?sink. ' +
-                    '?process semsim:hasMediatorParticipant ?mediator. ' +
-                    '?source semsim:hasPhysicalEntityReference ?entitySRC. ' +
-                    '?entitySRC semsim:hasPhysicalDefinition ?sourceCHEBI. ' +
-                    '?source semsim:hasPhysicalEntityReference ?entitySRC. ' +
-                    '?entitySRC ro:part_of ?entity11. ' +
-                    '?entity11 semsim:hasPhysicalDefinition ?sourceFMA. ' +
-                    '?sink semsim:hasPhysicalEntityReference ?entityDST. ' +
-                    '?entityDST ro:part_of ?entity22. ' +
-                    '?entity22 semsim:hasPhysicalDefinition ?sinkFMA. ' +
-                    '?mediator semsim:hasPhysicalEntityReference ?entityMED. ' +
-                    '?entityMED semsim:hasPhysicalDefinition ?mediatorFMA. ' +
-                    '}}';
-
-                sendPostRequest(
-                    endpoint,
+                var query = sparqlUtils.fluxOPB();
+                ajaxUtils.sendPostRequest(
+                    sparqlUtils.endpoint,
                     query,
                     function (jsonObjFlux) {
 
@@ -194,7 +88,7 @@ var modelSimilarity = function () {
                                     cellmlname = jsonObj.results.bindings[j].model_entity.value.slice(0, indexOfHash);
 
                                 if (modelEntity[i].model == cellmlname) {
-                                    if (!isExist(jsonObj.results.bindings[j].model_entity.value, modelEntity[i].concentration)) {
+                                    if (!miscellaneous.isExist(jsonObj.results.bindings[j].model_entity.value, modelEntity[i].concentration)) {
                                         modelEntity[i].concentration.push({
                                             model_entity: jsonObj.results.bindings[j].model_entity.value,
                                             chebi: jsonObj.results.bindings[j].chebi.value,
@@ -213,7 +107,7 @@ var modelSimilarity = function () {
 
                                 if (modelEntity[i].model == cellmlname) {
                                     // Exceptional: J_Na (TODOs)
-                                    if (!isExist(jsonObjFlux.results.bindings[j].model_entity.value, modelEntity[i].flux)) {
+                                    if (!miscellaneous.isExist(jsonObjFlux.results.bindings[j].model_entity.value, modelEntity[i].flux)) {
                                         modelEntity[i].flux.push({
                                             model_entity: jsonObjFlux.results.bindings[j].model_entity.value,
                                             sourceCHEBI: jsonObjFlux.results.bindings[j].sourceCHEBI.value,
@@ -232,60 +126,6 @@ var modelSimilarity = function () {
     };
 
     discoverModelSimilarity();
-
-    var showModelSimilarity = function () {
-
-        $("#main-content").html("");
-
-        var head = ["CellML document", "Similarity score", "Visualisation graph"];
-        var table = $("<table/>").addClass("table table-hover");
-
-        // Table header
-        var thead = $("<thead/>"), tr = $("<tr/>");
-        for (var i = 0; i < head.length; i++) {
-            tr.append($("<th/>").append(head[i]));
-        }
-
-        thead.append(tr);
-        table.append(thead);
-
-        // Table body
-        var tbody = $("<tbody/>");
-        for (var i = 0; i < modelEntity.length; i++) {
-            tr = $("<tr/>"); // row
-
-            tr.append($("<td/>").append(modelEntity[i].model));
-            tr.append($("<td/>").append(modelEntity[i].score));
-            tbody.append(tr);
-
-            // data for SVG diagram
-            data.push(modelEntity[i].score);
-        }
-
-        table.append(tbody);
-        $("#main-content").append(table);
-
-        drawChart(data);
-    };
-
-    $(document).ready(function () {
-        $('[data-toggle="popover"]').popover();
-    });
-
-    var expandFunction = function () {
-        for (var i = 0; i < modelEntity[0].concentration.length; i++) {
-            // var samplehtm = '<fieldset class="majorpoints"><legend class="majorpointslegend">Expand</legend>' +
-            //     '<div class="hiders" style="display:none">' + testData[i] + '</div></fieldset>';
-
-            var samplehtm = '<fieldset class="majorpoints"><legend class="majorpointslegend">Expand</legend>' +
-                '<div class="hiders" style="display:none">' + modelEntity[0].concentration[i].model_entity + ' ' +
-                '<br/>' + modelEntity[0].concentration[i].chebi + ' ' +
-                '<br/>' + modelEntity[0].concentration[i].fma + ' ' +
-                '</div></fieldset>';
-
-            $("#main-content").append(samplehtm);
-        }
-    };
 
     var drawChart = function (data) {
 
@@ -322,13 +162,117 @@ var modelSimilarity = function () {
             });
     };
 
+    var showConcentrationTable = function (concentrationArray) {
+        var head = ["Model entity", "Solute", "Located_in"];
+        var table = $("<table/>").addClass("table table-hover"); //table-condensed table-bordered table-striped
+
+        // Table header
+        var thead = $("<thead/>"), tr = $("<tr/>");
+        for (var i in head) {
+            tr.append($("<th/>").append(head[i]));
+        }
+
+        thead.append(tr);
+        table.append(thead);
+
+        // Table body
+        var tbody = $("<tbody/>");
+        for (var i = 0; i < concentrationArray.length; i++) {
+            tr = $("<tr/>"); // row
+
+            var indexofColon = concentrationArray[i].chebi.indexOf("CHEBI:"),
+                chebi = "<a href=" + concentrationArray[i].chebi + " + target=_blank>" + concentrationArray[i].chebi.slice(indexofColon) + "</a>";
+
+            indexofColon = concentrationArray[i].fma.indexOf("FMA:");
+            var fma = "<a href=" + concentrationArray[i].fma + " + target=_blank>" + concentrationArray[i].fma.slice(indexofColon) + "</a>";
+
+            tr.append($("<td/>").append(concentrationArray[i].model_entity)); // model_entity
+            tr.append($("<td/>").append(chebi)); // solute
+            tr.append($("<td/>").append(fma)); // compartment
+
+            tbody.append(tr);
+        }
+
+        table.append(tbody);
+
+        return table;
+    };
+
+    var showModelSimilarity = function () {
+
+        $("#main-content").html("");
+
+        var head = ["CellML document", "Similarity score (Exact)", "Visualisation graph", "Similarity score (EBI)", "Overlapping graph"];
+        var table = $("<table/>").addClass("table table-hover");
+
+        // Table header
+        var thead = $("<thead/>"), tr = $("<tr/>");
+        for (var i = 0; i < head.length; i++) {
+            tr.append($("<th/>").append(head[i]));
+        }
+
+        thead.append(tr);
+        table.append(thead);
+
+        // Table body
+        var tbody = $("<tbody/>");
+        for (var i = 0; i < modelEntity.length; i++) {
+            tr = $("<tr/>"); // row
+
+            var tstr = showConcentrationTable(modelEntity[i].concentration);
+            var samplehtm = '<fieldset class="majorpoints"><legend class="majorpointslegend">' + modelEntity[i].model + '</legend>' +
+                '<div class="hiders" style="display: none">' + tstr[0].innerHTML + '</div></fieldset>';
+
+            // $("#main-content").append(samplehtm);
+            tr.append($("<td/>").append(samplehtm)); // model
+
+            // tr.append($("<td/>").append(modelEntity[i].model)); // model
+            tr.append($("<td/>").append(modelEntity[i].score)); // similarity score
+
+            // svg visualisation graph
+            data.push(modelEntity[i].score);
+            tr.append($("<td/>").append(drawChart(data))); // svg graph
+            data = []; // reinitialization for next data
+
+            tr.append($("<td/>").append(modelEntity[i].scoreEBI)); // similarity score EBI
+
+            // svg visualisation graph
+            var click = "<a href=# target=_blank>click</a>";
+            tr.append($("<td/>").append(click)); // similarity graph
+
+            tbody.append(tr);
+        }
+
+        table.append(tbody);
+        $("#main-content").append(table);
+
+        $('.majorpoints').click(function () {
+            $(this).find('.hiders').toggle();
+        });
+
+        // miscellaneous.drawChart(data);
+    };
+
+    $(document).ready(function () {
+
+        // On first load, show home view
+        miscellaneous.showLoading("#main-content");
+
+        // homepage
+        ajaxUtils.sendGetRequest(
+            sparqlUtils.homeHtml,
+            function (homeHtmlContent) {
+                $("#main-content").html(homeHtmlContent);
+            },
+            false);
+
+        // $(".dropdown-toggle").dropdown();
+        $('[data-toggle="popover"]').popover();
+    });
+
     $(document).on("keydown", function () {
 
         if (event.key == "Enter") {
-
-            // Reinitialize for a new search result
-            // d3.select("svg").remove();
-
             var indexes = $.map(modelEntity, function (obj, index) {
                 if (obj.model == event.srcElement.value) {
                     return index;
@@ -340,26 +284,35 @@ var modelSimilarity = function () {
         }
     });
 
+    mainUtils.loadSearchHtml = function () {
+        ajaxUtils.sendGetRequest(
+            sparqlUtils.searchHtml,
+            function (searchHtmlContent) {
+                $("#main-content").html(searchHtmlContent);
+            },
+            false);
+    };
+
     var synonymFromEBIOLSCon = function (concentrationArr, enteredIndex) {
 
         var endpointOLS, chebi_uri, fma_uri;
-        if (concentrationArr.concentration[idCounter].chebi.indexOf(partOfCHEBIUri) != -1) {
+        if (concentrationArr.concentration[idCounter].chebi.indexOf(sparqlUtils.partOfCHEBIUri) != -1) {
             var indexofColon = concentrationArr.concentration[idCounter].chebi.indexOf("CHEBI:");
             chebi_uri = "http://purl.obolibrary.org/obo/CHEBI_" + concentrationArr.concentration[idCounter].chebi.slice(indexofColon + 6);
-            endpointOLS = abiOntoEndpoint + "/chebi/terms?iri=" + chebi_uri;
+            endpointOLS = sparqlUtils.abiOntoEndpoint + "/chebi/terms?iri=" + chebi_uri;
         }
 
-        sendGetRequest(
+        ajaxUtils.sendGetRequest(
             endpointOLS,
             function (jsonObjOLSCHEBI) {
 
-                if (concentrationArr.concentration[idCounter].fma.indexOf(partOfFMAUri) != -1) {
+                if (concentrationArr.concentration[idCounter].fma.indexOf(sparqlUtils.partOfFMAUri) != -1) {
                     var indexofColon = concentrationArr.concentration[idCounter].fma.indexOf("FMA:");
                     fma_uri = "http://purl.org/sig/ont/fma/fma" + concentrationArr.concentration[idCounter].fma.slice(indexofColon + 4); // 3 + 1 (skip :)
-                    endpointOLS = abiOntoEndpoint + "/fma/terms?iri=" + fma_uri;
+                    endpointOLS = sparqlUtils.abiOntoEndpoint + "/fma/terms?iri=" + fma_uri;
                 }
 
-                sendGetRequest(
+                ajaxUtils.sendGetRequest(
                     endpointOLS,
                     function (jsonObjOLSFMA) {
 
@@ -400,43 +353,43 @@ var modelSimilarity = function () {
     var synonymFromEBIOLSFlux = function (fluxArr, enteredIndex) {
 
         var endpointOLS, chebi_uri, fma_uri;
-        if (fluxArr.flux[idCounter].sourceCHEBI.indexOf(partOfCHEBIUri) != -1) {
+        if (fluxArr.flux[idCounter].sourceCHEBI.indexOf(sparqlUtils.partOfCHEBIUri) != -1) {
             var indexofColon = fluxArr.flux[idCounter].sourceCHEBI.indexOf("CHEBI:");
             chebi_uri = "http://purl.obolibrary.org/obo/CHEBI_" + fluxArr.flux[idCounter].sourceCHEBI.slice(indexofColon + 6);
-            endpointOLS = abiOntoEndpoint + "/chebi/terms?iri=" + chebi_uri;
+            endpointOLS = sparqlUtils.abiOntoEndpoint + "/chebi/terms?iri=" + chebi_uri;
         }
 
-        sendGetRequest(
+        ajaxUtils.sendGetRequest(
             endpointOLS,
             function (jsonObjOLSCHEBI) {
 
-                if (fluxArr.flux[idCounter].sourceFMA.indexOf(partOfFMAUri) != -1) {
+                if (fluxArr.flux[idCounter].sourceFMA.indexOf(sparqlUtils.partOfFMAUri) != -1) {
                     var indexofColon = fluxArr.flux[idCounter].sourceFMA.indexOf("FMA:");
                     fma_uri = "http://purl.org/sig/ont/fma/fma" + fluxArr.flux[idCounter].sourceFMA.slice(indexofColon + 4); // 3 + 1 (skip :)
-                    endpointOLS = abiOntoEndpoint + "/fma/terms?iri=" + fma_uri;
+                    endpointOLS = sparqlUtils.abiOntoEndpoint + "/fma/terms?iri=" + fma_uri;
                 }
 
-                sendGetRequest(
+                ajaxUtils.sendGetRequest(
                     endpointOLS,
                     function (jsonObjOLSSourceFMA) {
 
-                        if (fluxArr.flux[idCounter].sinkFMA.indexOf(partOfFMAUri) != -1) {
+                        if (fluxArr.flux[idCounter].sinkFMA.indexOf(sparqlUtils.partOfFMAUri) != -1) {
                             var indexofColon = fluxArr.flux[idCounter].sinkFMA.indexOf("FMA:");
                             fma_uri = "http://purl.org/sig/ont/fma/fma" + fluxArr.flux[idCounter].sinkFMA.slice(indexofColon + 4); // 3 + 1 (skip :)
-                            endpointOLS = abiOntoEndpoint + "/fma/terms?iri=" + fma_uri;
+                            endpointOLS = sparqlUtils.abiOntoEndpoint + "/fma/terms?iri=" + fma_uri;
                         }
 
-                        sendGetRequest(
+                        ajaxUtils.sendGetRequest(
                             endpointOLS,
                             function (jsonObjOLSSinkFMA) {
 
-                                if (fluxArr.flux[idCounter].mediatorFMA.indexOf(partOfFMAUri) != -1) {
+                                if (fluxArr.flux[idCounter].mediatorFMA.indexOf(sparqlUtils.partOfFMAUri) != -1) {
                                     var indexofColon = fluxArr.flux[idCounter].mediatorFMA.indexOf("FMA:");
                                     fma_uri = "http://purl.org/sig/ont/fma/fma" + fluxArr.flux[idCounter].mediatorFMA.slice(indexofColon + 4); // 3 + 1 (skip :)
-                                    endpointOLS = abiOntoEndpoint + "/fma/terms?iri=" + fma_uri;
+                                    endpointOLS = sparqlUtils.abiOntoEndpoint + "/fma/terms?iri=" + fma_uri;
                                 }
 
-                                sendGetRequest(
+                                ajaxUtils.sendGetRequest(
                                     endpointOLS,
                                     function (jsonObjOLSMediatorFMA) {
 
@@ -562,7 +515,7 @@ var modelSimilarity = function () {
 
     var showConcentration = function (concentrationArray) {
         var head = ["Model entity", "Solute", "Located_in"];
-        var table = $("<table/>").addClass("table table-hover table-condensed"); //table-bordered table-striped
+        var table = $("<table/>").addClass("table table-hover"); //table-condensed table-bordered table-striped
 
         // Table header
         var thead = $("<thead/>"), tr = $("<tr/>");
@@ -594,7 +547,15 @@ var modelSimilarity = function () {
         table.append(tbody);
         $("#main-content").append(table);
 
-        showGraph(concentrationArray);
+        // uncomment LATER!!!
+        // similarityModels(concentrationArray, modelEntity[1].concentration);
+
+        // expand function
+        // miscellaneous.expandFunction();
+        //
+        // $('.majorpoints').click(function () {
+        //     $(this).find('.hiders').toggle();
+        // });
     };
 
     var showFlux = function (fluxArray) {
@@ -641,45 +602,13 @@ var modelSimilarity = function () {
         $("#main-content").append(table);
     };
 
-    var showGraph = function (concentrationArray) {
-        console.log("showGraph: ", concentrationArray);
-        similarityModels(concentrationArray, modelEntity[1].concentration);
-
-        // expand function
-        expandFunction();
-
-        $('.majorpoints').click(function () {
-            $(this).find('.hiders').toggle();
-        });
-    };
-
-    // Remove duplicate links
-    var uniqueifySVG = function (es) {
-        var retval = [];
-        es.forEach(function (e) {
-            for (var j = 0; j < retval.length; j++) {
-                if (retval[j].source === e.source && retval[j].target === e.target)
-                    return;
-            }
-            retval.push(e);
-        });
-        return retval;
-    };
-
-    var parseModelName = function (modelEntity) {
-        var indexOfHash = modelEntity.search("#"),
-            modelName = modelEntity.slice(0, indexOfHash);
-
-        return modelName;
-    };
-
     var similarityModels = function (concentrationArray, concentrationArray2) {
 
         console.log("concentrationArray: ", concentrationArray);
         console.log("concentrationArray2: ", concentrationArray2);
 
-        var model = parseModelName(concentrationArray[0].model_entity),
-            model2 = parseModelName(concentrationArray2[0].model_entity);
+        var model = miscellaneous.parseModelName(concentrationArray[0].model_entity),
+            model2 = miscellaneous.parseModelName(concentrationArray2[0].model_entity);
 
         var links = [];
 
@@ -770,7 +699,7 @@ var modelSimilarity = function () {
             }
         }
 
-        links = uniqueifySVG(links);
+        links = miscellaneous.uniqueifySVG(links);
 
         console.log("links: ", links);
 
@@ -945,4 +874,8 @@ var modelSimilarity = function () {
             d.fy = null;
         }
     };
-}();
+
+    // Expose utility to the global object
+    global.$mainUtils = mainUtils;
+
+})(window);

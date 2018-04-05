@@ -66,6 +66,5 @@ function handleResponse(request, responseHandler, isJsonResponse) {
 
 exports.sendGetRequest = sendGetRequest;
 exports.sendPostRequest = sendPostRequest;
-exports.sendEBIPostRequest = sendEBIPostRequest;
 exports.getRequestObject = getRequestObject;
 exports.handleResponse = handleResponse;
