@@ -5,6 +5,7 @@
 var ajaxUtils = require("./../libs/ajax-utils.js");
 var miscellaneous = require("./miscellaneous.js");
 var sparqlUtils = require("./sparqlUtils.js");
+var similarity = require("./similarity.js");
 
 "use strict";
 
@@ -15,6 +16,7 @@ var modelSimilarity = (function (global) {
             model: "weinstein_1995.cellml",
             concentration: [],
             flux: [],
+            protein: "http://purl.obolibrary.org/obo/PR_P26433",
             score: 0,
             scoreEBI: 0
         },
@@ -22,6 +24,7 @@ var modelSimilarity = (function (global) {
             model: "chang_fujita_b_1999.cellml",
             concentration: [],
             flux: [],
+            protein: "", // http://purl.obolibrary.org/obo/CL_0000066
             score: 0,
             scoreEBI: 0
         },
@@ -29,6 +32,7 @@ var modelSimilarity = (function (global) {
             model: "chang_fujita_1999.cellml",
             concentration: [],
             flux: [],
+            protein: "http://purl.obolibrary.org/obo/PR_P59158",
             score: 0,
             scoreEBI: 0
         },
@@ -36,12 +40,12 @@ var modelSimilarity = (function (global) {
             model: "mackenzie_1996.cellml",
             concentration: [],
             flux: [],
+            protein: "http://purl.obolibrary.org/obo/PR_Q9ET37",
             score: 0,
             scoreEBI: 0
         }
     ];
     var idCounter = 0;
-    var data = [];
     var mainUtils = {};
 
     mainUtils.loadHomeHtml = function () {
@@ -53,15 +57,6 @@ var modelSimilarity = (function (global) {
             },
             false);
     };
-
-    // mainUtils.loadChartHtml = function () {
-    //     ajaxUtils.sendGetRequest(
-    //         sparqlUtils.chartHtml,
-    //         function (chartHtmlContent) {
-    //             $("#main-content td").html(chartHtmlContent);
-    //         },
-    //         false);
-    // };
 
     var discoverModelSimilarity = function () {
 
@@ -119,47 +114,12 @@ var modelSimilarity = (function (global) {
                                 }
                             }
                         }
+
+                        console.log("Testing modelEntity: ", modelEntity);
                     },
                     true);
             },
             true);
-    };
-
-    discoverModelSimilarity();
-
-    var drawChart = function (data) {
-
-        var width = 420,
-            barHeight = 20;
-
-        var x = d3.scaleLinear()
-            .domain([0, d3.max(data)])
-            .range([0, width]);
-
-        var chart = d3.select(".chart")
-            .attr("width", width)
-            .attr("height", barHeight * data.length);
-
-        var bar = chart.selectAll("g")
-            .data(data)
-            .enter().append("g")
-            .attr("transform", function (d, i) {
-                return "translate(0," + i * barHeight + ")";
-            });
-
-        bar.append("rect")
-            .attr("width", x)
-            .attr("height", barHeight - 1);
-
-        bar.append("text")
-            .attr("x", function (d) {
-                return x(d) - 3;
-            })
-            .attr("y", barHeight / 2)
-            .attr("dy", ".35em") // .35em
-            .text(function (d) {
-                return d;
-            });
     };
 
     var showConcentrationTable = function (concentrationArray) {
@@ -198,11 +158,56 @@ var modelSimilarity = (function (global) {
         return table;
     };
 
+    var showFluxTable = function (fluxArray) {
+        var head = ["Model entity", "Solute", "Source FMA", "Sink FMA", "Mediator FMA"];
+        var table = $("<table/>").addClass("table table-hover table-condensed"); //table-bordered table-striped
+
+        // Table header
+        var thead = $("<thead/>"), tr = $("<tr/>");
+        for (var i in head) {
+            tr.append($("<th/>").append(head[i]));
+        }
+
+        thead.append(tr);
+        table.append(thead);
+
+        // Table body
+        var tbody = $("<tbody/>");
+        for (var i = 0; i < fluxArray.length; i++) {
+            tr = $("<tr/>"); // row
+
+            var indexofColon, chebi, srcFMA, snkFMA, medFMA;
+            indexofColon = fluxArray[i].sourceCHEBI.indexOf("CHEBI:");
+            chebi = "<a href=" + fluxArray[i].sourceCHEBI + " + target=_blank>" + fluxArray[i].sourceCHEBI.slice(indexofColon) + "</a>";
+
+            indexofColon = fluxArray[i].sourceFMA.indexOf("FMA:");
+            srcFMA = "<a href=" + fluxArray[i].sourceFMA + " + target=_blank>" + fluxArray[i].sourceFMA.slice(indexofColon) + "</a>";
+
+            indexofColon = fluxArray[i].sinkFMA.indexOf("FMA:");
+            snkFMA = "<a href=" + fluxArray[i].sinkFMA + " + target=_blank>" + fluxArray[i].sinkFMA.slice(indexofColon) + "</a>";
+
+            indexofColon = fluxArray[i].mediatorFMA.indexOf("FMA:");
+            medFMA = "<a href=" + fluxArray[i].mediatorFMA + " + target=_blank>" + fluxArray[i].mediatorFMA.slice(indexofColon) + "</a>";
+
+            tr.append($("<td/>").append(fluxArray[i].model_entity)); // model_entity
+            tr.append($("<td/>").append(chebi)); // solute
+            tr.append($("<td/>").append(srcFMA)); // source FMA
+            tr.append($("<td/>").append(snkFMA)); // sink FMA
+            tr.append($("<td/>").append(medFMA)); // mediator FMA
+
+            tbody.append(tr);
+        }
+
+        table.append(tbody);
+
+        return table;
+    };
+
     var showModelSimilarity = function () {
 
         $("#main-content").html("");
 
-        var head = ["CellML document", "Similarity score (Exact)", "Visualisation graph", "Similarity score (EBI)", "Overlapping graph"];
+        var head = ["CellML document", "Exact similarity", "EBI similarity"];
         var table = $("<table/>").addClass("table table-hover");
 
         // Table header
@@ -219,9 +224,14 @@ var modelSimilarity = (function (global) {
         for (var i = 0; i < modelEntity.length; i++) {
             tr = $("<tr/>"); // row
 
-            var tstr = showConcentrationTable(modelEntity[i].concentration);
+            var tstrconcentration = showConcentrationTable(modelEntity[i].concentration);
+            tstrconcentration = "<table id='fieldsetTable'>" + tstrconcentration[0].innerHTML + "</table>";
+
+            var tstrflux = showFluxTable(modelEntity[i].flux);
+            tstrflux = "<table id='fieldsetTable'>" + tstrflux[0].innerHTML + "</table>";
+
             var samplehtm = '<fieldset class="majorpoints"><legend class="majorpointslegend">' + modelEntity[i].model + '</legend>' +
-                '<div class="hiders" style="display: none">' + tstr[0].innerHTML + '</div></fieldset>';
+                '<div class="hiders" style="display: none">' + tstrconcentration + '<br/>' + tstrflux + '</div></fieldset>';
 
             // $("#main-content").append(samplehtm);
             tr.append($("<td/>").append(samplehtm)); // model
@@ -229,16 +239,7 @@ var modelSimilarity = (function (global) {
             // tr.append($("<td/>").append(modelEntity[i].model)); // model
             tr.append($("<td/>").append(modelEntity[i].score)); // similarity score
 
-            // svg visualisation graph
-            data.push(modelEntity[i].score);
-            tr.append($("<td/>").append(drawChart(data))); // svg graph
-            data = []; // reinitialization for next data
-
             tr.append($("<td/>").append(modelEntity[i].scoreEBI)); // similarity score EBI
-
-            // svg visualisation graph
-            var click = "<a href=# target=_blank>click</a>";
-            tr.append($("<td/>").append(click)); // similarity graph
 
             tbody.append(tr);
         }
@@ -249,8 +250,6 @@ var modelSimilarity = (function (global) {
         $('.majorpoints').click(function () {
             $(this).find('.hiders').toggle();
         });
-
-        // miscellaneous.drawChart(data);
     };
 
     $(document).ready(function () {
@@ -270,9 +269,12 @@ var modelSimilarity = (function (global) {
         $('[data-toggle="popover"]').popover();
     });
 
-    $(document).on("keydown", function () {
+    // SELECT a CellML model from a dropdown list
+    mainUtils.filter = function () {
 
-        if (event.key == "Enter") {
+        discoverModelSimilarity();
+
+        if (event.srcElement.value != "...select a CellML model") {
             var indexes = $.map(modelEntity, function (obj, index) {
                 if (obj.model == event.srcElement.value) {
                     return index;
@@ -280,9 +282,104 @@ var modelSimilarity = (function (global) {
             });
 
             var enteredIndex = indexes[0];
-            synonymFromEBIOLSCon(modelEntity[enteredIndex], enteredIndex); // append synonym names from EBI OLS's JSON
+
+            // similarity matrix calculation!
+            var index = 0, ProteinSeq = "", requestData, PID = [],
+                baseUrl = "https://www.ebi.ac.uk/Tools/services/rest/clustalo";
+
+            var enteredPrID = miscellaneous.splitPRFromProtein(modelEntity, PID, enteredIndex);
+
+            // PID does NOT start with P or Q
+            for (var key in PID) {
+                // console.log("PID[key]: ", PID[key]);
+                if (PID[key].charAt(0) == "Q") continue;
+
+                if (PID[key].charAt(0) != "P") {
+                    PID[key] = "P" + PID[key].replace(/^0+/, ""); // Or parseInt("065", 10);
+                }
+            }
+
+            console.log("PID AFTER: ", PID);
+
+            // https://www.ebi.ac.uk/seqdb/confluence/pages/viewpage.action?pageId=48923608
+            // https://www.ebi.ac.uk/seqdb/confluence/display/WEBSERVICES/clustalo_rest
+            var WSDbfetchREST = function () {
+
+                var dbfectendpoint = "https://www.ebi.ac.uk/Tools/dbfetch/dbfetch/uniprotkb/" + PID[index] + "/fasta";
+
+                ajaxUtils.sendGetRequest(
+                    dbfectendpoint,
+                    function (psequence) {
+                        ProteinSeq += psequence;
+
+                        index++;
+                        if (index == PID.length) {
+                            // console.log("ProteinSeq: ", ProteinSeq);
+
+                            requestData = {
+                                "sequence": ProteinSeq,
+                                "email": "dsar941@aucklanduni.ac.nz"
+                            }
+
+                            var requestUrl = baseUrl + "/run/";
+
+                            ajaxUtils.sendEBIPostRequest(
+                                requestUrl,
+                                requestData,
+                                function (jobId) {
+                                    // console.log("jobId: ", jobId); // jobId
+
+                                    var chkJobStatus = function (jobId) {
+                                        var jobIdUrl = baseUrl + "/status/" + jobId;
+                                        ajaxUtils.sendGetRequest(
+                                            jobIdUrl,
+                                            function (resultObj) {
+                                                console.log("result: ", resultObj); // jobId status
+
+                                                if (resultObj == "RUNNING") {
+                                                    setTimeout(function () {
+                                                        chkJobStatus(jobId);
+                                                    }, 5000);
+                                                }
+
+                                                var pimUrl = baseUrl + "/result/" + jobId + "/pim";
+                                                ajaxUtils.sendGetRequest(
+                                                    pimUrl,
+                                                    function (identityMatrix) {
+                                                        miscellaneous.similarityMatrixEBI(
+                                                            identityMatrix,
+                                                            PID,
+                                                            enteredPrID,
+                                                            modelEntity);
+
+                                                        console.log("identityMatrix: ", identityMatrix);
+                                                        console.log("PID: ", PID);
+                                                        console.log("enteredPrID: ", enteredPrID);
+                                                        console.log("modelEntity: ", modelEntity);
+
+                                                        synonymFromEBIOLSCon(modelEntity[enteredIndex], enteredIndex); // append synonym names from EBI OLS's JSON
+                                                    },
+                                                    false);
+                                            },
+                                            false);
+                                    }
+
+                                    chkJobStatus(jobId);
+                                },
+                                false);
+
+                            return;
+                        }
+
+                        // callback
+                        WSDbfetchREST();
+                    },
+                    false);
+            };
+
+            WSDbfetchREST();
         }
-    });
+    };
 
     mainUtils.loadSearchHtml = function () {
         ajaxUtils.sendGetRequest(
@@ -393,7 +490,8 @@ var modelSimilarity = (function (global) {
                                     endpointOLS,
                                     function (jsonObjOLSMediatorFMA) {
 
-                                        var tempvar, synonym_CHEBI, synonym_sourceFMA, synonym_sinkFMA, synonym_mediatorFMA;
+                                        var tempvar, synonym_CHEBI, synonym_sourceFMA, synonym_sinkFMA,
+                                            synonym_mediatorFMA;
                                         if (jsonObjOLSCHEBI._embedded.terms[0].annotation["has_related_synonym"] == undefined) {
                                             synonym_CHEBI = jsonObjOLSCHEBI._embedded.terms[0].annotation["id"][0].slice(3);
                                         }
@@ -499,9 +597,6 @@ var modelSimilarity = (function (global) {
 
                                             showModelSimilarity();
 
-                                            showConcentration(concentrationArray);
-                                            showFlux(fluxArray);
-
                                             return;
                                         }
 
@@ -511,368 +606,6 @@ var modelSimilarity = (function (global) {
                             }, true);
                     }, true);
             }, true);
-    };
-
-    var showConcentration = function (concentrationArray) {
-        var head = ["Model entity", "Solute", "Located_in"];
-        var table = $("<table/>").addClass("table table-hover"); //table-condensed table-bordered table-striped
-
-        // Table header
-        var thead = $("<thead/>"), tr = $("<tr/>");
-        for (var i in head) {
-            tr.append($("<th/>").append(head[i]));
-        }
-
-        thead.append(tr);
-        table.append(thead);
-
-        // Table body
-        var tbody = $("<tbody/>");
-        for (var i = 0; i < concentrationArray.length; i++) {
-            tr = $("<tr/>"); // row
-
-            var indexofColon = concentrationArray[i].chebi.indexOf("CHEBI:"),
-                chebi = "<a href=" + concentrationArray[i].chebi + " + target=_blank>" + concentrationArray[i].chebi.slice(indexofColon) + "</a>";
-
-            indexofColon = concentrationArray[i].fma.indexOf("FMA:");
-            var fma = "<a href=" + concentrationArray[i].fma + " + target=_blank>" + concentrationArray[i].fma.slice(indexofColon) + "</a>";
-
-            tr.append($("<td/>").append(concentrationArray[i].model_entity)); // model_entity
-            tr.append($("<td/>").append(chebi)); // solute
-            tr.append($("<td/>").append(fma)); // compartment
-
-            tbody.append(tr);
-        }
-
-        table.append(tbody);
-        $("#main-content").append(table);
-
-        // uncomment LATER!!!
-        // similarityModels(concentrationArray, modelEntity[1].concentration);
-
-        // expand function
-        // miscellaneous.expandFunction();
-        //
-        // $('.majorpoints').click(function () {
-        //     $(this).find('.hiders').toggle();
-        // });
-    };
-
-    var showFlux = function (fluxArray) {
-        var head = ["Model entity", "Solute", "Source FMA", "Sink FMA", "Mediator FMA"];
-        var table = $("<table/>").addClass("table table-hover table-condensed"); //table-bordered table-striped
-
-        // Table header
-        var thead = $("<thead/>"), tr = $("<tr/>");
-        for (var i in head) {
-            tr.append($("<th/>").append(head[i]));
-        }
-
-        thead.append(tr);
-        table.append(thead);
-
-        // Table body
-        var tbody = $("<tbody/>");
-        for (var i = 0; i < fluxArray.length; i++) {
-            tr = $("<tr/>"); // row
-
-            var indexofColon, chebi, srcFMA, snkFMA, medFMA;
-            indexofColon = fluxArray[i].sourceCHEBI.indexOf("CHEBI:");
-            chebi = "<a href=" + fluxArray[i].sourceCHEBI + " + target=_blank>" + fluxArray[i].sourceCHEBI.slice(indexofColon) + "</a>";
-
-            indexofColon = fluxArray[i].sourceFMA.indexOf("FMA:");
-            srcFMA = "<a href=" + fluxArray[i].sourceFMA + " + target=_blank>" + fluxArray[i].sourceFMA.slice(indexofColon) + "</a>";
-
-            indexofColon = fluxArray[i].sinkFMA.indexOf("FMA:");
-            snkFMA = "<a href=" + fluxArray[i].sinkFMA + " + target=_blank>" + fluxArray[i].sinkFMA.slice(indexofColon) + "</a>";
-
-            indexofColon = fluxArray[i].mediatorFMA.indexOf("FMA:");
-            medFMA = "<a href=" + fluxArray[i].mediatorFMA + " + target=_blank>" + fluxArray[i].mediatorFMA.slice(indexofColon) + "</a>";
-
-            tr.append($("<td/>").append(fluxArray[i].model_entity)); // model_entity
-            tr.append($("<td/>").append(chebi)); // solute
-            tr.append($("<td/>").append(srcFMA)); // source FMA
-            tr.append($("<td/>").append(snkFMA)); // sink FMA
-            tr.append($("<td/>").append(medFMA)); // mediator FMA
-
-            tbody.append(tr);
-        }
-
-        table.append(tbody);
-        $("#main-content").append(table);
-    };
-
-    var similarityModels = function (concentrationArray, concentrationArray2) {
-
-        console.log("concentrationArray: ", concentrationArray);
-        console.log("concentrationArray2: ", concentrationArray2);
-
-        var model = miscellaneous.parseModelName(concentrationArray[0].model_entity),
-            model2 = miscellaneous.parseModelName(concentrationArray2[0].model_entity);
-
-        var links = [];
-
-        for (var i = 0; i < concentrationArray.length; i++) {
-            for (var j = 0; j < 2; j++) {
-
-                var indexofColon = concentrationArray[i].chebi.indexOf("CHEBI:"),
-                    chebi = concentrationArray[i].chebi.slice(indexofColon);
-
-                indexofColon = concentrationArray[i].fma.indexOf("FMA:");
-                var fma = concentrationArray[i].fma.slice(indexofColon);
-
-                var name, target;
-                if (j == 0) {
-                    name = "Solute";
-                    target = chebi; // concentrationArray[i].chebi
-                }
-
-                if (j == 1) {
-                    name = "Located_in";
-                    target = fma; // concentrationArray[i].fma;
-                }
-
-                var indexofColon = concentrationArray[i].model_entity.indexOf("#"),
-                    model_entity = concentrationArray[i].model_entity.slice(indexofColon + 1);
-
-                links.push({
-                    source: concentrationArray[i].model_entity, // model_entity,
-                    target: target,
-                    name: name
-                });
-            }
-        }
-
-        for (var i = 0; i < concentrationArray2.length; i++) {
-            for (var j = 0; j < 2; j++) {
-
-                var indexofColon = concentrationArray2[i].chebi.indexOf("CHEBI:"),
-                    chebi = concentrationArray2[i].chebi.slice(indexofColon);
-
-                indexofColon = concentrationArray2[i].fma.indexOf("FMA:");
-                var fma = concentrationArray2[i].fma.slice(indexofColon);
-
-                var name, target;
-                if (j == 0) {
-                    name = "Solute";
-                    target = chebi; // concentrationArray[i].chebi
-                }
-
-                if (j == 1) {
-                    name = "Located_in";
-                    target = fma; // concentrationArray[i].fma;
-                }
-
-                var indexofColon = concentrationArray2[i].model_entity.indexOf("#"),
-                    model_entity = concentrationArray2[i].model_entity.slice(indexofColon + 1);
-
-                links.push({
-                    source: concentrationArray2[i].model_entity, // model_entity,
-                    target: target,
-                    name: name
-                });
-            }
-        }
-
-        // similarity calculation from concentrationArray
-        for (var i = 0; i < concentrationArray.length; i++) {
-            for (var j = 0; j < concentrationArray2.length; j++) {
-
-                var indexofColon, chebi, chebi2, fma, fma2;
-                indexofColon = concentrationArray[i].chebi.indexOf(" (");
-                chebi = concentrationArray[i].chebi.slice(0, indexofColon);
-                chebi2 = concentrationArray2[j].chebi;
-
-                indexofColon = concentrationArray[i].fma.indexOf(" (");
-                fma = concentrationArray[i].fma.slice(0, indexofColon);
-                fma2 = concentrationArray2[j].fma;
-
-                if (chebi == chebi2 && fma == fma2) {
-                    links.push({
-                        source: concentrationArray[i].model_entity,
-                        target: concentrationArray2[j].model_entity,
-                        name: "Similarity"
-                    });
-
-                    break;
-                }
-            }
-        }
-
-        links = miscellaneous.uniqueifySVG(links);
-
-        console.log("links: ", links);
-
-        var nodes = {};
-
-        // Compute distinct nodes from the links.
-        links.forEach(function (link) {
-            link.source = nodes[link.source] ||
-                (nodes[link.source] = {name: link.source});
-
-            link.target = nodes[link.target] ||
-                (nodes[link.target] = {name: link.target});
-        });
-
-        // SVG graph
-        var width = 2000, // 1200
-            height = 900; // 700
-
-        var svg = d3.select("#svgSimilarityModels").append("svg")
-            .attrs({
-                "width": width,
-                "height": height
-            })
-            .append("g");
-
-        var color = d3.scaleOrdinal(d3.schemeCategory20);
-
-        var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function (d) {
-                return d.name;
-            }))
-            .force("charge", d3.forceManyBody().strength(-100)) // -100
-            .force("center", d3.forceCenter(width / 4, height / 2)) // width / 3 and height / 2
-            .force("link", d3.forceLink().distance(100).strength(0.1)); // 100
-
-        //build the arrow.
-        svg.append("svg:defs").selectAll("marker")
-            .data(["end"])      // Different link/path types can be defined here
-            .enter().append("svg:marker")    // This section adds in the arrows
-            .attrs({
-                "id": String,
-                "viewBox": "0 -5 10 10",
-                "refX": 15,
-                "refY": -1.5,
-                "markerWidth": 4,
-                "markerHeight": 4,
-                "orient": "auto"
-            })
-            .append("svg:path")
-            .attr("d", "M0,-5L10,0L0,5");
-
-        // label edges with different color
-        var edgelabels = ["Similarity", "Solute", "Located_in"];
-        var py = 20;
-
-        // add the links and the arrows
-        var link = svg.append("svg:g").selectAll("path")
-            .data(links)
-            .enter().append("svg:path")
-            .attr("class", "pathlink")
-            .style("stroke", function (d) {
-                for (var i = 0; i < edgelabels.length; i++) {
-                    if (d.name == edgelabels[i]) {
-                        svg.append("text")
-                            .style("font", "14px sans-serif")
-                            .attr("stroke", color(d.name))
-                            .attr("x", 10)
-                            .attr("y", py)
-                            .text(d.name);
-
-                        //increment to get distinct color
-                        color(d.name + 1);
-                        py = py + 20;
-                        edgelabels[i] = "";
-                        break;
-                    }
-                }
-
-                return color(d.name);
-            })
-            .attr("marker-end", "url(#end)");
-
-        var node = svg.append("g")
-            .attr("class", "nodes")
-            .selectAll("circle")
-            .data(d3.values(nodes))
-            .enter().append("g")
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
-
-        node.append("circle")
-            .attr("r", 7)
-            .styles({
-                "fill": function (d, i) {
-                    if (d.name.indexOf(model) != -1) {
-                        return "red";
-                    }
-
-                    if (d.name.indexOf(model2) != -1) {
-                        return "brown";
-                    }
-                },
-                "r": function (d, i) {
-                    if (d.name.indexOf(model) != -1) {
-                        return 10;
-                    }
-
-                    if (d.name.indexOf(model2) != -1) {
-                        return 10;
-                    }
-                }
-            });
-
-        // add the text
-        node.append("text")
-            .attrs({
-                "x": 12,
-                "dy": ".35em"
-            })
-            .text(function (d) {
-                return d.name;
-            });
-
-        simulation
-            .nodes(d3.values(nodes))
-            .on("tick", tick);
-
-        simulation.force("link")
-            .links(links);
-
-        // add the curvy lines
-        function tick() {
-            // add the curvy lines
-            link.attr("d", function (d) {
-
-                // Total difference in x and y from source to target
-                var dx = d.target.x - d.source.x,
-                    dy = d.target.y - d.source.y;
-
-                // Length of path from center of source node to center of target node
-                var dr = Math.sqrt(dx * dx + dy * dy);
-
-                return "M" +
-                    d.source.x + "," +
-                    d.source.y + "A" +
-                    dr + "," + dr + " 0 0,1 " +
-                    d.target.x + "," +
-                    d.target.y;
-            });
-
-            node.attr("transform", function (d) {
-                return "translate(" + d.x + "," + d.y + ")";
-            });
-        }
-
-        function dragstarted(d) {
-            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-        }
-
-        function dragged(d) {
-            d.fx = d3.event.x;
-            d.fy = d3.event.y;
-        }
-
-        function dragended(d) {
-            if (!d3.event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-        }
     };
 
     // Expose utility to the global object

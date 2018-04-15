@@ -1,10 +1,16 @@
 <div class="container">
     <!-- The second value will be selected initially -->
-    <select id="searchTxt" name="searchTxt">
-        <option value="..select a CellML model" selected>..select a CellML model</option>
-        <option value="weinstein_1995.cellml">weinstein_1995.cellml</option>
-        <option value="chang_fujita_b_1999.cellml">chang_fujita_b_1999.cellml</option>
-    </select>
+    <div id="lead-msg" class="well container lead">
+        SELECT a CellML model&ensp;
+
+        <select id="searchTxt" name="searchTxt" onclick="$mainUtils.filter();">
+            <option value="...select a CellML model" selected>...select a CellML model</option>
+            <option value="weinstein_1995.cellml">weinstein_1995.cellml</option>
+            <option value="chang_fujita_b_1999.cellml">chang_fujita_b_1999.cellml</option>
+            <option value="chang_fujita_1999.cellml">chang_fujita_1999.cellml</option>
+            <option value="mackenzie_1996.cellml">mackenzie_1996.cellml</option>
+        </select>
+    </div>
 
     <hr/>
 

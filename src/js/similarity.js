@@ -1,5 +1,5 @@
 /*
-* Testing Model Similarity ...
+* similarity of models
 * */
 
 var similarityModels = function () {
@@ -539,4 +539,6 @@ var similarityModels = function () {
         d.fx = null;
         d.fy = null;
     }
-}();
+};
+
+exports.similarityModels = similarityModels;
