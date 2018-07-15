@@ -338,6 +338,7 @@ var modelSimilarity = (function (global) {
         $('[data-toggle="popover"]').popover();
     });
 
+    // SELECT a CellML model from a dropdown list
     mainUtils.filter = function () {
 
         discoverModelSimilarity();
@@ -676,6 +677,863 @@ var modelSimilarity = (function (global) {
             }, true);
     };
 
+    var sparqlOBJ = {
+        protocol1Concentration: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+        "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
+        "PREFIX dcterms: <http://purl.org/dc/terms/>" +
+        "SELECT ?modelEntity " +
+        "WHERE { " +
+        "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+        "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
+        "?model_prop semsim:physicalPropertyOf ?source_entity. " +
+        "?source_entity ro:part_of ?source_part_of_entity. " +
+        "?source_part_of_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:74550>. " +
+        "?source_entity semsim:hasPhysicalDefinition <http://identifiers.org/chebi/CHEBI:29101>. " +
+        "}",
+        protocol1Time: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+        "SELECT ?modelEntity " +
+        "WHERE { " +
+        "?modelEntity semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_01023>. " +
+        "}",
+        protocol2Currrent: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+        "SELECT ?modelEntity " +
+        "WHERE { " +
+        "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+        "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00318>. " +
+        "?model_prop semsim:physicalPropertyOf ?model_proc. " +
+        "?model_proc semsim:hasMediatorParticipant ?model_medparticipant. " +
+        "?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. " +
+        "?med_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:84666>. " +
+        "}",
+        protocol2Potential: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+        "SELECT ?modelEntity " +
+        "WHERE { " +
+        "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+        "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00506>. " +
+        "?model_prop semsim:physicalPropertyOf ?entity. " +
+        "?entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:84666>. " +
+        "}",
+        protocol3Flux: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+        "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
+        "PREFIX dcterms: <http://purl.org/dc/terms/>" +
+        "SELECT ?modelEntity " +
+        "WHERE { " +
+        "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+        "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00593>. " +
+        "?model_prop semsim:physicalPropertyOf ?model_proc. " +
+        "?model_proc semsim:hasSourceParticipant ?model_srcparticipant. " +
+        "?model_srcparticipant semsim:hasPhysicalEntityReference ?source_entity. " +
+        "?source_entity ro:part_of ?source_part_of_entity. " +
+        "?source_part_of_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:74550>. " +
+        "?source_entity semsim:hasPhysicalDefinition <http://identifiers.org/chebi/CHEBI:29101>. " +
+        "?model_proc semsim:hasSinkParticipant ?model_sinkparticipant. " +
+        "?model_sinkparticipant semsim:hasPhysicalEntityReference ?sink_entity. " +
+        "?sink_entity ro:part_of ?sink_part_of_entity. " +
+        "?sink_part_of_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:66836>. " +
+        "?model_proc semsim:hasMediatorParticipant ?model_medparticipant. " +
+        "?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. " +
+        "?med_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:84666>. " +
+        "}",
+        protocol4Concentration: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+        "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
+        "PREFIX dcterms: <http://purl.org/dc/terms/>" +
+        "SELECT ?modelEntity " +
+        "WHERE { " +
+        "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+        "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
+        "?model_prop semsim:physicalPropertyOf ?source_entity. " +
+        "?source_entity ro:part_of ?source_part_of_entity. " +
+        "?source_part_of_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:74550>. " +
+        "?source_entity semsim:hasPhysicalDefinition <http://identifiers.org/chebi/CHEBI:28938>. " +
+        "}",
+        protocol2AConcentration: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+        "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
+        "PREFIX dcterms: <http://purl.org/dc/terms/>" +
+        "SELECT ?modelEntity " +
+        "WHERE { " +
+        "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+        "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
+        "?model_prop semsim:physicalPropertyOf ?source_entity. " +
+        "?source_entity ro:part_of ?source_part_of_entity. " +
+        "?source_part_of_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:74550>. " +
+        "?source_entity semsim:hasPhysicalDefinition <http://identifiers.org/chebi/CHEBI:15378>. " +
+        "}"
+    }
+
+    var drawSEDML = function () {
+
+        var endpoint = "https://models.physiomeproject.org/pmr2_virtuoso_search";
+        var opbTime = "http://identifiers.org/opb/OPB_01023";
+        var csvArray = [], tempxAxis = [], tempyAxis = [], tcsvArray = [];
+        var csvCounter = 0, xAxis = [], yAxis = [], csvname = [], dataLen = 0;
+
+        // Definition of protocols
+        var sedmlWorkspaceName = "https://models.physiomeproject.org/workspace/267/rawfile/HEAD/weinstein_1995.sedml";
+
+        // compare component and varible name of two model entities
+        var isExist = function (element, element2) {
+            // remove duplicate components with same variable and cellml model
+            var indexOfHash = element.search("#"),
+                cellmlModelName = element.slice(0, indexOfHash), // weinstein_1995.cellml
+                componentVariableName = element.slice(indexOfHash + 1), // NHE3.J_NHE3_Na
+                indexOfDot = componentVariableName.indexOf("."),
+                variableName = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
+
+            var indexOfHash2 = element2.search("#"),
+                cellmlModelName2 = element2.slice(0, indexOfHash2), // weinstein_1995.cellml
+                componentVariableName2 = element2.slice(indexOfHash2 + 1), // NHE3.J_NHE3_Na
+                indexOfDot2 = componentVariableName2.indexOf("."),
+                variableName2 = componentVariableName2.slice(indexOfDot2 + 1); // J_NHE3_Na
+
+            if (cellmlModelName == cellmlModelName2 && variableName == variableName2) {
+                return true;
+            }
+
+            return false;
+        };
+
+        function d3CheckBox() {
+
+            var size = 20,
+                x = 0,
+                y = 0,
+                rx = 0,
+                ry = 0,
+                markStrokeWidth = 2,
+                boxStrokeWidth = 2,
+                checked = false,
+                clickEvent,
+                xtext = 0,
+                ytext = 0,
+                text = "Empty";
+
+            function checkBox(selection) {
+                var g = selection.append("g"),
+                    box = g.append("rect")
+                        .attr("width", size)
+                        .attr("height", size)
+                        .attr("x", x)
+                        .attr("y", y)
+                        .attr("rx", rx)
+                        .attr("ry", ry)
+                        .styles({
+                            "fill-opacity": 0,
+                            "stroke-width": boxStrokeWidth,
+                            "stroke": "black"
+                        }),
+                    txt = g.append("text").attr("x", xtext).attr("y", ytext).text("" + text + "");
+
+                //Data to represent the check mark
+                var coordinates = [
+                    {x: x + (size / 8), y: y + (size / 3)},
+                    {x: x + (size / 2.2), y: (y + size) - (size / 4)},
+                    {x: (x + size) - (size / 8), y: (y + (size / 10))}
+                ];
+
+                var line = d3.line()
+                    .x(function (d) {
+                        return d.x;
+                    })
+                    .y(function (d) {
+                        return d.y;
+                    });
+
+                var mark = g.append("path")
+                    .attr("d", line(coordinates))
+                    .styles({
+                        "stroke-width": markStrokeWidth,
+                        "stroke": "black",
+                        "fill": "none",
+                        "opacity": (checked) ? 1 : 0
+                    });
+
+                g.on("click", function () {
+                    checked = !checked;
+                    mark.style("opacity", (checked) ? 1 : 0);
+
+                    if (clickEvent) {
+                        clickEvent();
+                    }
+
+                    d3.event.stopPropagation();
+                });
+            }
+
+            checkBox.size = function (val) {
+                size = val;
+                return checkBox;
+            };
+
+            checkBox.x = function (val) {
+                x = val;
+                return checkBox;
+            };
+
+            checkBox.y = function (val) {
+                y = val;
+                return checkBox;
+            };
+
+            checkBox.rx = function (val) {
+                rx = val;
+                return checkBox;
+            };
+
+            checkBox.ry = function (val) {
+                ry = val;
+                return checkBox;
+            };
+
+            checkBox.markStrokeWidth = function (val) {
+                markStrokeWidth = val;
+                return checkBox;
+            };
+
+            checkBox.boxStrokeWidth = function (val) {
+                boxStrokeWidth = val;
+                return checkBox;
+            };
+
+            checkBox.checked = function (val) {
+                if (val === undefined) {
+                    return checked;
+                } else {
+                    checked = val;
+                    return checkBox;
+                }
+            };
+
+            checkBox.clickEvent = function (val) {
+                clickEvent = val;
+                return checkBox;
+            };
+
+            checkBox.xtext = function (val) {
+                xtext = val;
+                return checkBox;
+            };
+
+            checkBox.ytext = function (val) {
+                ytext = val;
+                return checkBox;
+            };
+
+            checkBox.text = function (val) {
+                text = val;
+                return checkBox;
+            };
+
+            return checkBox;
+        }
+
+        // svg graph
+        var svgDiagram = function (csvData, xDomain, yDomain, csvname) {
+
+            console.log("xDomain, yDomain, and csvname: ", xDomain, yDomain, csvname);
+
+            var checkBox = [];
+
+            var svg = d3.select("svg"),
+                margin = {top: 20, right: 20, bottom: 30, left: 50},
+                width = +svg.attr("width") - margin.left - margin.right,
+                height = +svg.attr("height") - margin.top - margin.bottom,
+                g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var x = d3.scaleLinear()
+                .rangeRound([0, width]);
+
+            var y = d3.scaleLinear()
+                .rangeRound([height, 0]);
+
+            var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+            var line = d3.line()
+                .x(function (d) {
+                    return x(d["xaxis"]);
+                })
+                .y(function (d) {
+                    return y(d["yaxis"]);
+                });
+
+            x.domain([xDomain[0], xDomain[1]]);
+            y.domain([yDomain[0], yDomain[1]]);
+
+            g.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .call(d3.axisBottom(x).ticks(10));
+
+            g.append("g")
+                .call(d3.axisLeft(y).ticks(10));
+
+            var update = function () {
+                for (var i = 0; i < checkBox.length; i++) {
+                    if (checkBox[i].checked() == false) {
+                        $("#" + i).css("opacity", 0);
+                    }
+                    else {
+                        $("#" + i).css("opacity", 1);
+                    }
+                }
+            };
+
+            var c = 0, py = 5;
+            for (var i = 1; i < csvData.length; i++) {
+
+                console.log("c, py and color(c): ", c, py, color(c));
+
+                for (var m = 0; m < csvData[i].length; m++) {
+                    csvData[i][m]["xaxis"] = csvData[0][m]["xaxis"];
+                }
+
+                g.append("path")
+                    .datum(csvData[i])
+                    .attr("id", c)
+                    .attr("fill", "none")
+                    .attr("stroke", function (d) {
+
+                        checkBox[c] = new d3CheckBox();
+                        checkBox[c].x(700).y(py).checked(true).clickEvent(update);
+
+                        g.call(checkBox[c]);
+                        g.append("text")
+                            .style("font", "14px sans-serif")
+                            .attr("stroke", color(c))
+                            .attr("x", 740)
+                            .attr("y", py + 15)
+                            .text(csvname[i - 1].slice(csvname[i - 1].indexOf("/") + 1));
+
+                        return color(c);
+                    })
+                    .attr("stroke-linejoin", "round")
+                    .attr("stroke-linecap", "round")
+                    .attr("stroke-width", 1.5)
+                    .attr("opacity", 1)
+                    .attr("d", line);
+
+                c = c + 1;
+                py = py + 20;
+            }
+        };
+
+        var minMax = function (tempArray) {
+            var min, max;
+            for (var i = 0; i < tempArray.length; i++) {
+                if (i == 0)
+                    min = tempArray[i];
+                else if (tempArray[i] <= min)
+                    min = tempArray[i];
+
+                if (i == 0)
+                    max = tempArray[i];
+                else if (tempArray[i] >= max)
+                    max = tempArray[i];
+            }
+
+            return [min, max];
+        }
+
+        // experimental data and function
+        var expFunction = function (xAxis, yAxis, csvname, csvArray) {
+
+            console.log("xAxis, yAxis, and csvname: ", xAxis, yAxis, csvname, csvArray);
+
+            var csvCounter = 0, minResult = [];
+
+            var csvFunction = function (csvarraydata) {
+                d3.csv("data/experimental.csv", function (data) {
+                    console.log("csvarraydata: ", csvarraydata);
+                    console.log("data: ", data);
+                    tcsvArray = data;
+
+                    var result = [];
+                    for (var i = 0; i < data.length; i++) { // column
+
+                        var sum = 0, initial = 1 / (2 * data.length);
+                        for (var j = 0; j < data.length; j++) { // row
+                            sum = sum + Math.pow((data[j][i] - csvarraydata[j]["yaxis"]), 2);
+                        }
+
+                        sum = initial * sum;
+                        result.push([sum, i]);
+                    }
+
+                    console.log("result: ", result);
+
+                    var min, minIndex;
+                    minResult.push(d3.min(result, function (d, i) {
+                        if (i == 0) {
+                            min = d[0];
+                            minIndex = i;
+                        }
+                        else if (d[0] <= min) {
+                            min = d[0];
+                            minIndex = i;
+                        }
+
+                        if (i == result.length - 1)
+                            return [min, minIndex];
+                    }));
+
+                    csvCounter++;
+                    if (csvCounter < csvArray.length - 1) {
+                        csvFunction(csvArray[csvCounter + 1]);
+                    }
+
+                    if (csvCounter == csvArray.length - 1) {
+                        console.log("minResult: ", minResult);
+
+                        var min2, minIndex2, pRESULT;
+                        pRESULT = d3.min(minResult, function (d, i) {
+                            if (i == 0) {
+                                min2 = d[0];
+                                minIndex2 = i;
+                            }
+                            else if (d[0] <= min2) {
+                                min2 = d[0];
+                                minIndex2 = i;
+                            }
+
+                            if (i == minResult.length - 1)
+                                return [min2, minIndex2];
+                        });
+
+                        for (var i = 0; i < csvArray.length; i++) {
+                            if (i <= pRESULT[1] + 1)
+                                continue;
+
+                            csvArray.splice(i, 1);
+                            i--;
+                        }
+
+                        csvArray = [csvArray[0], csvArray[csvArray.length - 1]];
+
+                        console.log("pRESULT: ", pRESULT);
+                        console.log("tcsvArray: ", tcsvArray);
+
+                        var temp = [];
+                        for (var i = 0; i < tcsvArray.length; i++) {
+                            temp.push({yaxis: tcsvArray[i][pRESULT[1]]});
+                        }
+
+                        csvArray.push(temp);
+                        console.log("csvArray: ", csvArray);
+
+                        // remove irrelevant index in csvname
+                        for (var i = 0; i < csvname.length; i++) {
+                            if (i <= pRESULT[1])
+                                continue;
+
+                            csvname.splice(i, 1);
+                            i--;
+                        }
+
+                        csvname = [csvname[csvname.length - 1], "data/experimental.csv"];
+
+                        console.log(csvname);
+                        svgDiagram(csvArray, minMax(tempxAxis), minMax(tempyAxis), csvname);
+                    }
+                })
+            }
+
+            csvFunction(csvArray[csvCounter + 1]);
+        }
+
+        var arrFunction = function (xaxis, yaxis, csv, csvCounter, tempOBJ, ploty) {
+
+            d3.csv(csv, function (data) {
+
+                var tempX = [], tempY = [];
+
+                var tempx = d3.extent(data, function (d, i) {
+
+                    if (i <= dataLen) {
+                        tempX.push({xaxis: d[xaxis]});
+                        return parseFloat(d[xaxis]);
+                    }
+                });
+
+                var tempy = d3.extent(data, function (d, j) {
+
+                    if (j < dataLen) {
+                        tempY.push({yaxis: d[yaxis]});
+                        return parseFloat(d[yaxis]);
+                    }
+                });
+
+                if (csvCounter == 0) {
+                    tempxAxis.push(tempx[0], tempx[1]);
+                    tempyAxis.push(tempy[0], tempy[1]);
+
+                    if (tempX.length == dataLen)
+                        csvArray.push(tempX);
+                    else {
+                        tempX.splice(dataLen);
+                        csvArray.push(tempX);
+                    }
+
+                    csvArray.push(tempY);
+                }
+                else {
+                    tempxAxis.push(tempx[0], tempx[1]);
+                    tempyAxis.push(tempy[0], tempy[1]);
+                    csvArray.push(tempY);
+                }
+
+                console.log("csvCounter: ", csvCounter);
+
+                if (csvCounter == tempOBJ.length - 1) {
+
+                    console.log("tempxAxis, tempyAxis and csvArray: ", tempxAxis, tempyAxis, csvArray);
+
+                    if (ploty == "experimental") {
+                        expFunction(xAxis, yAxis, csvname, csvArray, tempxAxis, tempyAxis);
+                    }
+                    else {
+                        svgDiagram(csvArray, minMax(tempxAxis), minMax(tempyAxis), csvname);
+                    }
+
+                    return;
+                }
+                else {
+                    csvCounter = csvCounter + 1;
+                    arrFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, tempOBJ, ploty);
+                }
+            });
+        };
+
+        var reinit = function () {
+            csvArray = [];
+            tempxAxis = [];
+            tempyAxis = [];
+            csvCounter = 0;
+            xAxis = [];
+            yAxis = [];
+            csvname = [];
+            dataLen = 0;
+        };
+
+        var protocolID = document.getElementById("protocol");
+        protocolID.onclick = function () {
+            console.log("option: ", $("#protocol option"));
+            for (var i = 0; i < $("#protocol option").length; i++) {
+                if ($("#protocol option")[i].selected == true) {
+                    console.log("selected: ", $("#protocol option")[i].selected);
+
+                    $("#svgid").empty();
+                    reinit();
+
+                    // protocol #1
+                    if ($("#protocol option")[i].innerText == "concentration vs time") {
+                        protocol($("#protocol option")[i].innerText);
+                        $("#protocol option")[i].selected = false;
+                    }
+
+                    // protocol #2
+                    if ($("#protocol option")[i].innerText == "V vs I") {
+                        protocol($("#protocol option")[i].innerText);
+                        $("#protocol option")[i].selected = false;
+                    }
+
+                    // protocol #3A
+                    if ($("#protocol option")[i].innerText == "concentration/flux vs concentration 3A") {
+                        protocol($("#protocol option")[i].innerText);
+                        $("#protocol option")[i].selected = false;
+                    }
+
+                    // protocol #3B
+                    if ($("#protocol option")[i].innerText == "concentration/flux vs concentration 3B") {
+                        protocol($("#protocol option")[i].innerText);
+                        $("#protocol option")[i].selected = false;
+                    }
+
+                    // protocol #4A
+                    if ($("#protocol option")[i].innerText == "1/flux vs concentration 4A") {
+                        protocol($("#protocol option")[i].innerText);
+                        $("#protocol option")[i].selected = false;
+                    }
+
+                    // protocol #4B
+                    if ($("#protocol option")[i].innerText == "1/flux vs concentration 4B") {
+                        protocol($("#protocol option")[i].innerText);
+                        $("#protocol option")[i].selected = false;
+                    }
+
+                    // protocol #2A
+                    if ($("#protocol option")[i].innerText == "flux vs external pH 2A") {
+                        protocol($("#protocol option")[i].innerText);
+                        $("#protocol option")[i].selected = false;
+                    }
+
+                    // protocol #2B
+                    if ($("#protocol option")[i].innerText == "1/flux vs concentration 2B") {
+                        protocol($("#protocol option")[i].innerText);
+                        $("#protocol option")[i].selected = false;
+                    }
+
+                    // experimental
+                    if ($("#protocol option")[i].innerText == "experimental") {
+                        protocol($("#protocol option")[i].innerText);
+                        $("#protocol option")[i].selected = false;
+                    }
+                }
+            }
+        }
+
+        var tempModelHelper = function (tempOBJ, templistOfModel) {
+            var icounter = 0;
+            for (var i = 0; i < templistOfModel.length; i++) {
+                tempOBJ.push({model: templistOfModel[i], alias: []});
+                for (var j = i + 1; j < templistOfModel.length; j++) {
+                    if (isExist(templistOfModel[i], templistOfModel[j])) {
+                        icounter++;
+                        tempOBJ[tempOBJ.length - 1].alias.push(templistOfModel[j]);
+                    }
+                }
+
+                if (icounter > 0) {
+                    i = i + icounter;
+                    icounter = 0;
+                }
+            }
+
+            // return tempOBJ;
+        }
+
+        var isModelExist = function (modelEntity, cellmlModels) {
+            var cellmlModelEntityName = modelEntity.slice(0, modelEntity.indexOf("#"));
+
+            console.log(cellmlModelEntityName);
+
+            for (var i = 0; i < cellmlModels.length; i++) {
+                var cellmlModelName = cellmlModels[i].model.slice(0, cellmlModels[i].model.indexOf("#"));
+
+                if (cellmlModelEntityName == cellmlModelName)
+                    return true;
+            }
+
+            return false;
+        }
+
+        // Protocol function
+        var protocol = function (protocolName) {
+            ajaxUtils.sendGetRequest(
+                sedmlWorkspaceName,
+                function (sedmlworkspaceHtml) {
+                    // SEDML document
+                    var parser = new DOMParser();
+                    var xmlDoc = parser.parseFromString(sedmlworkspaceHtml, "text/xml");
+                    console.log("xmlSEDMLDoc: ", xmlDoc);
+
+                    var id, name, opby, opbx, chebi, fma, sparqly, sparqlx, time, ploty;
+                    for (var i = 0; i < xmlDoc.getElementsByTagName("Protocol").length; i++) {
+                        if (xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("name") == protocolName) {
+                            id = xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("id");
+                            name = xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("name");
+                            opby = xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("opby");
+                            opbx = xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("opbx");
+                            chebi = xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("chebi");
+                            fma = xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("fma");
+                            sparqly = xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("sparqly");
+                            sparqlx = xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("sparqlx");
+                            time = xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("time");
+                            ploty = xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("ploty");
+
+                            break;
+                        }
+                    }
+
+                    console.log("protocol values: ", id, name, opby, opbx, chebi, fma, sparqly, sparqlx, time);
+
+                    // query for y axis
+                    var query = sparqlOBJ[sparqly];
+
+                    ajaxUtils.sendPostRequest(
+                        endpoint,
+                        query,
+                        function (jsonObjy) {
+                            console.log("jsonObjy: ", jsonObjy);
+
+                            // query for x axis
+                            var query = sparqlOBJ[sparqlx];
+
+                            ajaxUtils.sendPostRequest(
+                                endpoint,
+                                query,
+                                function (jsonObjx) {
+                                    console.log("jsonObjx: ", jsonObjx);
+
+                                    var tempOBJx = [], templistOfModelx = [];
+                                    var tempOBJy = [], templistOfModely = [];
+
+                                    for (var i = 0; i < jsonObjy.results.bindings.length; i++) {
+                                        templistOfModely.push(jsonObjy.results.bindings[i].modelEntity.value);
+                                    }
+
+                                    for (var i = 0; i < jsonObjx.results.bindings.length; i++) {
+                                        templistOfModelx.push(jsonObjx.results.bindings[i].modelEntity.value);
+                                    }
+
+                                    console.log("templistOfModelx: ", templistOfModelx);
+                                    console.log("templistOfModely: ", templistOfModely);
+
+                                    tempModelHelper(tempOBJx, templistOfModelx);
+                                    tempModelHelper(tempOBJy, templistOfModely);
+
+                                    console.log("tempOBJx and tempOBJy: ", tempOBJx, tempOBJy);
+
+                                    // condition 1: cross-check and delete/replace
+                                    if (tempOBJx.length != tempOBJy.length) {
+                                        if (tempOBJx.length >= tempOBJy.length) {
+                                            for (var i = 0; i < tempOBJx.length; i++) {
+                                                if (!isModelExist(tempOBJx[i].model, tempOBJy)) {
+                                                    tempOBJx.splice(i, 1);
+                                                    i = i - 1;
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            for (var i = 0; i < tempOBJy.length; i++) {
+                                                if (!isModelExist(tempOBJy[i].model, tempOBJx)) {
+                                                    tempOBJy.splice(i, 1);
+                                                    i = i - 1;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    console.log("tempOBJx and tempOBJy AFTER: ", tempOBJx, tempOBJy);
+
+                                    var counter = 0;
+                                    var cellmlWorkspaceFunction = function (counter) {
+                                        var cellmlWorkspaceName = "https://models.physiomeproject.org/workspace/267/rawfile/HEAD/" + tempOBJy[counter].model;
+                                        ajaxUtils.sendGetRequest(
+                                            cellmlWorkspaceName,
+                                            function (cellmlWorkspaceHtml) {
+                                                // CellML document
+                                                var parserCellML = new DOMParser();
+                                                var xmlCellMLDoc = parserCellML.parseFromString(cellmlWorkspaceHtml, "text/xml");
+                                                console.log("xmlCellMLDoc: ", xmlCellMLDoc);
+
+                                                // csv
+                                                if (ploty == "undefined")
+                                                    csvname.push("data/" +
+                                                        tempOBJy[counter].model.slice(0, tempOBJy[counter].model.indexOf(".cellml")) +
+                                                        ".csv");
+                                                else if (ploty == "experimental")
+                                                    csvname.push("data/" +
+                                                        tempOBJy[counter].model.slice(0, tempOBJy[counter].model.indexOf("_")) +
+                                                        ".csv");
+                                                else
+                                                    csvname.push("data/" +
+                                                        tempOBJy[counter].model.slice(0, tempOBJy[counter].model.indexOf(".cellml")) +
+                                                        "_" + id + ".csv");
+
+                                                // TODO: special case for 'time'
+                                                if (opbTime == opbx || opbTime == opby) {
+                                                    // x axis component and variable name
+                                                    var componentx = time.slice(time.indexOf("='") + 2, time.length - 2);
+                                                    componentx = componentx.slice(0, componentx.indexOf("']"));
+                                                    var variablex = time.slice(time.lastIndexOf("='") + 2, time.length - 2);
+                                                }
+                                                else {
+                                                    // x axis component and variable name
+                                                    var element = tempOBJx[counter].model,
+                                                        indexOfHash = element.search("#"),
+                                                        componentVariableName = element.slice(indexOfHash + 1), // NHE3.J_NHE3_Na
+                                                        indexOfDot = componentVariableName.indexOf("."),
+                                                        componentx = componentVariableName.slice(0, indexOfDot),
+                                                        variablex = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
+                                                }
+
+                                                if (ploty == "undefined" || ploty == "experimental") {
+                                                    // y axis component and variable name
+                                                    var element = tempOBJy[counter].model,
+                                                        indexOfHash = element.search("#"),
+                                                        componentVariableName = element.slice(indexOfHash + 1), // NHE3.J_NHE3_Na
+                                                        indexOfDot = componentVariableName.indexOf("."),
+                                                        componenty = componentVariableName.slice(0, indexOfDot),
+                                                        variabley = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
+                                                }
+                                                else {
+                                                    var variabley = ploty;
+                                                }
+
+                                                var unitsVar;
+                                                for (var i = 0; i < xmlCellMLDoc.getElementsByTagName("variable").length; i++) {
+                                                    if (xmlCellMLDoc.getElementsByTagName("variable")[i].getAttribute("cmeta:id") == componentx + "." + variablex) {
+                                                        unitsVar = xmlCellMLDoc.getElementsByTagName("variable")[i].getAttribute("units");
+                                                        xAxis.push(componentx + " | " + variablex + " (" + unitsVar + ")");
+                                                    }
+
+                                                    if (xmlCellMLDoc.getElementsByTagName("variable")[i].getAttribute("cmeta:id") == componenty + "." + variabley) {
+                                                        unitsVar = xmlCellMLDoc.getElementsByTagName("variable")[i].getAttribute("units");
+                                                        yAxis.push(componenty + " | " + variabley + " (" + unitsVar + ")");
+                                                    }
+                                                }
+
+                                                if (counter == tempOBJy.length - 1) {
+
+                                                    if (ploty != "undefined" && ploty != "experimental") {
+                                                        for (var i = 0; i < xAxis.length; i++) {
+                                                            yAxis.push(variabley);
+                                                        }
+                                                    }
+
+                                                    console.log("xAxis, yAxis and csv: ", xAxis, yAxis, csvname);
+
+                                                    // checking size of csv files are Equal or Not!
+                                                    var sizeOfCSV = function (csvCounter) {
+
+                                                        d3.csv(csvname[csvCounter], function (data) {
+                                                            dataLen = data.length;
+
+                                                            if (csvCounter == tempOBJy.length - 1) {
+                                                                csvCounter = 0;
+                                                                arrFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, tempOBJy, ploty);
+
+                                                                return;
+                                                            }
+                                                            else {
+                                                                csvCounter = csvCounter + 1;
+                                                                sizeOfCSV(csvCounter);
+                                                            }
+                                                        });
+                                                    }
+
+                                                    sizeOfCSV(csvCounter); // first call
+                                                }
+
+                                                counter++;
+
+                                                if (counter <= tempOBJy.length - 1)
+                                                    cellmlWorkspaceFunction(counter); // call back
+                                            },
+                                            false);
+                                    };
+
+                                    cellmlWorkspaceFunction(counter); // first call
+                                },
+                                true);
+                        },
+                        true);
+                },
+                false);
+        }
+    };
+
+    // SEDML based annotation and visualization of protocols
+    mainUtils.loadProtocolHtml = function () {
+        ajaxUtils.sendGetRequest(
+            sparqlUtils.drawSEDMLHtml,
+            function (drawSEDMLHtmlContent) {
+                console.log(drawSEDMLHtmlContent);
+                $("#main-content").html(drawSEDMLHtmlContent);
+
+                drawSEDML();
+            },
+            false);
+    }
+
     // Expose utility to the global object
     global.$mainUtils = mainUtils;
 
@@ -968,6 +1826,7 @@ var abiOntoEndpoint = "http://ontology.cer.auckland.ac.nz/ols-boot/api/ontologie
 var homeHtml = "./snippets/home-snippet.html";
 var searchHtml = "./snippets/search-snippet.html";
 var similarityHtml = "./snippets/similarity-snippet.html";
+var drawSEDMLHtml = "./snippets/drawSEDML-snippet.html";
 
 var endpoint = "https://models.physiomeproject.org/pmr2_virtuoso_search";
 var sodium = "http://identifiers.org/chebi/CHEBI:29101";
@@ -1042,6 +1901,7 @@ exports.chloride = chloride;
 exports.homeHtml = homeHtml;
 exports.searchHtml = searchHtml;
 exports.similarityHtml = similarityHtml;
+exports.drawSEDMLHtml = drawSEDMLHtml;
 
 /***/ }),
 /* 4 */

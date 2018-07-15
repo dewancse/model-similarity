@@ -7,6 +7,7 @@ var abiOntoEndpoint = "http://ontology.cer.auckland.ac.nz/ols-boot/api/ontologie
 var homeHtml = "./snippets/home-snippet.html";
 var searchHtml = "./snippets/search-snippet.html";
 var similarityHtml = "./snippets/similarity-snippet.html";
+var drawSEDMLHtml = "./snippets/drawSEDML-snippet.html";
 
 var endpoint = "https://models.physiomeproject.org/pmr2_virtuoso_search";
 var sodium = "http://identifiers.org/chebi/CHEBI:29101";
@@ -81,3 +82,4 @@ exports.chloride = chloride;
 exports.homeHtml = homeHtml;
 exports.searchHtml = searchHtml;
 exports.similarityHtml = similarityHtml;
+exports.drawSEDMLHtml = drawSEDMLHtml;
