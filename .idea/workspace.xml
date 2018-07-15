@@ -2,35 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d10e2706-4b79-4bc6-9a24-e9aa638a1516" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/data/chang_fujita_1999.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/eskandari.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/eskandari_2005.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/experimental.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/mackenzie.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/mackenzie_1996.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/mackenzie_1996_3A.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/mackenzie_1996_3B.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/weinstein.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/weinstein_1995.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/weinstein_1995_2A.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/weinstein_1995_2B.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/weinstein_1995_3A.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/weinstein_1995_3B.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/weinstein_1995_4A.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/data/weinstein_1995_4B.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/example/circleGroup.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/example/circleGroup.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/example/graph.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/example/graph.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/example/index2.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/example/index2.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/model-similarity.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/bundle.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/bundle.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/js/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/js/sparqlUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/sparqlUtils.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/snippets/home-snippet.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/snippets/home-snippet.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -47,33 +22,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="home-snippet.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/snippets/home-snippet.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="88">
-              <caret line="4" column="9" lean-forward="true" selection-start-line="4" selection-start-column="9" selection-end-line="4" selection-end-column="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="22">
-              <caret line="1" column="13" selection-start-line="1" selection-start-column="13" selection-end-line="1" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="search-snippet.html" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/snippets/search-snippet.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="44">
-              <caret line="2" column="4" lean-forward="true" selection-start-line="2" selection-start-column="4" selection-end-line="2" selection-end-column="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="drawSEDML-snippet.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/snippets/drawSEDML-snippet.html">
           <provider selected="true" editor-type-id="text-editor">
@@ -83,11 +31,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="374">
-              <caret line="44" column="108" lean-forward="true" selection-start-line="44" selection-start-column="108" selection-end-line="44" selection-end-column="108" />
+            <state relative-caret-position="189">
+              <caret line="44" column="108" selection-start-line="44" selection-start-column="108" selection-end-line="44" selection-end-column="108" />
               <folding>
                 <element signature="n#footer#0;n#body#0;n#html#0;n#!!top" />
               </folding>
@@ -98,7 +46,7 @@
       <file leaf-file-name="index.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/js/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="100">
+            <state relative-caret-position="1804">
               <caret line="1248" column="47" selection-start-line="1248" selection-start-column="47" selection-end-line="1248" selection-end-column="47" />
               <folding>
                 <element signature="e#353#1288#0" />
@@ -107,7 +55,6 @@
                 <element signature="e#5131#6439#0" />
                 <element signature="e#6487#8373#0" />
                 <element signature="e#8418#10198#0" />
-                <element signature="n#style#0;n#div#0;n#fieldset#0;n#!!top" expanded="true" />
                 <element signature="e#10235#10653#0" />
                 <element signature="e#10742#15688#0" />
                 <element signature="e#16025#18808#0" />
@@ -126,7 +73,6 @@
                 <element signature="e#50349#53329#0" />
                 <element signature="e#53397#54050#0" />
                 <element signature="e#54116#54568#0" />
-                <element signature="e#54646#68096#0" />
                 <element signature="e#55188#56394#0" />
                 <element signature="e#58448#59540#0" />
               </folding>
@@ -197,7 +143,6 @@
         <option value="$PROJECT_DIR$/libs/ajax-utils.js" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/index.js" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/src/index2.html" />
         <option value="$PROJECT_DIR$/src/index2.js" />
         <option value="$PROJECT_DIR$/css/styles.css" />
@@ -222,6 +167,7 @@
         <option value="$PROJECT_DIR$/src/js/index.js" />
         <option value="$PROJECT_DIR$/src/snippets/drawSEDML-snippet.html" />
         <option value="$PROJECT_DIR$/src/css/style.css" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -242,9 +188,6 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="NodeModulesDirectoryManager">
-    <handled-path value="$PROJECT_DIR$/node_modules" />
-  </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="1" />
     <option name="y" value="1" />
@@ -256,23 +199,18 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="model-similarity" type="b2602c69:ProjectViewProjectNode" />
-              <item name="model-similarity" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="model-similarity" type="b2602c69:ProjectViewProjectNode" />
-              <item name="model-similarity" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="model-verification" type="b2602c69:ProjectViewProjectNode" />
+              <item name="model-verification" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -282,13 +220,14 @@
     <property name="javascript.nodejs.core.library.configured.version" value="4.6.0" />
     <property name="js-jscs-nodeInterpreter" value="C:\Program Files\nodejs\node.exe" />
     <property name="js.eslint.eslintPackage" value="C:\WebStormProjects\model-similarity\node_modules\eslint" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../epithelial-modelling-platform" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="node.js.detected.package.prettier" value="true" />
     <property name="node.js.path.for.package.prettier" value="project" />
     <property name="node.js.selected.package.prettier" value="" />
     <property name="nodejs.mocha.mocha_node_package_dir" value="C:\WebStormProjects\model-similarity\node_modules\mocha" />
     <property name="nodejs_interpreter_path" value="C:/Program Files/nodejs/node" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RecentsManager">
@@ -415,14 +354,16 @@
       <workItem from="1528833637376" duration="2772000" />
       <workItem from="1529665930186" duration="120000" />
       <workItem from="1531303364843" duration="5437000" />
+      <workItem from="1531646814302" duration="292000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="271836000" />
+    <option name="totallyTimeSpent" value="272128000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17966281" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -457,6 +398,48 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/js/index.js">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="27456">
+          <caret line="1248" column="47" selection-start-line="1248" selection-start-column="47" selection-end-line="1248" selection-end-column="47" />
+          <folding>
+            <element signature="e#353#1288#0" />
+            <element signature="e#1379#1640#0" />
+            <element signature="e#1689#5065#0" />
+            <element signature="e#5131#6439#0" />
+            <element signature="e#6487#8373#0" />
+            <element signature="e#8418#10198#0" />
+            <element signature="e#10235#10653#0" />
+            <element signature="e#10742#15688#0" />
+            <element signature="e#16025#18808#0" />
+            <element signature="e#18876#29397#0" />
+            <element signature="e#29420#34626#0" />
+            <element signature="e#35236#36269#0" />
+            <element signature="e#36302#40229#0" />
+            <element signature="e#40323#43357#0" />
+            <element signature="e#41613#41943#0" />
+            <element signature="e#42030#43347#0" />
+            <element signature="e#43402#43851#0" />
+            <element signature="e#43964#47848#0" />
+            <element signature="e#44160#47786#0" />
+            <element signature="e#47933#49986#0" />
+            <element signature="e#50022#50243#0" />
+            <element signature="e#50349#53329#0" />
+            <element signature="e#53397#54050#0" />
+            <element signature="e#54116#54568#0" />
+            <element signature="e#55188#56394#0" />
+            <element signature="e#58448#59540#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="1" column="13" selection-start-line="1" selection-start-column="13" selection-end-line="1" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/js/index.js">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5940">
           <caret line="270" lean-forward="true" selection-start-line="270" selection-end-line="270" />
         </state>
@@ -466,13 +449,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="308">
           <caret line="26" column="8" lean-forward="true" selection-start-line="26" selection-start-column="8" selection-end-line="26" selection-end-column="8" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#324#681#0" />
-            <element signature="e#812#1085#0" />
-            <element signature="e#1158#1735#0" />
-            <element signature="e#2139#3275#0" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -487,13 +463,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="704">
           <caret line="32" column="44" selection-start-line="32" selection-start-column="44" selection-end-line="32" selection-end-column="44" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#324#681#0" />
-            <element signature="e#812#1085#0" />
-            <element signature="e#1158#1735#0" />
-            <element signature="e#2139#3275#0" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -582,16 +551,6 @@
     <entry file="file://$PROJECT_DIR$/src/img/pmr-logo.png" />
     <entry file="file://$PROJECT_DIR$/src/img/SEDML.png" />
     <entry file="file://$PROJECT_DIR$/.travis.yml" />
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor>
-            <caret column="16" lean-forward="true" selection-start-column="16" selection-end-column="16" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="950">
@@ -652,12 +611,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/data/eskandari.csv">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/example/index2.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/example/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="132">
@@ -681,7 +634,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/js/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="100">
+        <state relative-caret-position="1804">
           <caret line="1248" column="47" selection-start-line="1248" selection-start-column="47" selection-end-line="1248" selection-end-column="47" />
           <folding>
             <element signature="e#353#1288#0" />
@@ -690,7 +643,6 @@
             <element signature="e#5131#6439#0" />
             <element signature="e#6487#8373#0" />
             <element signature="e#8418#10198#0" />
-            <element signature="n#style#0;n#div#0;n#fieldset#0;n#!!top" expanded="true" />
             <element signature="e#10235#10653#0" />
             <element signature="e#10742#15688#0" />
             <element signature="e#16025#18808#0" />
@@ -709,7 +661,6 @@
             <element signature="e#50349#53329#0" />
             <element signature="e#53397#54050#0" />
             <element signature="e#54116#54568#0" />
-            <element signature="e#54646#68096#0" />
             <element signature="e#55188#56394#0" />
             <element signature="e#58448#59540#0" />
           </folding>
@@ -720,30 +671,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="365">
           <caret line="209" column="1" lean-forward="true" selection-start-line="209" selection-start-column="1" selection-end-line="209" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="44" column="108" lean-forward="true" selection-start-line="44" selection-start-column="108" selection-end-line="44" selection-end-column="108" />
-          <folding>
-            <element signature="n#footer#0;n#body#0;n#html#0;n#!!top" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/snippets/drawSEDML-snippet.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="15" selection-start-line="15" selection-end-line="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/snippets/search-snippet.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="2" column="4" lean-forward="true" selection-start-line="2" selection-start-column="4" selection-end-line="2" selection-end-column="4" />
         </state>
       </provider>
     </entry>
@@ -765,20 +692,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1703">
           <caret line="24" selection-start-line="24" selection-end-line="24" />
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-            <element signature="e#324#681#0" />
-            <element signature="e#812#1085#0" />
-            <element signature="e#1158#1735#0" />
-            <element signature="e#2139#3275#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/snippets/home-snippet.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="4" column="9" lean-forward="true" selection-start-line="4" selection-start-column="9" selection-end-line="4" selection-end-column="9" />
         </state>
       </provider>
     </entry>
@@ -786,6 +699,47 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="22">
           <caret line="1" column="13" selection-start-line="1" selection-start-column="13" selection-end-line="1" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/snippets/home-snippet.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="4" column="9" selection-start-line="4" selection-start-column="9" selection-end-line="4" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/snippets/search-snippet.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="2" column="4" selection-start-line="2" selection-start-column="4" selection-end-line="2" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/snippets/drawSEDML-snippet.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="15" selection-start-line="15" selection-end-line="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor>
+            <caret column="20" selection-start-column="20" selection-end-column="20" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="44" column="108" selection-start-line="44" selection-start-column="108" selection-end-line="44" selection-end-column="108" />
+          <folding>
+            <element signature="n#footer#0;n#body#0;n#html#0;n#!!top" />
+          </folding>
         </state>
       </provider>
     </entry>
