@@ -161,9 +161,221 @@ var similarityMatrixEBI = function (identityMatrix, PID, enteredPrID, modelEntit
     }
 };
 
+function d3CheckBox() {
+
+    var size = 20,
+        x = 0,
+        y = 0,
+        rx = 0,
+        ry = 0,
+        markStrokeWidth = 2,
+        boxStrokeWidth = 2,
+        checked = false,
+        clickEvent,
+        xtext = 0,
+        ytext = 0,
+        text = "Empty";
+
+    function checkBox(selection) {
+        var g = selection.append("g"),
+            box = g.append("rect")
+                .attr("width", size)
+                .attr("height", size)
+                .attr("x", x)
+                .attr("y", y)
+                .attr("rx", rx)
+                .attr("ry", ry)
+                .styles({
+                    "fill-opacity": 0,
+                    "stroke-width": boxStrokeWidth,
+                    "stroke": "black"
+                }),
+            txt = g.append("text").attr("x", xtext).attr("y", ytext).text("" + text + "");
+
+        //Data to represent the check mark
+        var coordinates = [
+            {x: x + (size / 8), y: y + (size / 3)},
+            {x: x + (size / 2.2), y: (y + size) - (size / 4)},
+            {x: (x + size) - (size / 8), y: (y + (size / 10))}
+        ];
+
+        var line = d3.line()
+            .x(function (d) {
+                return d.x;
+            })
+            .y(function (d) {
+                return d.y;
+            });
+
+        var mark = g.append("path")
+            .attr("d", line(coordinates))
+            .styles({
+                "stroke-width": markStrokeWidth,
+                "stroke": "black",
+                "fill": "none",
+                "opacity": (checked) ? 1 : 0
+            });
+
+        g.on("click", function () {
+            checked = !checked;
+            mark.style("opacity", (checked) ? 1 : 0);
+
+            if (clickEvent) {
+                clickEvent();
+            }
+
+            d3.event.stopPropagation();
+        });
+    }
+
+    checkBox.size = function (val) {
+        size = val;
+        return checkBox;
+    };
+
+    checkBox.x = function (val) {
+        x = val;
+        return checkBox;
+    };
+
+    checkBox.y = function (val) {
+        y = val;
+        return checkBox;
+    };
+
+    checkBox.rx = function (val) {
+        rx = val;
+        return checkBox;
+    };
+
+    checkBox.ry = function (val) {
+        ry = val;
+        return checkBox;
+    };
+
+    checkBox.markStrokeWidth = function (val) {
+        markStrokeWidth = val;
+        return checkBox;
+    };
+
+    checkBox.boxStrokeWidth = function (val) {
+        boxStrokeWidth = val;
+        return checkBox;
+    };
+
+    checkBox.checked = function (val) {
+        if (val === undefined) {
+            return checked;
+        } else {
+            checked = val;
+            return checkBox;
+        }
+    };
+
+    checkBox.clickEvent = function (val) {
+        clickEvent = val;
+        return checkBox;
+    };
+
+    checkBox.xtext = function (val) {
+        xtext = val;
+        return checkBox;
+    };
+
+    checkBox.ytext = function (val) {
+        ytext = val;
+        return checkBox;
+    };
+
+    checkBox.text = function (val) {
+        text = val;
+        return checkBox;
+    };
+
+    return checkBox;
+}
+
+var minMax = function (tempArray) {
+    var min, max;
+    for (var i = 0; i < tempArray.length; i++) {
+        if (i == 0)
+            min = tempArray[i];
+        else if (tempArray[i] <= min)
+            min = tempArray[i];
+
+        if (i == 0)
+            max = tempArray[i];
+        else if (tempArray[i] >= max)
+            max = tempArray[i];
+    }
+
+    return [min, max];
+}
+
+// compare component and varible name of two model entities
+var isExistProtocolElem = function (element, element2) {
+    // remove duplicate components with same variable and cellml model
+    var indexOfHash = element.search("#"),
+        cellmlModelName = element.slice(0, indexOfHash), // weinstein_1995.cellml
+        componentVariableName = element.slice(indexOfHash + 1), // NHE3.J_NHE3_Na
+        indexOfDot = componentVariableName.indexOf("."),
+        variableName = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
+
+    var indexOfHash2 = element2.search("#"),
+        cellmlModelName2 = element2.slice(0, indexOfHash2), // weinstein_1995.cellml
+        componentVariableName2 = element2.slice(indexOfHash2 + 1), // NHE3.J_NHE3_Na
+        indexOfDot2 = componentVariableName2.indexOf("."),
+        variableName2 = componentVariableName2.slice(indexOfDot2 + 1); // J_NHE3_Na
+
+    if (cellmlModelName == cellmlModelName2 && variableName == variableName2) {
+        return true;
+    }
+
+    return false;
+};
+
+var tempModelHelper = function (tempOBJ, templistOfModel) {
+    var icounter = 0;
+    for (var i = 0; i < templistOfModel.length; i++) {
+        tempOBJ.push({model: templistOfModel[i], alias: []});
+        for (var j = i + 1; j < templistOfModel.length; j++) {
+            if (isExistProtocolElem(templistOfModel[i], templistOfModel[j])) {
+                icounter++;
+                tempOBJ[tempOBJ.length - 1].alias.push(templistOfModel[j]);
+            }
+        }
+
+        if (icounter > 0) {
+            i = i + icounter;
+            icounter = 0;
+        }
+    }
+
+    // return tempOBJ;
+}
+
+var isModelExist = function (modelEntity, cellmlModels) {
+    var cellmlModelEntityName = modelEntity.slice(0, modelEntity.indexOf("#"));
+
+    console.log(cellmlModelEntityName);
+
+    for (var i = 0; i < cellmlModels.length; i++) {
+        var cellmlModelName = cellmlModels[i].model.slice(0, cellmlModels[i].model.indexOf("#"));
+
+        if (cellmlModelEntityName == cellmlModelName)
+            return true;
+    }
+
+    return false;
+}
+
 exports.showLoading = showLoading;
 exports.isExist = isExist;
 exports.uniqueifySVG = uniqueifySVG;
 exports.parseModelName = parseModelName;
 exports.similarityMatrixEBI = similarityMatrixEBI;
 exports.splitPRFromProtein = splitPRFromProtein;
+exports.d3CheckBox = d3CheckBox;
+exports.minMax = minMax;
+exports.tempModelHelper = tempModelHelper;
+exports.isModelExist = isModelExist;
