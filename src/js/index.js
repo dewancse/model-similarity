@@ -1069,6 +1069,8 @@ var modelSimilarity = (function (global) {
                 var xmlDoc = parser.parseFromString(sedmlworkspaceHtml, "text/xml");
                 console.log("xmlSEDMLDoc: ", xmlDoc);
 
+                console.log("typeof xmlSEDMLDoc: ", typeof xmlDoc);
+
                 var id, name, opby, opbx, chebi, fma, sparqly, sparqlx, time, ploty;
                 for (var i = 0; i < xmlDoc.getElementsByTagName("Protocol").length; i++) {
                     if (xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("name") == protocolName) {

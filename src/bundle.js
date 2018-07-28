@@ -1138,6 +1138,8 @@ var modelSimilarity = (function (global) {
                 var xmlDoc = parser.parseFromString(sedmlworkspaceHtml, "text/xml");
                 console.log("xmlSEDMLDoc: ", xmlDoc);
 
+                console.log("typeof xmlSEDMLDoc: ", typeof xmlDoc);
+
                 var id, name, opby, opbx, chebi, fma, sparqly, sparqlx, time, ploty;
                 for (var i = 0; i < xmlDoc.getElementsByTagName("Protocol").length; i++) {
                     if (xmlDoc.getElementsByTagName("Protocol")[i].getAttribute("name") == protocolName) {
@@ -1907,6 +1909,7 @@ var modelSimilarity = (function (global) {
 
 // Returns an HTTP request object
 function getRequestObject() {
+    // code here
     if (window.XMLHttpRequest) {
         return (new XMLHttpRequest());
     }
@@ -1939,7 +1942,6 @@ var sendPostRequest = function (requestUrl, query, responseHandler, isJsonRespon
     };
 
     request.open("POST", requestUrl, true);
-
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.setRequestHeader("Accept", "application/sparql-results+json");
 
@@ -1955,7 +1957,6 @@ var sendEBIPostRequest = function (requestUrl, query, responseHandler, isJsonRes
     };
 
     request.open("POST", requestUrl, true);
-
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.setRequestHeader("Accept", "text/plain");
 
