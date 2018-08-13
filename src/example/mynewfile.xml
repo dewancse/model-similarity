@@ -37,7 +37,7 @@
     </listOfTasks>
     <listOfDataGenerators>
         <Protocol id="1"
-                  name="myNameAttr" ploty="undefined"/>
+                  name="myName" ploty="undefined"/>
         <Protocol id="2"
                   name="V vs I"
                   opby="http://identifiers.org/opb/OPB_00318"
@@ -121,7 +121,7 @@
         <dataGenerator id="xDataGenerator1_1">
             <listOfVariables>
                 <variable id="xVariable1_1"
-                          target="J_NHE3_Na" taskReference="repeatedTask"/>
+                          target="C_int_Na" taskReference="repeatedTask"/>
             </listOfVariables>
             <math xmlns="http://www.w3.org/1998/Math/MathML">
                 <ci>xVariable1_1</ci>
@@ -130,7 +130,7 @@
         <dataGenerator id="yDataGenerator1_1">
             <listOfVariables>
                 <variable id="yVariable1_1"
-                          target="C_ext_Na" taskReference="repeatedTask"/>
+                          target="Time" taskReference="repeatedTask"/>
             </listOfVariables>
             <math xmlns="http://www.w3.org/1998/Math/MathML">
                 <ci>xVariable1_1</ci>

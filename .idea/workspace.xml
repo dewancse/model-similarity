@@ -2,12 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d10e2706-4b79-4bc6-9a24-e9aa638a1516" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/example/client.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/example2/public/client.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/example2/public/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/example2/server.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/bundle.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/bundle.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/example/annotation.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/example/annotation.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/example/client.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/example/client.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/example/mynewfile.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/example/mynewfile.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/example/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/example/server.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/js/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/libs/ajax-utils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/libs/ajax-utils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/js/sparqlUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/sparqlUtils.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/webpack.config.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -25,11 +31,67 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="webpack.config.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/webpack.config.js">
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/example2/public/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="44">
-              <caret line="2" column="37" lean-forward="true" selection-start-line="2" selection-start-column="37" selection-end-line="2" selection-end-column="37" />
+            <state>
+              <caret line="9" column="23" selection-start-line="9" selection-start-column="23" selection-end-line="9" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="server.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/example2/server.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="770">
+              <caret line="35" column="37" lean-forward="true" selection-start-line="35" selection-start-column="37" selection-end-line="35" selection-end-column="37" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/js/index.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="210">
+              <caret line="582" column="88" lean-forward="true" selection-start-line="582" selection-start-column="88" selection-end-line="582" selection-end-column="88" />
+              <folding>
+                <element signature="e#353#1565#0" />
+                <element signature="e#1828#2089#0" />
+                <element signature="e#2286#2501#0" />
+                <element signature="e#2550#5926#0" />
+                <element signature="e#5992#7364#0" />
+                <element signature="e#7412#9353#0" />
+                <element signature="e#9407#12371#0" />
+                <element signature="e#12415#15706#0" />
+                <element signature="e#15743#16161#0" />
+                <element signature="e#34882#37662#0" />
+                <element signature="e#37802#41398#0" />
+                <element signature="e#41558#43451#0" />
+                <element signature="e#43483#43668#0" />
+                <element signature="e#43756#46520#0" />
+                <element signature="e#59695#59919#0" />
+                <element signature="e#60055#60319#0" />
+                <element signature="e#60360#77949#0" />
+                <element signature="e#62442#62781#0" />
+                <element signature="e#62836#62996#0" />
+                <element signature="e#63238#63776#0" />
+                <element signature="e#63853#64347#0" />
+                <element signature="e#64387#64929#0" />
+                <element signature="e#65007#65509#0" />
+                <element signature="e#65620#66539#0" />
+                <element signature="e#66769#66997#0" />
+                <element signature="e#67066#67298#0" />
+                <element signature="e#67369#67493#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="sparqlUtils.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/js/sparqlUtils.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="202">
+              <caret line="11" column="6" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
             </state>
           </provider>
         </entry>
@@ -47,17 +109,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>minmax</find>
-      <find>d3checkbo</find>
-      <find>minMax</find>
-      <find>tempModel</find>
-      <find>isModelExist</find>
-      <find>sedmlw</find>
-      <find>sparqlOBJ</find>
-      <find>endpoint</find>
-      <find>graphSimilarityModels</find>
-      <find>svgSimilarityModels</find>
-      <find>xml</find>
       <find>txtFile</find>
       <find>txtFile =</find>
       <find>saveas</find>
@@ -77,6 +128,17 @@
       <find>alert</find>
       <find>dompa</find>
       <find>&lt;variable</find>
+      <find>http://identifiers.org/fma/FMA:</find>
+      <find>https://www.ebi.ac.uk/Tools/dbfetch/dbfetch/uniprotkb/P26433/fasta</find>
+      <find>https://www.ebi.ac.uk/Tools/dbfetch/dbfetch/uniprotk</find>
+      <find>synonym_FMA = jsonObjOLSFMA._embedded.terms[0].annotation[&quot;preferred name&quot;][0];</find>
+      <find>synonym_sourceFMA = jsonObjOLSSourceFMA._embedded.terms[0]</find>
+      <find>https://models.physiomeproject.org/workspace/267/rawfile/HEAD/</find>
+      <find>https://models.physiomeproject.org/workspace/</find>
+      <find>web</find>
+      <find>ebiOntoEndpoint</find>
+      <find>abiOntoEndpoint</find>
+      <find>sig</find>
     </findStrings>
     <replaceStrings>
       <replace>location</replace>
@@ -86,6 +148,10 @@
       <replace>idCounter</replace>
       <replace>concentrationArray</replace>
       <replace>enteredPrID</replace>
+      <replace>http://purl.obolibrary.org/obo/FMA_</replace>
+      <replace>ebiOntoEndpoint</replace>
+      <replace>abiOntoEndpoint</replace>
+      <replace>bbiOntoEndpoint</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -94,12 +160,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/libs/ajax-utils.js" />
-        <option value="$PROJECT_DIR$/index.html" />
-        <option value="$PROJECT_DIR$/index.js" />
-        <option value="$PROJECT_DIR$/src/index2.html" />
-        <option value="$PROJECT_DIR$/src/index2.js" />
-        <option value="$PROJECT_DIR$/css/styles.css" />
         <option value="$PROJECT_DIR$/src/index.js" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/src/css/styles.css" />
@@ -114,7 +174,6 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/src/snippets/search-snippet.html" />
         <option value="$PROJECT_DIR$/package.json" />
-        <option value="$PROJECT_DIR$/src/js/sparqlUtils.js" />
         <option value="$PROJECT_DIR$/src/snippets/drawSEDML-snippet.html" />
         <option value="$PROJECT_DIR$/src/js/miscellaneous.js" />
         <option value="$PROJECT_DIR$/src/example/similarity-graph.html" />
@@ -135,11 +194,23 @@
         <option value="$PROJECT_DIR$/src/client2.js" />
         <option value="$PROJECT_DIR$/src/client.html" />
         <option value="$PROJECT_DIR$/src/client.js" />
-        <option value="$PROJECT_DIR$/src/js/index.js" />
         <option value="$PROJECT_DIR$/src/annotation.xml" />
         <option value="$PROJECT_DIR$/src/mynewfile.xml" />
         <option value="$PROJECT_DIR$/src/server.js" />
+        <option value="$PROJECT_DIR$/src/example/client2.js" />
+        <option value="$PROJECT_DIR$/src/example/annotation.xml" />
+        <option value="$PROJECT_DIR$/src/example/mynewfile.xml" />
+        <option value="$PROJECT_DIR$/src/example/server.js" />
+        <option value="$PROJECT_DIR$/src/example2/index.html" />
+        <option value="$PROJECT_DIR$/src/example2/client.js" />
+        <option value="$PROJECT_DIR$/src/example2/mynewfile.xml" />
+        <option value="$PROJECT_DIR$/src/example/client.js" />
+        <option value="$PROJECT_DIR$/src/example2/public/index.html" />
+        <option value="$PROJECT_DIR$/src/example2/public/client.js" />
+        <option value="$PROJECT_DIR$/src/example2/server.js" />
         <option value="$PROJECT_DIR$/webpack.config.js" />
+        <option value="$PROJECT_DIR$/src/js/sparqlUtils.js" />
+        <option value="$PROJECT_DIR$/src/js/index.js" />
       </list>
     </option>
   </component>
@@ -164,10 +235,10 @@
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1" />
-    <option name="y" value="1" />
-    <option name="width" value="1918" />
-    <option name="height" value="1038" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1932" />
+    <option name="height" value="1092" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -202,7 +273,7 @@
     <property name="js-jscs-nodeInterpreter" value="C:\Program Files\nodejs\node.exe" />
     <property name="js.eslint.eslintPackage" value="C:\WebStormProjects\model-similarity\node_modules\eslint" />
     <property name="jsx.switch.disabled" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../epithelial-modelling-platform" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.prettier" value="true" />
@@ -219,19 +290,19 @@
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\WebStormProjects\model-verification\src\example2\public" />
+      <recent name="C:\WebStormProjects\model-verification\src\example" />
+      <recent name="C:\WebStormProjects\model-verification\src\libs" />
+      <recent name="C:\WebStormProjects\model-verification\src" />
+      <recent name="C:\WebStormProjects\model-verification\src\js" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\WebStormProjects\model-verification\src\libs" />
       <recent name="C:\WebStormProjects\model-similarity\src\snippets" />
       <recent name="C:\WebStormProjects\model-similarity\src\example" />
       <recent name="C:\WebStormProjects\model-similarity\src" />
       <recent name="C:\WebStormProjects\model-similarity\src\js" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\WebStormProjects\model-verification\src\example" />
-      <recent name="C:\WebStormProjects\model-verification\src\libs" />
-      <recent name="C:\WebStormProjects\model-verification\src" />
-      <recent name="C:\WebStormProjects\model-verification\src\js" />
-      <recent name="C:\WebStormProjects\model-similarity\src\snippets" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -349,25 +420,28 @@
       <workItem from="1531781496650" duration="5140000" />
       <workItem from="1531791364766" duration="56202000" />
       <workItem from="1532664821788" duration="181000" />
-      <workItem from="1532665407335" duration="35250000" />
+      <workItem from="1532665407335" duration="41060000" />
+      <workItem from="1533156273305" duration="17148000" />
+      <workItem from="1533587546220" duration="3374000" />
+      <workItem from="1534113536145" duration="4155000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="368980000" />
+    <option name="totallyTimeSpent" value="399467000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17966281" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17755532" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5015806" side_tool="true" weight="0.30268198" />
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32950193" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="9" visible="true" weight="0.2943723" />
+      <window_info anchor="bottom" id="Terminal" order="9" sideWeight="0.49841937" visible="true" weight="0.34099618" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -376,7 +450,7 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32854405" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32792208" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -391,10 +465,20 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/img/SEDML.png" />
-    <entry file="file://$PROJECT_DIR$/.travis.yml" />
-    <entry file="file://$PROJECT_DIR$/src/img/combinedMem.png" />
-    <entry file="file://$PROJECT_DIR$/src/img/cellml.png" />
+    <entry file="file://$PROJECT_DIR$/src/example2/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="682">
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/example2/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="682">
+          <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/img/test2.png" />
     <entry file="file://$PROJECT_DIR$/src/bundle.js">
       <provider selected="true" editor-type-id="text-editor">
@@ -466,9 +550,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="110">
           <caret line="5" column="78" selection-start-line="5" selection-start-column="48" selection-end-line="5" selection-end-column="78" />
-          <folding>
-            <element signature="e#162#168#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -507,42 +588,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="132">
           <caret line="6" column="15" selection-start-line="6" selection-end-line="7" />
-          <folding>
-            <element signature="e#1459#1491#0" />
-            <element signature="e#1172#1242#0" />
-            <element signature="e#2347#2391#0" />
-            <element signature="e#2949#2967#0" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/libs/StreamSaver.js" />
     <entry file="file://$PROJECT_DIR$/src/libs/FileSaver.js" />
-    <entry file="file://$PROJECT_DIR$/src/js/sparqlUtils.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="27" column="22" selection-start-line="27" selection-start-column="4" selection-end-line="27" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="374">
-          <caret line="17" column="7" lean-forward="true" selection-start-line="2" selection-end-line="17" selection-end-column="7" />
-          <folding>
-            <element signature="n#header#0;n#body#0;n#html#0;n#!!top" />
-            <element signature="n#footer#0;n#body#0;n#html#0;n#!!top" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/client3.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="10" column="32" lean-forward="true" selection-start-line="10" selection-start-column="32" selection-end-line="10" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/client3.js" />
     <entry file="file://$PROJECT_DIR$/src/js/server.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="220">
@@ -550,25 +601,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/bootstrap.min.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/window-or-global/lib/index.js">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/util/util.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1254">
-          <folding>
-            <element signature="n#!!doc" expanded="true" />
-          </folding>
-        </state>
+        <state relative-caret-position="-1254" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/xmlhttprequest/lib/XMLHttpRequest.js">
@@ -593,24 +628,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/client2.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="6" column="20" selection-start-line="6" selection-start-column="20" selection-end-line="6" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/libs/ajax-utils.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="20" column="39" lean-forward="true" selection-start-line="20" selection-start-column="39" selection-end-line="20" selection-end-column="39" />
-          <folding>
-            <element signature="e#889#1297#0" />
-            <element signature="e#1429#2036#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/client2.js" />
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="77">
@@ -618,20 +636,101 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/mynewfile.sedml" />
+    <entry file="file://$PROJECT_DIR$/src/example/client2.js" />
+    <entry file="file://$PROJECT_DIR$/src/example/annotation.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="4" column="19" selection-end-line="17" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/libs/ajax-utils.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="517">
+          <caret line="88" lean-forward="true" selection-start-line="67" selection-end-line="88" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/example/client.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="407">
+          <caret line="23" column="9" lean-forward="true" selection-start-line="23" selection-start-column="9" selection-end-line="23" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/example/mynewfile.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="606">
+          <caret line="216" column="8" selection-start-line="216" selection-start-column="8" selection-end-line="216" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/example/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/example/client.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="5" column="26" selection-start-line="5" selection-start-column="26" selection-end-line="5" selection-end-column="26" />
+        <state relative-caret-position="264">
+          <caret line="14" column="79" selection-start-line="14" selection-start-column="9" selection-end-line="14" selection-end-column="79" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/example2/public/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="9" column="23" selection-start-line="9" selection-start-column="23" selection-end-line="9" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="17" column="7" lean-forward="true" selection-start-line="17" selection-start-column="7" selection-end-line="17" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/example2/server.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="770">
+          <caret line="35" column="37" lean-forward="true" selection-start-line="35" selection-start-column="37" selection-end-line="35" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/webpack.config.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="2" column="22" lean-forward="true" selection-start-line="2" selection-start-column="22" selection-end-line="2" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/example2/public/client.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="264">
+          <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
           <folding>
-            <element signature="e#2107#2139#0" />
+            <element signature="n#!!block;n#getRequestObject#0" />
+            <element signature="n#!!block;n#handleResponse#0" />
+            <element signature="e#1096#1341#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/js/sparqlUtils.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="202">
+          <caret line="11" column="6" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/js/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1840">
-          <caret line="1064" column="43" lean-forward="true" selection-start-line="1064" selection-start-column="43" selection-end-line="1064" selection-end-column="43" />
+        <state relative-caret-position="210">
+          <caret line="582" column="88" lean-forward="true" selection-start-line="582" selection-start-column="88" selection-end-line="582" selection-end-column="88" />
           <folding>
             <element signature="e#353#1565#0" />
             <element signature="e#1828#2089#0" />
@@ -642,63 +741,25 @@
             <element signature="e#9407#12371#0" />
             <element signature="e#12415#15706#0" />
             <element signature="e#15743#16161#0" />
-            <element signature="e#16250#21196#0" />
-            <element signature="e#21272#24055#0" />
-            <element signature="e#24123#34644#0" />
             <element signature="e#34882#37662#0" />
             <element signature="e#37802#41398#0" />
             <element signature="e#41558#43451#0" />
             <element signature="e#43483#43668#0" />
             <element signature="e#43756#46520#0" />
+            <element signature="e#59695#59919#0" />
+            <element signature="e#60055#60319#0" />
+            <element signature="e#60360#77949#0" />
+            <element signature="e#62442#62781#0" />
+            <element signature="e#62836#62996#0" />
+            <element signature="e#63238#63776#0" />
+            <element signature="e#63853#64347#0" />
+            <element signature="e#64387#64929#0" />
+            <element signature="e#65007#65509#0" />
+            <element signature="e#65620#66539#0" />
+            <element signature="e#66769#66997#0" />
+            <element signature="e#67066#67298#0" />
+            <element signature="e#67369#67493#0" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/mynewfile.sedml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1540">
-          <caret line="20" column="24" lean-forward="true" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/example/mynewfile.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2379">
-          <caret line="129" column="46" lean-forward="true" selection-start-line="129" selection-start-column="46" selection-end-line="129" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/example/server.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-103">
-          <caret line="21" column="39" selection-start-line="21" selection-start-column="39" selection-end-line="21" selection-end-column="39" />
-          <folding>
-            <element signature="e#1459#1491#0" />
-            <element signature="e#1172#1242#0" />
-            <element signature="e#2347#2391#0" />
-            <element signature="e#2949#2967#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/example/client.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="359">
-          <caret line="22" column="34" selection-start-line="22" selection-start-column="34" selection-end-line="22" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/example/annotation.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="484">
-          <caret line="22" column="29" selection-start-line="22" selection-start-column="29" selection-end-line="22" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/webpack.config.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="2" column="37" lean-forward="true" selection-start-line="2" selection-start-column="37" selection-end-line="2" selection-end-column="37" />
         </state>
       </provider>
     </entry>

@@ -493,7 +493,7 @@ var modelSimilarity = (function (global) {
             // https://www.ebi.ac.uk/seqdb/confluence/display/WEBSERVICES/clustalo_rest
             var WSDbfetchREST = function () {
 
-                var dbfectendpoint = "https://www.ebi.ac.uk/Tools/dbfetch/dbfetch/uniprotkb/" + PID[index] + "/fasta";
+                var dbfectendpoint = sparqlUtils.cors_api_url + "https://www.ebi.ac.uk/Tools/dbfetch/dbfetch/uniprotkb/" + PID[index] + "/fasta";
 
                 ajaxUtils.sendGetRequest(
                     dbfectendpoint,
@@ -573,9 +573,7 @@ var modelSimilarity = (function (global) {
 
         var endpointOLS, chebi_uri, fma_uri;
         if (concentrationArr.concentration[idCounter].chebi.indexOf(sparqlUtils.partOfCHEBIUri) != -1) {
-            var indexofColon = concentrationArr.concentration[idCounter].chebi.indexOf("CHEBI:");
-            chebi_uri = "http://purl.obolibrary.org/obo/CHEBI_" + concentrationArr.concentration[idCounter].chebi.slice(indexofColon + 6);
-            endpointOLS = sparqlUtils.abiOntoEndpoint + "/chebi/terms?iri=" + chebi_uri;
+            endpointOLS = sparqlUtils.ebiOntoEndpoint + "/chebi/terms?iri=" + concentrationArr.concentration[idCounter].chebi;
         }
 
         ajaxUtils.sendGetRequest(
@@ -583,9 +581,7 @@ var modelSimilarity = (function (global) {
             function (jsonObjOLSCHEBI) {
 
                 if (concentrationArr.concentration[idCounter].fma.indexOf(sparqlUtils.partOfFMAUri) != -1) {
-                    var indexofColon = concentrationArr.concentration[idCounter].fma.indexOf("FMA:");
-                    fma_uri = "http://purl.org/sig/ont/fma/fma" + concentrationArr.concentration[idCounter].fma.slice(indexofColon + 4); // 3 + 1 (skip :)
-                    endpointOLS = sparqlUtils.abiOntoEndpoint + "/fma/terms?iri=" + fma_uri;
+                    endpointOLS = sparqlUtils.ebiOntoEndpoint + "/fma/terms?iri=" + concentrationArr.concentration[idCounter].fma;
                 }
 
                 ajaxUtils.sendGetRequest(
@@ -606,7 +602,10 @@ var modelSimilarity = (function (global) {
                             }
                         }
 
-                        synonym_FMA = jsonObjOLSFMA._embedded.terms[0].annotation["preferred name"][0];
+                        if (jsonObjOLSFMA._embedded.terms[0].annotation["preferred name"] != undefined)
+                            synonym_FMA = jsonObjOLSFMA._embedded.terms[0].annotation["preferred name"][0];
+                        else
+                            synonym_FMA = "undefined";
 
                         modelEntity[enteredIndex].concentration[idCounter].chebi += " (" + synonym_CHEBI + ")";
                         modelEntity[enteredIndex].concentration[idCounter].fma += " (" + synonym_FMA + ")";
@@ -630,9 +629,7 @@ var modelSimilarity = (function (global) {
 
         var endpointOLS, chebi_uri, fma_uri;
         if (fluxArr.flux[idCounter].sourceCHEBI.indexOf(sparqlUtils.partOfCHEBIUri) != -1) {
-            var indexofColon = fluxArr.flux[idCounter].sourceCHEBI.indexOf("CHEBI:");
-            chebi_uri = "http://purl.obolibrary.org/obo/CHEBI_" + fluxArr.flux[idCounter].sourceCHEBI.slice(indexofColon + 6);
-            endpointOLS = sparqlUtils.abiOntoEndpoint + "/chebi/terms?iri=" + chebi_uri;
+            endpointOLS = sparqlUtils.ebiOntoEndpoint + "/chebi/terms?iri=" + fluxArr.flux[idCounter].sourceCHEBI;
         }
 
         ajaxUtils.sendGetRequest(
@@ -640,9 +637,9 @@ var modelSimilarity = (function (global) {
             function (jsonObjOLSCHEBI) {
 
                 if (fluxArr.flux[idCounter].sourceFMA.indexOf(sparqlUtils.partOfFMAUri) != -1) {
-                    var indexofColon = fluxArr.flux[idCounter].sourceFMA.indexOf("FMA:");
-                    fma_uri = "http://purl.org/sig/ont/fma/fma" + fluxArr.flux[idCounter].sourceFMA.slice(indexofColon + 4); // 3 + 1 (skip :)
-                    endpointOLS = sparqlUtils.abiOntoEndpoint + "/fma/terms?iri=" + fma_uri;
+                    // var indexofColon = fluxArr.flux[idCounter].sourceFMA.indexOf("FMA:");
+                    // fma_uri = "http://purl.org/sig/ont/fma/fma" + fluxArr.flux[idCounter].sourceFMA.slice(indexofColon + 4); // 3 + 1 (skip :)
+                    endpointOLS = sparqlUtils.ebiOntoEndpoint + "/fma/terms?iri=" + fluxArr.flux[idCounter].sourceFMA;
                 }
 
                 ajaxUtils.sendGetRequest(
@@ -650,9 +647,9 @@ var modelSimilarity = (function (global) {
                     function (jsonObjOLSSourceFMA) {
 
                         if (fluxArr.flux[idCounter].sinkFMA.indexOf(sparqlUtils.partOfFMAUri) != -1) {
-                            var indexofColon = fluxArr.flux[idCounter].sinkFMA.indexOf("FMA:");
-                            fma_uri = "http://purl.org/sig/ont/fma/fma" + fluxArr.flux[idCounter].sinkFMA.slice(indexofColon + 4); // 3 + 1 (skip :)
-                            endpointOLS = sparqlUtils.abiOntoEndpoint + "/fma/terms?iri=" + fma_uri;
+                            // var indexofColon = fluxArr.flux[idCounter].sinkFMA.indexOf("FMA:");
+                            // fma_uri = "http://purl.org/sig/ont/fma/fma" + fluxArr.flux[idCounter].sinkFMA.slice(indexofColon + 4); // 3 + 1 (skip :)
+                            endpointOLS = sparqlUtils.ebiOntoEndpoint + "/fma/terms?iri=" + fluxArr.flux[idCounter].sinkFMA;
                         }
 
                         ajaxUtils.sendGetRequest(
@@ -660,9 +657,9 @@ var modelSimilarity = (function (global) {
                             function (jsonObjOLSSinkFMA) {
 
                                 if (fluxArr.flux[idCounter].mediatorFMA.indexOf(sparqlUtils.partOfFMAUri) != -1) {
-                                    var indexofColon = fluxArr.flux[idCounter].mediatorFMA.indexOf("FMA:");
-                                    fma_uri = "http://purl.org/sig/ont/fma/fma" + fluxArr.flux[idCounter].mediatorFMA.slice(indexofColon + 4); // 3 + 1 (skip :)
-                                    endpointOLS = sparqlUtils.abiOntoEndpoint + "/fma/terms?iri=" + fma_uri;
+                                    // var indexofColon = fluxArr.flux[idCounter].mediatorFMA.indexOf("FMA:");
+                                    // fma_uri = "http://purl.org/sig/ont/fma/fma" + fluxArr.flux[idCounter].mediatorFMA.slice(indexofColon + 4); // 3 + 1 (skip :)
+                                    endpointOLS = sparqlUtils.ebiOntoEndpoint + "/fma/terms?iri=" + fluxArr.flux[idCounter].mediatorFMA;
                                 }
 
                                 ajaxUtils.sendGetRequest(
@@ -684,9 +681,20 @@ var modelSimilarity = (function (global) {
                                             }
                                         }
 
-                                        synonym_sourceFMA = jsonObjOLSSourceFMA._embedded.terms[0].annotation["preferred name"][0];
-                                        synonym_sinkFMA = jsonObjOLSSinkFMA._embedded.terms[0].annotation["preferred name"][0];
-                                        synonym_mediatorFMA = jsonObjOLSMediatorFMA._embedded.terms[0].annotation["preferred name"][0];
+                                        if (jsonObjOLSSourceFMA._embedded.terms[0].annotation["preferred name"] != undefined)
+                                            synonym_sourceFMA = jsonObjOLSSourceFMA._embedded.terms[0].annotation["preferred name"][0];
+                                        else
+                                            synonym_sourceFMA = "undefined";
+
+                                        if (jsonObjOLSSinkFMA._embedded.terms[0].annotation["preferred name"] != undefined)
+                                            synonym_sinkFMA = jsonObjOLSSinkFMA._embedded.terms[0].annotation["preferred name"][0];
+                                        else
+                                            synonym_sinkFMA = "undefined";
+
+                                        if (jsonObjOLSMediatorFMA._embedded.terms[0].annotation["preferred name"] != undefined)
+                                            synonym_mediatorFMA = jsonObjOLSMediatorFMA._embedded.terms[0].annotation["preferred name"][0];
+                                        else
+                                            synonym_mediatorFMA = "undefined";
 
                                         modelEntity[enteredIndex].flux[idCounter].sourceCHEBI += " (" + synonym_CHEBI + ")";
                                         modelEntity[enteredIndex].flux[idCounter].sourceFMA += " (" + synonym_sourceFMA + ")";
@@ -1221,7 +1229,7 @@ var modelSimilarity = (function (global) {
 
                                 var counter = 0;
                                 var cellmlWorkspaceFunction = function (counter) {
-                                    var cellmlWorkspaceName = "https://models.physiomeproject.org/workspace/267/rawfile/HEAD/" + tempOBJy[counter].model;
+                                    var cellmlWorkspaceName = sparqlUtils.cors_api_url + "https://models.physiomeproject.org/workspace/267/rawfile/HEAD/" + tempOBJy[counter].model;
                                     ajaxUtils.sendGetRequest(
                                         cellmlWorkspaceName,
                                         function (cellmlWorkspaceHtml) {
@@ -1363,65 +1371,65 @@ var modelSimilarity = (function (global) {
 
         var concentration = [
             {
-                chebi: "CHEBI:1234_1",
-                fma: "FMA:74550_1",
+                chebi: "CHEBI_1234_1",
+                fma: "FMA_74550_1",
                 model_entity: "weinstein#NHE3.C_ext_H"
             },
             {
-                chebi: "CHEBI:1235_1",
-                fma: "FMA:74550_2",
+                chebi: "CHEBI_1235_1",
+                fma: "FMA_74550_2",
                 model_entity: "weinstein#NHE3.C_ext_NH4"
             },
             {
-                chebi: "CHEBI:1236_1",
-                fma: "FMA:74550_3",
+                chebi: "CHEBI_1236_1",
+                fma: "FMA_74550_3",
                 model_entity: "weinstein#NHE3.C_ext_Na"
             },
             {
-                chebi: "CHEBI:1234_2",
-                fma: "FMA:63680_1",
+                chebi: "CHEBI_1234_2",
+                fma: "FMA_63680_1",
                 model_entity: "weinstein#NHE3.C_int_H"
             },
             {
-                chebi: "CHEBI:1235_2",
-                fma: "FMA:63680_2",
+                chebi: "CHEBI_1235_2",
+                fma: "FMA_63680_2",
                 model_entity: "weinstein#NHE3.C_int_NH4"
             },
             {
-                chebi: "CHEBI:1236_2",
-                fma: "FMA:63680_3",
+                chebi: "CHEBI_1236_2",
+                fma: "FMA_63680_3",
                 model_entity: "weinstein#NHE3.C_int_Na"
             }
         ];
         var concentration2 = [
             {
-                chebi: "CHEBI:1234_3",
-                fma: "FMA:74550_4",
+                chebi: "CHEBI_1234_3",
+                fma: "FMA_74550_4",
                 model_entity: "epithelial#NHE3.C_ext_H"
             },
             {
-                chebi: "CHEBI:1237_1",
-                fma: "FMA:74550_5",
+                chebi: "CHEBI_1237_1",
+                fma: "FMA_74550_5",
                 model_entity: "epithelial#NHE3.C_ext_Cl"
             },
             {
-                chebi: "CHEBI:1238_1",
-                fma: "FMA:74550_6",
+                chebi: "CHEBI_1238_1",
+                fma: "FMA_74550_6",
                 model_entity: "epithelial#NHE3.C_ext_K"
             },
             {
-                chebi: "CHEBI:1234_4",
-                fma: "FMA:63680_4",
+                chebi: "CHEBI_1234_4",
+                fma: "FMA_63680_4",
                 model_entity: "epithelial#NHE3.C_int_H"
             },
             {
-                chebi: "CHEBI:1237_2",
-                fma: "FMA:63680_5",
+                chebi: "CHEBI_1237_2",
+                fma: "FMA_63680_5",
                 model_entity: "epithelial#NHE3.C_int_Cl"
             },
             {
-                chebi: "CHEBI:1238_2",
-                fma: "FMA:63680_6",
+                chebi: "CHEBI_1238_2",
+                fma: "FMA_63680_6",
                 model_entity: "epithelial#NHE3.C_int_K"
             }
         ];
@@ -2395,7 +2403,10 @@ exports.isModelExist = isModelExist;
 /**
  * Created by Dewan Sarwar on 14/01/2018.
  */
-var ebiOntoEndpoint = "https://www.ebi.ac.uk/ols/ontologies";
+var cors_api_url = "https://cors-anywhere.herokuapp.com/";
+var endpoint = cors_api_url + "https://models.physiomeproject.org/pmr2_virtuoso_search";
+
+var ebiOntoEndpoint = "https://www.ebi.ac.uk/ols/api/ontologies";
 var abiOntoEndpoint = "http://ontology.cer.auckland.ac.nz/ols-boot/api/ontologies";
 
 var homeHtml = "./snippets/home-snippet.html";
@@ -2403,23 +2414,22 @@ var searchHtml = "./snippets/search-snippet.html";
 var similarityHtml = "./snippets/similarity-snippet.html";
 var drawSEDMLHtml = "./snippets/drawSEDML-snippet.html";
 
-var endpoint = "https://models.physiomeproject.org/pmr2_virtuoso_search";
-var sodium = "http://identifiers.org/chebi/CHEBI:29101";
-var potassium = "http://identifiers.org/chebi/CHEBI:29103";
-var chloride = "http://identifiers.org/chebi/CHEBI:17996";
-var luminalID = "http://identifiers.org/fma/FMA:74550";
-var cytosolID = "http://identifiers.org/fma/FMA:66836";
-var interstitialID = "http://identifiers.org/fma/FMA:9673";
-var apicalID = "http://identifiers.org/fma/FMA:84666";
-var basolateralID = "http://identifiers.org/fma/FMA:84669";
+var sodium = "http://purl.obolibrary.org/obo/CHEBI_29101";
+var potassium = "http://purl.obolibrary.org/obo/CHEBI_29103";
+var chloride = "http://purl.obolibrary.org/obo/CHEBI_17996";
+var luminalID = "http://purl.obolibrary.org/obo/FMA_74550";
+var cytosolID = "http://purl.obolibrary.org/obo/FMA_66836";
+var interstitialID = "http://purl.obolibrary.org/obo/FMA_9673";
+var apicalID = "http://purl.obolibrary.org/obo/FMA_84666";
+var basolateralID = "http://purl.obolibrary.org/obo/FMA_84669";
 
-var partOfCHEBIUri = "http://identifiers.org/chebi/CHEBI";
-var partOfFMAUri = "http://identifiers.org/fma/FMA";
+var partOfCHEBIUri = "http://purl.obolibrary.org/obo/CHEBI";
+var partOfFMAUri = "http://purl.obolibrary.org/obo/FMA";
 
 var opbTime = "http://identifiers.org/opb/OPB_01023";
 
 // Definition of protocols
-var sedmlWorkspaceName = "https://models.physiomeproject.org/workspace/267/rawfile/HEAD/weinstein_1995.sedml";
+var sedmlWorkspaceName = cors_api_url + "https://models.physiomeproject.org/workspace/267/rawfile/HEAD/weinstein_1995.sedml";
 
 var sparqlOBJ = {
     protocol1Concentration: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
@@ -2431,8 +2441,8 @@ var sparqlOBJ = {
     "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
     "?model_prop semsim:physicalPropertyOf ?source_entity. " +
     "?source_entity ro:part_of ?source_part_of_entity. " +
-    "?source_part_of_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:74550>. " +
-    "?source_entity semsim:hasPhysicalDefinition <http://identifiers.org/chebi/CHEBI:29101>. " +
+    "?source_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_74550>. " +
+    "?source_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_29101>. " +
     "}",
     protocol1Time: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
     "SELECT ?modelEntity " +
@@ -2447,7 +2457,7 @@ var sparqlOBJ = {
     "?model_prop semsim:physicalPropertyOf ?model_proc. " +
     "?model_proc semsim:hasMediatorParticipant ?model_medparticipant. " +
     "?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. " +
-    "?med_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:84666>. " +
+    "?med_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84666>. " +
     "}",
     protocol2Potential: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
     "SELECT ?modelEntity " +
@@ -2455,7 +2465,7 @@ var sparqlOBJ = {
     "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
     "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00506>. " +
     "?model_prop semsim:physicalPropertyOf ?entity. " +
-    "?entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:84666>. " +
+    "?entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84666>. " +
     "}",
     protocol3Flux: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
     "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
@@ -2468,15 +2478,15 @@ var sparqlOBJ = {
     "?model_proc semsim:hasSourceParticipant ?model_srcparticipant. " +
     "?model_srcparticipant semsim:hasPhysicalEntityReference ?source_entity. " +
     "?source_entity ro:part_of ?source_part_of_entity. " +
-    "?source_part_of_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:74550>. " +
-    "?source_entity semsim:hasPhysicalDefinition <http://identifiers.org/chebi/CHEBI:29101>. " +
+    "?source_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_74550>. " +
+    "?source_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_29101>. " +
     "?model_proc semsim:hasSinkParticipant ?model_sinkparticipant. " +
     "?model_sinkparticipant semsim:hasPhysicalEntityReference ?sink_entity. " +
     "?sink_entity ro:part_of ?sink_part_of_entity. " +
-    "?sink_part_of_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:66836>. " +
+    "?sink_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_66836>. " +
     "?model_proc semsim:hasMediatorParticipant ?model_medparticipant. " +
     "?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. " +
-    "?med_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:84666>. " +
+    "?med_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84666>. " +
     "}",
     protocol4Concentration: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
     "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
@@ -2487,8 +2497,8 @@ var sparqlOBJ = {
     "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
     "?model_prop semsim:physicalPropertyOf ?source_entity. " +
     "?source_entity ro:part_of ?source_part_of_entity. " +
-    "?source_part_of_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:74550>. " +
-    "?source_entity semsim:hasPhysicalDefinition <http://identifiers.org/chebi/CHEBI:28938>. " +
+    "?source_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_74550>. " +
+    "?source_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_28938>. " +
     "}",
     protocol2AConcentration: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
     "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
@@ -2499,8 +2509,8 @@ var sparqlOBJ = {
     "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
     "?model_prop semsim:physicalPropertyOf ?source_entity. " +
     "?source_entity ro:part_of ?source_part_of_entity. " +
-    "?source_part_of_entity semsim:hasPhysicalDefinition <http://identifiers.org/fma/FMA:74550>. " +
-    "?source_entity semsim:hasPhysicalDefinition <http://identifiers.org/chebi/CHEBI:15378>. " +
+    "?source_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_74550>. " +
+    "?source_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_15378>. " +
     "}"
 }
 
@@ -2566,8 +2576,9 @@ exports.searchHtml = searchHtml;
 exports.similarityHtml = similarityHtml;
 exports.drawSEDMLHtml = drawSEDMLHtml;
 exports.opbTime = opbTime;
-exports.sedmlWorkspaceName= sedmlWorkspaceName;
+exports.sedmlWorkspaceName = sedmlWorkspaceName;
 exports.sparqlOBJ = sparqlOBJ;
+exports.cors_api_url = cors_api_url;
 
 /***/ }),
 /* 4 */
