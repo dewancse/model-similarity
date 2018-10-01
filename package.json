@@ -1,10 +1,10 @@
 {
-  "name": "model-similarity",
+  "name": "model-verification",
   "version": "0.0.1",
-  "description": "A web-based tool to discovery and explore CellML model similarity",
-  "main": "./src/index.html",
+  "description": "A web-based tool to discover and verify CellML models",
+  "main": "server.js",
   "scripts": {
-    "build": "node ./src/js/server.js"
+    "start": "node server.js"
   },
   "authors": [
     "Dewan Sarwar <dsar941@aucklanduni.ac.nz>"
@@ -44,9 +44,8 @@
   },
   "keywords": [
     "epithelial",
-    "platform",
+    "model verification",
     "learning tool",
-    "model similarity",
-    "svg"
+    "model similarity"
   ]
 }

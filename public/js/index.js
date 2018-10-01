@@ -6,6 +6,8 @@ var ajaxUtils = require("./../libs/ajax-utils.js");
 var miscellaneous = require("./miscellaneous.js");
 var sparqlUtils = require("./sparqlUtils.js");
 var similarity = require("./similarity.js");
+var epithelialsparqlUtils = require("./epithelial/sparqlUtils.js");
+var epithelialplatform = require("./epithelial/epithelialPlatform.js");
 
 "use strict";
 
@@ -1835,6 +1837,21 @@ var modelSimilarity = (function (global) {
             d.fx = null;
             d.fy = null;
         }
+    };
+
+    /*******************************************/
+    /********* EPITHELIAL Platform *************/
+    /*******************************************/
+    console.log("epithelialsparqlUtils.epithelialHtml:", epithelialsparqlUtils.epithelialHtml);
+    mainUtils.loadEpithelialHtml = function () {
+        ajaxUtils.sendGetRequest(
+            epithelialsparqlUtils.epithelialHtml,
+            function (epithelialHtmlContent) {
+                console.log("epithelialHtmlContent: ", epithelialHtmlContent);
+                $("#main-content").html(epithelialHtmlContent);
+                ajaxUtils.sendGetRequest(epithelialsparqlUtils.epithelialHtml, epithelialplatform.epithelialPlatform, false);
+            },
+            false);
     };
 
     // Expose utility to the global object
