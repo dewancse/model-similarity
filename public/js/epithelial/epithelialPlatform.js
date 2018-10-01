@@ -7426,6 +7426,421 @@ var epithelialPlatform = function () {
 
         jQuery(window).trigger("resize");
     }
+
+    /**********************************/
+    /*********** Radar Plot ***********/
+    /**********************************/
+    var radarplot = function () {
+        var w = 500,
+            h = 500;
+
+        // var colorscale = d3.scale.category10(); // v3
+        var colorscale = d3.scaleOrdinal(d3.schemeCategory20); // v4
+
+        var combinedMembrane = [
+            {
+                med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
+                med_pr: "http://purl.obolibrary.org/obo/PR_P55018",
+                med_pr_text: "solute carrier family 12 member 3 (rat)",
+                med_pr_text_syn: "TSC",
+                model_entity: "chang_fujita_b_1999.cellml#total_transepithelial_sodium_flux.J_mc_Na",
+                model_entity2: "chang_fujita_b_1999.cellml#solute_concentrations.J_mc_Cl",
+                model_entity3: "",
+                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+                sink_fma2: "http://purl.obolibrary.org/obo/FMA_66836",
+                sink_fma3: "",
+                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29101",
+                solute_chebi2: "http://purl.obolibrary.org/obo/CHEBI_17996",
+                solute_chebi3: "",
+                solute_text: "Na+",
+                solute_text2: "Cl-",
+                solute_text3: "",
+                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+                source_fma2: "http://purl.obolibrary.org/obo/FMA_74550",
+                source_fma3: "",
+                variable_text: "J_mc_Na",
+                variable_text2: "J_mc_Cl",
+                variable_text3: ""
+            },
+            {
+                med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
+                med_pr: "http://purl.obolibrary.org/obo/PR_Q63633",
+                med_pr_text: "solute carrier family 12 member 5 (rat)",
+                med_pr_text_syn: "Q63633",
+                model_entity: "chang_fujita_b_1999.cellml#solute_concentrations.J_mc_Cl",
+                model_entity2: "chang_fujita_b_1999.cellml#total_transepithelial_potassium_flux.J_mc_K",
+                model_entity3: "",
+                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+                sink_fma2: "http://purl.obolibrary.org/obo/FMA_66836",
+                sink_fma3: "",
+                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_17996",
+                solute_chebi2: "http://purl.obolibrary.org/obo/CHEBI_29103",
+                solute_chebi3: "",
+                solute_text: "Cl-",
+                solute_text2: "K+",
+                solute_text3: "",
+                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+                source_fma2: "http://purl.obolibrary.org/obo/FMA_74550",
+                source_fma3: "",
+                variable_text: "J_mc_Cl",
+                variable_text2: "J_mc_K",
+                variable_text3: ""
+            },
+            {
+                med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
+                med_pr: "http://purl.obolibrary.org/obo/PR_P37089",
+                med_pr_text: "amiloride-sensitive sodium channel subunit alpha (rat)",
+                med_pr_text_syn: "RENAC",
+                model_entity: "chang_fujita_b_1999.cellml#mc_sodium_flux.G_mc_Na",
+                model_entity2: "",
+                model_entity3: "",
+                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+                sink_fma2: "channel",
+                sink_fma3: "channel",
+                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29101",
+                solute_chebi2: "channel",
+                solute_chebi3: "channel",
+                solute_text: "Na+",
+                solute_text2: "channel",
+                solute_text3: "channel",
+                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+                source_fma2: "channel",
+                source_fma3: "channel",
+                variable_text: "G_mc_Na",
+                variable_text2: "channel",
+                variable_text3: "channel"
+            },
+            {
+                med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
+                med_pr: "http://purl.obolibrary.org/obo/PR_Q06393",
+                med_pr_text: "chloride channel protein ClC-Ka (rat)",
+                med_pr_text_syn: "CLCNK1",
+                model_entity: "chang_fujita_b_1999.cellml#mc_chloride_flux.G_mc_Cl",
+                model_entity2: "",
+                model_entity3: "",
+                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+                sink_fma2: "channel",
+                sink_fma3: "channel",
+                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_17996",
+                solute_chebi2: "channel",
+                solute_chebi3: "channel",
+                solute_text: "Cl-",
+                solute_text2: "channel",
+                solute_text3: "channel",
+                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+                source_fma2: "channel",
+                source_fma3: "channel",
+                variable_text: "G_mc_Cl",
+                variable_text2: "channel",
+                variable_text3: "channel"
+            },
+            {
+                med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
+                med_pr: "http://purl.obolibrary.org/obo/PR_P15387",
+                med_pr_text: "potassium voltage-gated channel subfamily B member 1 (rat)",
+                med_pr_text_syn: "P15387",
+                model_entity: "chang_fujita_b_1999.cellml#mc_potassium_flux.G_mc_K",
+                model_entity2: "",
+                model_entity3: "",
+                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+                sink_fma2: "channel",
+                sink_fma3: "channel",
+                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29103",
+                solute_chebi2: "channel",
+                solute_chebi3: "channel",
+                solute_text: "K+",
+                solute_text2: "channel",
+                solute_text3: "channel",
+                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+                source_fma2: "channel",
+                source_fma3: "channel",
+                variable_text: "G_mc_K",
+                variable_text2: "channel",
+                variable_text3: "channel"
+            },
+            {
+                med_fma: "http://purl.obolibrary.org/obo/FMA_84669",
+                med_pr: "http://purl.obolibrary.org/obo/PR_P06685",
+                med_pr_text: "sodium/potassium-transporting ATPase subunit alpha-1 (rat)",
+                med_pr_text_syn: "P06685",
+                model_entity: "chang_fujita_b_1999.cellml#solute_concentrations.J_sc_Na",
+                model_entity2: "chang_fujita_b_1999.cellml#sc_potassium_flux.J_sc_K",
+                model_entity3: "",
+                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+                sink_fma: "http://purl.obolibrary.org/obo/FMA_9673",
+                sink_fma2: "http://purl.obolibrary.org/obo/FMA_66836",
+                sink_fma3: "",
+                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29101",
+                solute_chebi2: "http://purl.obolibrary.org/obo/CHEBI_29103",
+                solute_chebi3: "",
+                solute_text: "Na+",
+                solute_text2: "K+",
+                solute_text3: "",
+                source_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+                source_fma2: "http://purl.obolibrary.org/obo/FMA_9673",
+                source_fma3: "",
+                variable_text: "J_sc_Na",
+                variable_text2: "J_sc_K",
+                variable_text3: ""
+            },
+            {
+                med_fma: "http://purl.obolibrary.org/obo/FMA_84669",
+                med_pr: "http://purl.obolibrary.org/obo/PR_Q06393",
+                med_pr_text: "chloride channel protein ClC-Ka (rat)",
+                med_pr_text_syn: "CLCNK1",
+                model_entity: "chang_fujita_b_1999.cellml#sc_chloride_flux.G_sc_Cl",
+                model_entity2: "",
+                model_entity3: "",
+                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+                sink_fma2: "channel",
+                sink_fma3: "channel",
+                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_17996",
+                solute_chebi2: "channel",
+                solute_chebi3: "channel",
+                solute_text: "Cl-",
+                solute_text2: "channel",
+                solute_text3: "channel",
+                source_fma: "http://purl.obolibrary.org/obo/FMA_9673",
+                source_fma2: "channel",
+                source_fma3: "channel",
+                variable_text: "G_sc_Cl",
+                variable_text2: "channel",
+                variable_text3: "channel"
+            },
+            {
+                med_fma: "http://purl.obolibrary.org/obo/FMA_84669",
+                med_pr: "http://purl.obolibrary.org/obo/PR_P15387",
+                med_pr_text: "potassium voltage-gated channel subfamily B member 1 (rat)",
+                med_pr_text_syn: "P15387",
+                model_entity: "chang_fujita_b_1999.cellml#sc_potassium_flux.G_sc_K",
+                model_entity2: "",
+                model_entity3: "",
+                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+                sink_fma2: "channel",
+                sink_fma3: "channel",
+                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29103",
+                solute_chebi2: "channel",
+                solute_chebi3: "channel",
+                solute_text: "K+",
+                solute_text2: "channel",
+                solute_text3: "channel",
+                source_fma: "http://purl.obolibrary.org/obo/FMA_9673",
+                source_fma2: "channel",
+                source_fma3: "channel",
+                variable_text: "G_sc_K",
+                variable_text2: "channel",
+                variable_text3: "channel"
+            },
+            {
+                med_fma: "http://purl.obolibrary.org/obo/FMA_67394",
+                med_pr: "http://purl.obolibrary.org/obo/PR_Q9Z0S6",
+                med_pr_text: "claudin-10 (mouse)",
+                med_pr_text_syn: "CLDN10A",
+                model_entity: "chang_fujita_b_1999.cellml#ms_sodium_flux.G_ms_Na",
+                model_entity2: "",
+                model_entity3: "",
+                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+                sink_fma: "http://purl.obolibrary.org/obo/FMA_9673",
+                sink_fma2: "diffusiveflux",
+                sink_fma3: "diffusiveflux",
+                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29101",
+                solute_chebi2: "diffusiveflux",
+                solute_chebi3: "diffusiveflux",
+                solute_text: "Na+",
+                solute_text2: "diffusiveflux",
+                solute_text3: "diffusiveflux",
+                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+                source_fma2: "diffusiveflux",
+                source_fma3: "diffusiveflux",
+                variable_text: "G_ms_Na",
+                variable_text2: "diffusiveflux",
+                variable_text3: "diffusiveflux"
+            },
+            {
+                med_fma: "http://purl.obolibrary.org/obo/FMA_67394",
+                med_pr: "http://purl.obolibrary.org/obo/PR_O35054",
+                med_pr_text: "claudin-4 (mouse)",
+                med_pr_text_syn: "CPETR1",
+                model_entity: "chang_fujita_b_1999.cellml#ms_chloride_flux.G_ms_Cl",
+                model_entity2: "",
+                model_entity3: "",
+                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+                sink_fma: "http://purl.obolibrary.org/obo/FMA_9673",
+                sink_fma2: "diffusiveflux",
+                sink_fma3: "diffusiveflux",
+                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_17996",
+                solute_chebi2: "diffusiveflux",
+                solute_chebi3: "diffusiveflux",
+                solute_text: "Cl-",
+                solute_text2: "diffusiveflux",
+                solute_text3: "diffusiveflux",
+                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+                source_fma2: "diffusiveflux",
+                source_fma3: "diffusiveflux",
+                variable_text: "G_ms_Cl",
+                variable_text2: "diffusiveflux",
+                variable_text3: "diffusiveflux"
+            },
+            {
+                med_fma: "http://purl.obolibrary.org/obo/FMA_67394",
+                med_pr: "http://purl.obolibrary.org/obo/PR_F1LZ52",
+                med_pr_text: "kelch-like protein 3 (rat)",
+                med_pr_text_syn: "F1LZ52",
+                model_entity: "chang_fujita_b_1999.cellml#ms_potassium_flux.G_ms_K",
+                model_entity2: "",
+                model_entity3: "",
+                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+                sink_fma: "http://purl.obolibrary.org/obo/FMA_9673",
+                sink_fma2: "diffusiveflux",
+                sink_fma3: "diffusiveflux",
+                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29103",
+                solute_chebi2: "diffusiveflux",
+                solute_chebi3: "diffusiveflux",
+                solute_text: "K+",
+                solute_text2: "diffusiveflux",
+                solute_text3: "diffusiveflux",
+                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+                source_fma2: "diffusiveflux",
+                source_fma3: "diffusiveflux",
+                variable_text: "G_ms_K",
+                variable_text2: "diffusiveflux",
+                variable_text3: "diffusiveflux"
+            }
+        ];
+        //Legend titles
+        var LegendOptions = ['chang_fujita_1999', 'chang_fujita_b_1999', 'weinstein_1995', 'mackenzie_1996'];
+
+        //Data
+        var d = [
+            [
+                {axis: combinedMembrane[0].med_pr_text_syn, value: 1.1},
+                {axis: combinedMembrane[1].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[2].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[3].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[4].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[5].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[6].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[7].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[8].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[9].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[10].med_pr_text_syn, value: 0.0}
+            ], [
+                {axis: combinedMembrane[0].med_pr_text_syn, value: 1.1},
+                {axis: combinedMembrane[1].med_pr_text_syn, value: 1.1},
+                {axis: combinedMembrane[2].med_pr_text_syn, value: 1.1},
+                {axis: combinedMembrane[3].med_pr_text_syn, value: 1.1},
+                {axis: combinedMembrane[4].med_pr_text_syn, value: 1.1},
+                {axis: combinedMembrane[5].med_pr_text_syn, value: 1.1},
+                {axis: combinedMembrane[6].med_pr_text_syn, value: 1.1},
+                {axis: combinedMembrane[7].med_pr_text_syn, value: 1.1},
+                {axis: combinedMembrane[8].med_pr_text_syn, value: 1.1},
+                {axis: combinedMembrane[9].med_pr_text_syn, value: 1.1},
+                {axis: combinedMembrane[10].med_pr_text_syn, value: 1.1}
+            ], [
+                {axis: combinedMembrane[0].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[1].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[2].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[3].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[4].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[5].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[6].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[7].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[8].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[9].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[10].med_pr_text_syn, value: 0.0}
+            ], [
+                {axis: combinedMembrane[0].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[1].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[2].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[3].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[4].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[5].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[6].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[7].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[8].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[9].med_pr_text_syn, value: 0.0},
+                {axis: combinedMembrane[10].med_pr_text_syn, value: 0.0}
+            ]
+        ];
+
+        //Options for the Radar chart, other than default
+        var mycfg = {
+            w: w,
+            h: h,
+            maxValue: 1.1,
+            levels: 11,
+            ExtraWidthX: 300
+        }
+
+        //Call function to draw the Radar chart
+        //Will expect that data is in %'s
+        RadarChart.draw("#chart", d, mycfg);
+
+        ////////////////////////////////////////////
+        /////////// Initiate legend ////////////////
+        ////////////////////////////////////////////
+
+        var svg = d3.select('#chart')
+            .selectAll('svg')
+            .append('svg')
+            .attr("width", w + 300)
+            .attr("height", h);
+
+        //Create the title for the legend
+        var text = svg.append("text")
+            .attr("class", "title")
+            .attr('transform', 'translate(90,0)')
+            .attr("x", w - 70)
+            .attr("y", 10)
+            .attr("font-size", "12px")
+            .attr("fill", "#404040")
+            .text("Which models match wrt the assembled model");
+
+        //Initiate Legend
+        var legend = svg.append("g")
+            .attr("class", "legend")
+            .attr("height", 100)
+            .attr("width", 200)
+            .attr('transform', 'translate(90,20)');
+
+        //Create colour squares
+        legend.selectAll('rect')
+            .data(LegendOptions)
+            .enter()
+            .append("rect")
+            .attr("x", w - 65)
+            .attr("y", function (d, i) {
+                return i * 20;
+            })
+            .attr("width", 10)
+            .attr("height", 10)
+            .style("fill", function (d, i) {
+                return colorscale(i);
+            });
+
+        //Create text next to squares
+        legend.selectAll('text')
+            .data(LegendOptions)
+            .enter()
+            .append("text")
+            .attr("x", w - 52)
+            .attr("y", function (d, i) {
+                return i * 20 + 9;
+            })
+            .attr("font-size", "11px")
+            .attr("fill", "#737373")
+            .text(function (d) {
+                return d;
+            });
+    }
+    radarplot();
 };
 
 exports.epithelialPlatform = epithelialPlatform;

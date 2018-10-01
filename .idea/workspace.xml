@@ -2,66 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d10e2706-4b79-4bc6-9a24-e9aa638a1516" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/public/js/epithelial/epithelialPlatform.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/js/epithelial/miscellaneous.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/js/epithelial/snippets/epithelial-snippet.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/js/epithelial/solutesBouncing.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/js/epithelial/sparqlUtils.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/js/epithelial/svgPlatform.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/libs/d3.v4.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/js/epithelial/RadarChart.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/dsar941.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/bundle.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/bundle.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/css/bootstrap.min.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/css/bootstrap.min.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/chang_fujita_1999.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/chang_fujita_1999.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/eskandari.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/eskandari.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/eskandari_2005.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/eskandari_2005.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/experimental.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/experimental.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/mackenzie.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/mackenzie.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/mackenzie_1996.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/mackenzie_1996.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/mackenzie_1996_3A.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/mackenzie_1996_3A.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/mackenzie_1996_3B.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/mackenzie_1996_3B.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/weinstein.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/weinstein.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/weinstein_1995.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/weinstein_1995.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/weinstein_1995_2A.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/weinstein_1995_2A.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/weinstein_1995_2B.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/weinstein_1995_2B.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/weinstein_1995_3A.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/weinstein_1995_3A.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/weinstein_1995_3B.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/weinstein_1995_3B.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/weinstein_1995_4A.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/weinstein_1995_4A.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/weinstein_1995_4B.csv" beforeDir="false" afterPath="$PROJECT_DIR$/public/data/weinstein_1995_4B.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/example/annotation.xml" beforeDir="false" afterPath="$PROJECT_DIR$/public/example/annotation.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/example/client.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/example/client.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/example/client.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/example/client.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/example/mynewfile.xml" beforeDir="false" afterPath="$PROJECT_DIR$/public/example/mynewfile.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/example/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/example/server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/example2/mynewfile.xml" beforeDir="false" afterPath="$PROJECT_DIR$/public/example2/mynewfile.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/example2/public/client.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/example2/public/client.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/example2/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/example2/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/example2/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/example2/server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/fonts/glyphicons-halflings-regular.woff2" beforeDir="false" afterPath="$PROJECT_DIR$/public/fonts/glyphicons-halflings-regular.woff2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/img/ajax-loader.gif" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/ajax-loader.gif" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/img/logo.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/logo.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/js/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/js/miscellaneous.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/miscellaneous.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/js/sedmlGraph.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/sedmlGraph.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/js/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/js/similarity.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/similarity.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/js/sparqlUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/sparqlUtils.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/libs/ajax-utils.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/libs/ajax-utils.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/libs/bootstrap.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/libs/bootstrap.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/libs/d3-selection-multi.v1.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/libs/d3-selection-multi.v1.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/libs/d3.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/libs/d3.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/libs/jquery-ui.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/libs/jquery-ui.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/libs/jquery.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/libs/jquery.min.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/snippets/drawSEDML-snippet.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/snippets/drawSEDML-snippet.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/snippets/home-snippet.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/snippets/home-snippet.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/snippets/search-snippet.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/snippets/search-snippet.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/snippets/sedmlGraph.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/snippets/sedmlGraph.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/snippets/similarity-snippet.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/snippets/similarity-snippet.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webpack.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/webpack.config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/bundle.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/bundle.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/js/epithelial/epithelialPlatform.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/epithelial/epithelialPlatform.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/js/epithelial/snippets/epithelial-snippet.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/epithelial/snippets/epithelial-snippet.html" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -89,32 +41,34 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="html" value="8" />
-          <entry key="js" value="14" />
+          <entry key="gitignore" value="2" />
+          <entry key="html" value="9" />
+          <entry key="js" value="16" />
           <entry key="json" value="1" />
           <entry key="md" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="HTML" value="8" />
+          <entry key="HTML" value="9" />
           <entry key="JSON" value="1" />
-          <entry key="JavaScript" value="14" />
+          <entry key="JavaScript" value="16" />
           <entry key="Markdown" value="1" />
+          <entry key="PLAIN_TEXT" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="html" value="107" />
-          <entry key="js" value="539" />
+          <entry key="html" value="122" />
+          <entry key="js" value="1092" />
           <entry key="json" value="77" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="HTML" value="107" />
+          <entry key="HTML" value="122" />
           <entry key="JSON" value="77" />
-          <entry key="JavaScript" value="539" />
+          <entry key="JavaScript" value="1092" />
         </counts>
       </usages-collector>
     </session>
@@ -124,63 +78,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/public/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="176">
-              <caret line="8" column="31" selection-start-line="8" selection-start-column="31" selection-end-line="8" selection-end-column="31" />
+            <state relative-caret-position="374">
+              <caret line="18" column="47" selection-start-line="18" selection-start-column="47" selection-end-line="18" selection-end-column="47" />
               <folding>
+                <element signature="n#header#0;n#body#0;n#html#0;n#!!top" />
                 <element signature="n#footer#0;n#body#0;n#html#0;n#!!top" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/js/index.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="418">
-              <caret line="1845" column="25" selection-start-line="1845" selection-start-column="25" selection-end-line="1845" selection-end-column="25" />
-              <folding>
-                <element signature="e#353#1565#0" />
-                <element signature="e#1828#2089#0" />
-                <element signature="e#2286#2501#0" />
-                <element signature="e#2550#5926#0" />
-                <element signature="e#5992#7364#0" />
-                <element signature="e#7412#9353#0" />
-                <element signature="e#9407#12371#0" />
-                <element signature="e#12415#15706#0" />
-                <element signature="e#15743#16161#0" />
-                <element signature="e#16250#21223#0" />
-                <element signature="e#21299#23856#0" />
-                <element signature="e#23924#35112#0" />
-                <element signature="e#35350#38130#0" />
-                <element signature="e#38270#41866#0" />
-                <element signature="e#42026#43919#0" />
-                <element signature="e#43951#44136#0" />
-                <element signature="e#44224#46988#0" />
-                <element signature="e#47070#60082#0" />
-                <element signature="e#60190#60414#0" />
-                <element signature="e#60855#78444#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/js/sparqlUtils.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="154">
-              <caret line="7" column="19" selection-start-line="7" selection-start-column="19" selection-end-line="7" selection-end-column="19" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/public/js/epithelial/sparqlUtils.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="264">
-              <caret line="175" column="72" lean-forward="true" selection-start-line="175" selection-start-column="72" selection-end-line="175" selection-end-column="72" />
-              <folding>
-                <element signature="e#344#2975#0" />
-                <element signature="e#2995#5799#0" />
               </folding>
             </state>
           </provider>
@@ -189,14 +91,74 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/public/js/epithelial/epithelialPlatform.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="314">
-              <caret line="729" column="38" lean-forward="true" selection-start-line="729" selection-start-column="38" selection-end-line="729" selection-end-column="38" />
+            <state relative-caret-position="286">
+              <caret line="7803" column="61" selection-start-line="7803" selection-start-column="61" selection-end-line="7803" selection-end-column="61" />
               <folding>
                 <element signature="e#321#12035#0" />
                 <element signature="e#12052#12060#0" />
                 <element signature="e#19943#19953#0" />
                 <element signature="e#26483#26493#0" />
+                <element signature="e#16034#16245#0" />
+                <element signature="e#17212#18369#0" />
+                <element signature="e#22283#22728#0" />
+                <element signature="e#22773#23729#0" />
+                <element signature="e#23780#23790#0" />
+                <element signature="e#23992#24188#0" />
+                <element signature="e#24272#25689#0" />
+                <element signature="e#25745#26712#0" />
+                <element signature="e#26823#197499#0" />
+                <element signature="e#197639#204589#0" />
+                <element signature="e#204686#209670#0" />
+                <element signature="e#209706#223751#0" />
+                <element signature="e#223796#223855#0" />
+                <element signature="e#223985#226704#0" />
+                <element signature="e#226861#230572#0" />
+                <element signature="e#230665#234411#0" />
+                <element signature="e#234516#238439#0" />
+                <element signature="e#238553#242768#0" />
+                <element signature="e#243062#286088#0" />
+                <element signature="e#286147#307332#0" />
+                <element signature="e#307429#311345#0" />
+                <element signature="e#311421#312149#0" />
+                <element signature="e#312250#319576#0" />
+                <element signature="e#319678#320028#0" />
+                <element signature="e#320082#321008#0" />
+                <element signature="e#321046#343001#0" />
+                <element signature="e#343133#345808#0" />
+                <element signature="e#362939#375757#0" />
+                <element signature="e#364195#365434#0" />
+                <element signature="e#365444#366560#0" />
+                <element signature="e#366570#367672#0" />
+                <element signature="e#367682#368803#0" />
+                <element signature="e#368813#370050#0" />
+                <element signature="e#370060#371161#0" />
+                <element signature="e#371171#372291#0" />
+                <element signature="e#372301#373442#0" />
+                <element signature="e#373452#374593#0" />
+                <element signature="e#374603#375751#0" />
+                <element signature="e#375909#379011#0" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/js/epithelial/RadarChart.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="154">
+              <caret line="49" column="45" lean-forward="true" selection-start-line="49" selection-start-column="45" selection-end-line="49" selection-end-column="45" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public/js/epithelial/snippets/epithelial-snippet.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="22">
+              <caret line="1" column="15" selection-start-line="1" selection-start-column="15" selection-end-line="1" selection-end-column="15" />
             </state>
           </provider>
         </entry>
@@ -214,10 +176,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>down</find>
-      <find>download</find>
-      <find>data</find>
-      <find>evt.data</find>
       <find>createWriteStream</find>
       <find>loca</find>
       <find>saveAs</find>
@@ -244,6 +202,10 @@
       <find>bbiOntoEndpoint</find>
       <find>relatedModelEntity</find>
       <find>source_fma</find>
+      <find>source</find>
+      <find>chart</find>
+      <find>legen</find>
+      <find>legend</find>
     </findStrings>
     <replaceStrings>
       <replace>location</replace>
@@ -265,8 +227,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/example/index.js" />
-        <option value="$PROJECT_DIR$/src/js/similarity.js" />
         <option value="$PROJECT_DIR$/src/snippets/readSEDML.html" />
         <option value="$PROJECT_DIR$/src/js/sedmlGraph.js" />
         <option value="$PROJECT_DIR$/src/snippets/home-snippet.html" />
@@ -315,6 +275,8 @@
         <option value="$PROJECT_DIR$/public/js/index.js" />
         <option value="$PROJECT_DIR$/public/js/epithelial/sparqlUtils.js" />
         <option value="$PROJECT_DIR$/public/index.html" />
+        <option value="$PROJECT_DIR$/public/js/epithelial/RadarChart.js" />
+        <option value="$PROJECT_DIR$/public/js/epithelial/snippets/epithelial-snippet.html" />
         <option value="$PROJECT_DIR$/public/js/epithelial/epithelialPlatform.js" />
       </list>
     </option>
@@ -367,12 +329,6 @@
               <item name="model-verification" type="462c0819:PsiDirectoryNode" />
               <item name="public" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="model-verification" type="b2602c69:ProjectViewProjectNode" />
-              <item name="model-verification" type="462c0819:PsiDirectoryNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="css" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -389,7 +345,7 @@
     <property name="js-jscs-nodeInterpreter" value="C:\Program Files\nodejs\node.exe" />
     <property name="js.eslint.eslintPackage" value="C:\WebStormProjects\model-similarity\node_modules\eslint" />
     <property name="jsx.switch.disabled" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../model-discovery-tool" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../radar-plot" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.prettier" value="true" />
@@ -407,10 +363,10 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\WebStormProjects\model-verification\public\js\epithelial" />
       <recent name="C:\WebStormProjects\model-verification\public\libs" />
       <recent name="C:\WebStormProjects\model-verification\public\snippets" />
       <recent name="C:\WebStormProjects\model-verification\public\js\epithelial\snippets" />
-      <recent name="C:\WebStormProjects\model-verification\public\js\epithelial" />
       <recent name="C:\WebStormProjects\model-verification\src\libs" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -496,18 +452,18 @@
       <workItem from="1538024106282" duration="229000" />
       <workItem from="1538091495159" duration="618000" />
       <workItem from="1538348080073" duration="30000" />
-      <workItem from="1538351614507" duration="7538000" />
+      <workItem from="1538351614507" duration="12956000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="411473000" />
+    <option name="totallyTimeSpent" value="416891000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1176" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17702845" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17702845" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -520,7 +476,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="8" sideWeight="0.5015806" side_tool="true" weight="0.30268198" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info anchor="bottom" id="Terminal" order="10" sideWeight="0.49841937" visible="true" weight="0.29721954" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" sideWeight="0.49841937" visible="true" weight="0.29721954" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -533,23 +489,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="1" column="13" selection-start-line="1" selection-start-column="13" selection-end-line="1" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor>
-            <caret column="20" selection-start-column="20" selection-end-column="20" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.eslintrc.json" />
     <entry file="file://$PROJECT_DIR$/src/example/index2.js" />
     <entry file="file://$PROJECT_DIR$/src/example/index.js" />
@@ -701,9 +640,6 @@
     <entry file="file://$PROJECT_DIR$/public/js/epithelial/solutesBouncing.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/js/epithelial/snippets/epithelial-snippet.html">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/snippets/epithelial-snippet.html">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -791,20 +727,10 @@
     <entry file="file://$PROJECT_DIR$/public/libs/d3.v4.min.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/public/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="176">
-          <caret line="8" column="31" selection-start-line="8" selection-start-column="31" selection-end-line="8" selection-end-column="31" />
-          <folding>
-            <element signature="n#footer#0;n#body#0;n#html#0;n#!!top" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/js/epithelial/sparqlUtils.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="264">
-          <caret line="175" column="72" lean-forward="true" selection-start-line="175" selection-start-column="72" selection-end-line="175" selection-end-column="72" />
+          <caret line="175" column="72" selection-start-line="175" selection-start-column="72" selection-end-line="175" selection-end-column="72" />
           <folding>
             <element signature="e#344#2975#0" />
             <element signature="e#2995#5799#0" />
@@ -812,15 +738,89 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="1" column="13" selection-start-line="1" selection-start-column="13" selection-end-line="1" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="18" column="47" selection-start-line="18" selection-start-column="47" selection-end-line="18" selection-end-column="47" />
+          <folding>
+            <element signature="n#header#0;n#body#0;n#html#0;n#!!top" />
+            <element signature="n#footer#0;n#body#0;n#html#0;n#!!top" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/js/epithelial/snippets/epithelial-snippet.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="1" column="15" selection-start-line="1" selection-start-column="15" selection-end-line="1" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/js/epithelial/RadarChart.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="154">
+          <caret line="49" column="45" lean-forward="true" selection-start-line="49" selection-start-column="45" selection-end-line="49" selection-end-column="45" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/public/js/epithelial/epithelialPlatform.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="314">
-          <caret line="729" column="38" lean-forward="true" selection-start-line="729" selection-start-column="38" selection-end-line="729" selection-end-column="38" />
+        <state relative-caret-position="286">
+          <caret line="7803" column="61" selection-start-line="7803" selection-start-column="61" selection-end-line="7803" selection-end-column="61" />
           <folding>
             <element signature="e#321#12035#0" />
             <element signature="e#12052#12060#0" />
             <element signature="e#19943#19953#0" />
             <element signature="e#26483#26493#0" />
+            <element signature="e#16034#16245#0" />
+            <element signature="e#17212#18369#0" />
+            <element signature="e#22283#22728#0" />
+            <element signature="e#22773#23729#0" />
+            <element signature="e#23780#23790#0" />
+            <element signature="e#23992#24188#0" />
+            <element signature="e#24272#25689#0" />
+            <element signature="e#25745#26712#0" />
+            <element signature="e#26823#197499#0" />
+            <element signature="e#197639#204589#0" />
+            <element signature="e#204686#209670#0" />
+            <element signature="e#209706#223751#0" />
+            <element signature="e#223796#223855#0" />
+            <element signature="e#223985#226704#0" />
+            <element signature="e#226861#230572#0" />
+            <element signature="e#230665#234411#0" />
+            <element signature="e#234516#238439#0" />
+            <element signature="e#238553#242768#0" />
+            <element signature="e#243062#286088#0" />
+            <element signature="e#286147#307332#0" />
+            <element signature="e#307429#311345#0" />
+            <element signature="e#311421#312149#0" />
+            <element signature="e#312250#319576#0" />
+            <element signature="e#319678#320028#0" />
+            <element signature="e#320082#321008#0" />
+            <element signature="e#321046#343001#0" />
+            <element signature="e#343133#345808#0" />
+            <element signature="e#362939#375757#0" />
+            <element signature="e#364195#365434#0" />
+            <element signature="e#365444#366560#0" />
+            <element signature="e#366570#367672#0" />
+            <element signature="e#367682#368803#0" />
+            <element signature="e#368813#370050#0" />
+            <element signature="e#370060#371161#0" />
+            <element signature="e#371171#372291#0" />
+            <element signature="e#372301#373442#0" />
+            <element signature="e#373452#374593#0" />
+            <element signature="e#374603#375751#0" />
+            <element signature="e#375909#379011#0" />
           </folding>
         </state>
       </provider>
