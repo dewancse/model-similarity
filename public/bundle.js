@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1009,6 +1009,576 @@ exports.sendEBIPostRequest = sendEBIPostRequest;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+/**
+ * Created by Dewan Sarwar on 5/8/2017.
+ */
+// Show loading icon inside element identified by 'selector'.
+var showLoading = function (selector) {
+    $(selector).html("<div class='text-center'><img src='../src/img/ajax-loader.gif'></div>");
+};
+
+var isExist = function (model, modelEntityList) {
+    // remove duplicate components with same variable and cellml model
+    var indexOfHash = model.search("#"),
+        cellmlModelName = model.slice(0, indexOfHash), // weinstein_1995.cellml
+        componentVariableName = model.slice(indexOfHash + 1), // NHE3.J_NHE3_Na
+        indexOfDot = componentVariableName.indexOf("."),
+        variableName = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
+
+    for (var i = 0; i < modelEntityList.length; i++) {
+        var indexOfHash2 = modelEntityList[i].model_entity.search("#"),
+            cellmlModelName2 = modelEntityList[i].model_entity.slice(0, indexOfHash2), // weinstein_1995.cellml
+            componentVariableName2 = modelEntityList[i].model_entity.slice(indexOfHash2 + 1), // NHE3.J_NHE3_Na
+            indexOfDot2 = componentVariableName2.indexOf("."),
+            variableName2 = componentVariableName2.slice(indexOfDot2 + 1); // J_NHE3_Na
+
+        if (cellmlModelName == cellmlModelName2 && variableName == variableName2) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+var uniqueifySVG = function (es) {
+    var retval = [];
+    es.forEach(function (e) {
+        for (var j = 0; j < retval.length; j++) {
+            if (retval[j].source === e.source && retval[j].target === e.target)
+                return;
+        }
+        retval.push(e);
+    });
+    return retval;
+};
+
+var parseModelName = function (modelEntity) {
+    var indexOfHash = modelEntity.search("#"),
+        modelName = modelEntity.slice(0, indexOfHash);
+
+    return modelName;
+};
+
+// split PR_ from protein identifier
+var splitPRFromProtein = function (modelEntity, PID, enteredIndex) {
+    var enteredPrId, proteinID, indexOfPR;
+    for (var i = 0; i < modelEntity.length; i++) {
+        if (modelEntity[i].protein == "") {
+            modelEntity[i].scoreEBI = "epithelial cell";
+        }
+        else {
+            indexOfPR = modelEntity[i].protein.search("PR_");
+            proteinID = modelEntity[i].protein.slice(indexOfPR + 3, modelEntity[i].protein.length);
+
+            PID.push(proteinID);
+        }
+
+        if (i == enteredIndex)
+            enteredPrId = proteinID;
+    }
+
+    return enteredPrId;
+};
+
+// split PR_ from protein identifier
+var splitPR = function (proteinURI) {
+    var indexOfPR = proteinURI.search("PR_");
+    return proteinURI.slice(indexOfPR + 3, proteinURI.length);
+};
+
+// process EBI similarity matrix
+var similarityMatrixEBI = function (identityMatrix, PID, enteredPrID, modelEntity) {
+    // console.log("Identity Matrix: ", identityMatrix);
+
+    var indexOfColon = identityMatrix.search("1:"), m, n, i, j;
+
+    // console.log("index1stBar: ", identityMatrix.slice(indexOfColon - 1, identityMatrix.length));
+    identityMatrix = identityMatrix.slice(indexOfColon - 1, identityMatrix.length);
+
+    // console.log("New Identity Matrix: ", identityMatrix);
+
+    var matrixArray = identityMatrix.match(/[(\w\:)*\d\.]+/gi),
+        proteinIndex = [],
+        twoDMatrix = [];
+
+    // console.log("matrixArray: ", matrixArray);
+
+    for (i = 0; i < matrixArray.length; i = i + PID.length + 3) // +3 for digit:, PID, and Genes and Species
+        matrixArray.splice(i, 1);
+
+    for (i = 0; i < matrixArray.length; i = i + PID.length + 2) // +2 for PID and Genes and Species
+        matrixArray.splice(i, 1);
+
+    for (i = 1; i < matrixArray.length; i = i + PID.length + 1) // +1 for PID
+        matrixArray.splice(i, 1);
+
+    // console.log("matrixArray: ", matrixArray);
+
+    for (i = 0; i < matrixArray.length; i++) {
+        if (matrixArray[i].charAt(0).match(/[A-Za-z]/gi)) {
+            proteinIndex.push([matrixArray[i], i]);
+        }
+    }
+
+    // console.log("proteinIndex: ", proteinIndex);
+
+    // 1D to 2D array
+    while (matrixArray.length) {
+        matrixArray.splice(0, 1); // remove protein ID
+        twoDMatrix.push(matrixArray.splice(0, proteinIndex.length));
+    }
+
+    for (i = 0; i < twoDMatrix.length; i++) {
+        for (j = 0; j < twoDMatrix[i].length; j++) {
+            twoDMatrix[i][j] = parseFloat(twoDMatrix[i][j]);
+        }
+    }
+
+    // console.log("twoDMatrix: ", twoDMatrix);
+
+    var similarityOBJ = [];
+    for (i = 0; i < twoDMatrix.length; i++) {
+        for (j = 0; j < twoDMatrix.length; j++) {
+            if (i == j || j < i) continue;
+
+            similarityOBJ.push({
+                "PID1": proteinIndex[i][0],
+                "PID2": proteinIndex[j][0],
+                "similarity": twoDMatrix[i][j]
+            })
+        }
+    }
+
+    console.log("similarityOBJ: ", similarityOBJ);
+    console.log("enteredPrID: ", enteredPrID);
+
+    // length is empty when 100% matching
+    // appended a 0 bit after its protein id and make a comparision
+    if (similarityOBJ.length != 0) {
+        for (m = 0; m < modelEntity.length; m++) {
+
+            if (modelEntity[m].protein == "") continue;
+
+            if (splitPR(modelEntity[m].protein) == enteredPrID)
+                modelEntity[m].scoreEBI = 100;
+
+            for (n = 0; n < similarityOBJ.length; n++) {
+                if ((splitPR(modelEntity[m].protein) == similarityOBJ[n].PID1 && enteredPrID == similarityOBJ[n].PID2) ||
+                    (splitPR(modelEntity[m].protein) == similarityOBJ[n].PID2 && enteredPrID == similarityOBJ[n].PID1)) {
+                    modelEntity[m].scoreEBI = similarityOBJ[n].similarity;
+                }
+            }
+        }
+    }
+};
+
+function d3CheckBox() {
+
+    var size = 20,
+        x = 0,
+        y = 0,
+        rx = 0,
+        ry = 0,
+        markStrokeWidth = 2,
+        boxStrokeWidth = 2,
+        checked = false,
+        clickEvent,
+        xtext = 0,
+        ytext = 0,
+        text = "Empty";
+
+    function checkBox(selection) {
+        var g = selection.append("g"),
+            box = g.append("rect")
+                .attr("width", size)
+                .attr("height", size)
+                .attr("x", x)
+                .attr("y", y)
+                .attr("rx", rx)
+                .attr("ry", ry)
+                .styles({
+                    "fill-opacity": 0,
+                    "stroke-width": boxStrokeWidth,
+                    "stroke": "black"
+                }),
+            txt = g.append("text").attr("x", xtext).attr("y", ytext).text("" + text + "");
+
+        //Data to represent the check mark
+        var coordinates = [
+            {x: x + (size / 8), y: y + (size / 3)},
+            {x: x + (size / 2.2), y: (y + size) - (size / 4)},
+            {x: (x + size) - (size / 8), y: (y + (size / 10))}
+        ];
+
+        var line = d3.line()
+            .x(function (d) {
+                return d.x;
+            })
+            .y(function (d) {
+                return d.y;
+            });
+
+        var mark = g.append("path")
+            .attr("d", line(coordinates))
+            .styles({
+                "stroke-width": markStrokeWidth,
+                "stroke": "black",
+                "fill": "none",
+                "opacity": (checked) ? 1 : 0
+            });
+
+        g.on("click", function () {
+            checked = !checked;
+            mark.style("opacity", (checked) ? 1 : 0);
+
+            if (clickEvent) {
+                clickEvent();
+            }
+
+            d3.event.stopPropagation();
+        });
+    }
+
+    checkBox.size = function (val) {
+        size = val;
+        return checkBox;
+    };
+
+    checkBox.x = function (val) {
+        x = val;
+        return checkBox;
+    };
+
+    checkBox.y = function (val) {
+        y = val;
+        return checkBox;
+    };
+
+    checkBox.rx = function (val) {
+        rx = val;
+        return checkBox;
+    };
+
+    checkBox.ry = function (val) {
+        ry = val;
+        return checkBox;
+    };
+
+    checkBox.markStrokeWidth = function (val) {
+        markStrokeWidth = val;
+        return checkBox;
+    };
+
+    checkBox.boxStrokeWidth = function (val) {
+        boxStrokeWidth = val;
+        return checkBox;
+    };
+
+    checkBox.checked = function (val) {
+        if (val === undefined) {
+            return checked;
+        } else {
+            checked = val;
+            return checkBox;
+        }
+    };
+
+    checkBox.clickEvent = function (val) {
+        clickEvent = val;
+        return checkBox;
+    };
+
+    checkBox.xtext = function (val) {
+        xtext = val;
+        return checkBox;
+    };
+
+    checkBox.ytext = function (val) {
+        ytext = val;
+        return checkBox;
+    };
+
+    checkBox.text = function (val) {
+        text = val;
+        return checkBox;
+    };
+
+    return checkBox;
+}
+
+var minMax = function (tempArray) {
+    var min, max;
+    for (var i = 0; i < tempArray.length; i++) {
+        if (i == 0)
+            min = tempArray[i];
+        else if (tempArray[i] <= min)
+            min = tempArray[i];
+
+        if (i == 0)
+            max = tempArray[i];
+        else if (tempArray[i] >= max)
+            max = tempArray[i];
+    }
+
+    return [min, max];
+}
+
+// compare component and varible name of two model entities
+var isExistProtocolElem = function (element, element2) {
+    // remove duplicate components with same variable and cellml model
+    var indexOfHash = element.search("#"),
+        cellmlModelName = element.slice(0, indexOfHash), // weinstein_1995.cellml
+        componentVariableName = element.slice(indexOfHash + 1), // NHE3.J_NHE3_Na
+        indexOfDot = componentVariableName.indexOf("."),
+        variableName = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
+
+    var indexOfHash2 = element2.search("#"),
+        cellmlModelName2 = element2.slice(0, indexOfHash2), // weinstein_1995.cellml
+        componentVariableName2 = element2.slice(indexOfHash2 + 1), // NHE3.J_NHE3_Na
+        indexOfDot2 = componentVariableName2.indexOf("."),
+        variableName2 = componentVariableName2.slice(indexOfDot2 + 1); // J_NHE3_Na
+
+    if (cellmlModelName == cellmlModelName2 && variableName == variableName2) {
+        return true;
+    }
+
+    return false;
+};
+
+var tempModelHelper = function (tempOBJ, templistOfModel) {
+    var icounter = 0;
+    for (var i = 0; i < templistOfModel.length; i++) {
+        tempOBJ.push({model: templistOfModel[i], alias: []});
+        for (var j = i + 1; j < templistOfModel.length; j++) {
+            if (isExistProtocolElem(templistOfModel[i], templistOfModel[j])) {
+                icounter++;
+                tempOBJ[tempOBJ.length - 1].alias.push(templistOfModel[j]);
+            }
+        }
+
+        if (icounter > 0) {
+            i = i + icounter;
+            icounter = 0;
+        }
+    }
+
+    // return tempOBJ;
+}
+
+var isModelExist = function (modelEntity, cellmlModels) {
+    var cellmlModelEntityName = modelEntity.slice(0, modelEntity.indexOf("#"));
+
+    console.log(cellmlModelEntityName);
+
+    for (var i = 0; i < cellmlModels.length; i++) {
+        var cellmlModelName = cellmlModels[i].model.slice(0, cellmlModels[i].model.indexOf("#"));
+
+        if (cellmlModelEntityName == cellmlModelName)
+            return true;
+    }
+
+    return false;
+}
+
+exports.showLoading = showLoading;
+exports.isExist = isExist;
+exports.uniqueifySVG = uniqueifySVG;
+exports.parseModelName = parseModelName;
+exports.similarityMatrixEBI = similarityMatrixEBI;
+exports.splitPRFromProtein = splitPRFromProtein;
+exports.d3CheckBox = d3CheckBox;
+exports.minMax = minMax;
+exports.tempModelHelper = tempModelHelper;
+exports.isModelExist = isModelExist;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+/**
+ * Created by Dewan Sarwar on 14/01/2018.
+ */
+var cors_api_url = "https://cors-anywhere.herokuapp.com/";
+var endpoint = cors_api_url + "https://models.physiomeproject.org/pmr2_virtuoso_search";
+
+var ebiOntoEndpoint = "https://www.ebi.ac.uk/ols/api/ontologies";
+var abiOntoEndpoint = "http://ontology.cer.auckland.ac.nz/ols-boot/api/ontologies";
+
+var homeHtml = "./snippets/home-snippet.html";
+var searchHtml = "./snippets/search-snippet.html";
+var similarityHtml = "./snippets/similarity-snippet.html";
+var drawSEDMLHtml = "./snippets/drawSEDML-snippet.html";
+
+var sodium = "http://purl.obolibrary.org/obo/CHEBI_29101";
+var potassium = "http://purl.obolibrary.org/obo/CHEBI_29103";
+var chloride = "http://purl.obolibrary.org/obo/CHEBI_17996";
+var luminalID = "http://purl.obolibrary.org/obo/FMA_74550";
+var cytosolID = "http://purl.obolibrary.org/obo/FMA_66836";
+var interstitialID = "http://purl.obolibrary.org/obo/FMA_9673";
+var apicalID = "http://purl.obolibrary.org/obo/FMA_84666";
+var basolateralID = "http://purl.obolibrary.org/obo/FMA_84669";
+
+var partOfCHEBIUri = "http://purl.obolibrary.org/obo/CHEBI";
+var partOfFMAUri = "http://purl.obolibrary.org/obo/FMA";
+
+var opbTime = "http://identifiers.org/opb/OPB_01023";
+
+// Definition of protocols
+var sedmlWorkspaceName = cors_api_url + "https://models.physiomeproject.org/workspace/267/rawfile/HEAD/weinstein_1995.sedml";
+
+var sparqlOBJ = {
+    protocol1Concentration: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+    "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
+    "PREFIX dcterms: <http://purl.org/dc/terms/>" +
+    "SELECT ?modelEntity " +
+    "WHERE { " +
+    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+    "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
+    "?model_prop semsim:physicalPropertyOf ?source_entity. " +
+    "?source_entity ro:part_of ?source_part_of_entity. " +
+    "?source_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_74550>. " +
+    "?source_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_29101>. " +
+    "}",
+    protocol1Time: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+    "SELECT ?modelEntity " +
+    "WHERE { " +
+    "?modelEntity semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_01023>. " +
+    "}",
+    protocol2Currrent: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+    "SELECT ?modelEntity " +
+    "WHERE { " +
+    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+    "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00318>. " +
+    "?model_prop semsim:physicalPropertyOf ?model_proc. " +
+    "?model_proc semsim:hasMediatorParticipant ?model_medparticipant. " +
+    "?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. " +
+    "?med_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84666>. " +
+    "}",
+    protocol2Potential: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+    "SELECT ?modelEntity " +
+    "WHERE { " +
+    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+    "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00506>. " +
+    "?model_prop semsim:physicalPropertyOf ?entity. " +
+    "?entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84666>. " +
+    "}",
+    protocol3Flux: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+    "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
+    "PREFIX dcterms: <http://purl.org/dc/terms/>" +
+    "SELECT ?modelEntity " +
+    "WHERE { " +
+    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+    "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00593>. " +
+    "?model_prop semsim:physicalPropertyOf ?model_proc. " +
+    "?model_proc semsim:hasSourceParticipant ?model_srcparticipant. " +
+    "?model_srcparticipant semsim:hasPhysicalEntityReference ?source_entity. " +
+    "?source_entity ro:part_of ?source_part_of_entity. " +
+    "?source_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_74550>. " +
+    "?source_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_29101>. " +
+    "?model_proc semsim:hasSinkParticipant ?model_sinkparticipant. " +
+    "?model_sinkparticipant semsim:hasPhysicalEntityReference ?sink_entity. " +
+    "?sink_entity ro:part_of ?sink_part_of_entity. " +
+    "?sink_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_66836>. " +
+    "?model_proc semsim:hasMediatorParticipant ?model_medparticipant. " +
+    "?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. " +
+    "?med_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84666>. " +
+    "}",
+    protocol4Concentration: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+    "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
+    "PREFIX dcterms: <http://purl.org/dc/terms/>" +
+    "SELECT ?modelEntity " +
+    "WHERE { " +
+    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+    "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
+    "?model_prop semsim:physicalPropertyOf ?source_entity. " +
+    "?source_entity ro:part_of ?source_part_of_entity. " +
+    "?source_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_74550>. " +
+    "?source_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_28938>. " +
+    "}",
+    protocol2AConcentration: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+    "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
+    "PREFIX dcterms: <http://purl.org/dc/terms/>" +
+    "SELECT ?modelEntity " +
+    "WHERE { " +
+    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+    "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
+    "?model_prop semsim:physicalPropertyOf ?source_entity. " +
+    "?source_entity ro:part_of ?source_part_of_entity. " +
+    "?source_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_74550>. " +
+    "?source_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_15378>. " +
+    "}"
+}
+
+var concentrationOPB = function () {
+    var query = 'PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> ' +
+        'PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> ' +
+        'SELECT DISTINCT ?g ?model_entity ?chebi ?fma ' +
+        'WHERE { GRAPH ?g { ' +
+        '?property semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. ' +
+        '?model_entity semsim:isComputationalComponentFor ?property. ' +
+        '?property semsim:physicalPropertyOf ?entity. ' +
+        '?entity semsim:hasPhysicalDefinition ?chebi. ' +
+        '?entity ro:part_of ?entity2. ' +
+        '?entity2 semsim:hasPhysicalDefinition ?fma. ' +
+        '}}';
+
+    return query;
+};
+
+var fluxOPB = function () {
+    var query = 'PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> ' +
+        'PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> ' +
+        'SELECT DISTINCT ?g ?model_entity ?sourceCHEBI ?sourceFMA ?sinkFMA ?mediatorFMA ' +
+        'WHERE { GRAPH ?g { ' +
+        '?property semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00593>. ' +
+        '?model_entity semsim:isComputationalComponentFor ?property. ' +
+        '?property semsim:physicalPropertyOf ?process. ' +
+        '?process semsim:hasSourceParticipant ?source. ' +
+        '?process semsim:hasSinkParticipant ?sink. ' +
+        '?process semsim:hasMediatorParticipant ?mediator. ' +
+        '?source semsim:hasPhysicalEntityReference ?entitySRC. ' +
+        '?entitySRC semsim:hasPhysicalDefinition ?sourceCHEBI. ' +
+        '?source semsim:hasPhysicalEntityReference ?entitySRC. ' +
+        '?entitySRC ro:part_of ?entity11. ' +
+        '?entity11 semsim:hasPhysicalDefinition ?sourceFMA. ' +
+        '?sink semsim:hasPhysicalEntityReference ?entityDST. ' +
+        '?entityDST ro:part_of ?entity22. ' +
+        '?entity22 semsim:hasPhysicalDefinition ?sinkFMA. ' +
+        '?mediator semsim:hasPhysicalEntityReference ?entityMED. ' +
+        '?entityMED semsim:hasPhysicalDefinition ?mediatorFMA. ' +
+        '}}';
+
+    return query;
+};
+
+exports.concentrationOPB = concentrationOPB;
+exports.fluxOPB = fluxOPB;
+exports.apicalID = apicalID;
+exports.basolateralID = basolateralID;
+exports.partOfCHEBIUri = partOfCHEBIUri;
+exports.luminalID = luminalID;
+exports.cytosolID = cytosolID;
+exports.interstitialID = interstitialID;
+exports.partOfFMAUri = partOfFMAUri;
+exports.endpoint = endpoint;
+exports.ebiOntoEndpoint = ebiOntoEndpoint;
+exports.abiOntoEndpoint = abiOntoEndpoint;
+exports.sodium = sodium;
+exports.potassium = potassium;
+exports.chloride = chloride;
+exports.homeHtml = homeHtml;
+exports.searchHtml = searchHtml;
+exports.similarityHtml = similarityHtml;
+exports.drawSEDMLHtml = drawSEDMLHtml;
+exports.opbTime = opbTime;
+exports.sedmlWorkspaceName = sedmlWorkspaceName;
+exports.sparqlOBJ = sparqlOBJ;
+exports.cors_api_url = cors_api_url;
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -1016,8 +1586,8 @@ exports.sendEBIPostRequest = sendEBIPostRequest;
  * Created by dsar941 on 6/2/2018.
  */
 var ajaxUtils = __webpack_require__(1);
-var miscellaneous = __webpack_require__(3);
-var sparqlUtils = __webpack_require__(4);
+var miscellaneous = __webpack_require__(2);
+var sparqlUtils = __webpack_require__(3);
 var similarity = __webpack_require__(5);
 var epithelialsparqlUtils = __webpack_require__(0);
 var epithelialplatform = __webpack_require__(6);
@@ -2873,576 +3443,6 @@ var modelSimilarity = (function (global) {
 })(window);
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-/**
- * Created by Dewan Sarwar on 5/8/2017.
- */
-// Show loading icon inside element identified by 'selector'.
-var showLoading = function (selector) {
-    $(selector).html("<div class='text-center'><img src='../src/img/ajax-loader.gif'></div>");
-};
-
-var isExist = function (model, modelEntityList) {
-    // remove duplicate components with same variable and cellml model
-    var indexOfHash = model.search("#"),
-        cellmlModelName = model.slice(0, indexOfHash), // weinstein_1995.cellml
-        componentVariableName = model.slice(indexOfHash + 1), // NHE3.J_NHE3_Na
-        indexOfDot = componentVariableName.indexOf("."),
-        variableName = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
-
-    for (var i = 0; i < modelEntityList.length; i++) {
-        var indexOfHash2 = modelEntityList[i].model_entity.search("#"),
-            cellmlModelName2 = modelEntityList[i].model_entity.slice(0, indexOfHash2), // weinstein_1995.cellml
-            componentVariableName2 = modelEntityList[i].model_entity.slice(indexOfHash2 + 1), // NHE3.J_NHE3_Na
-            indexOfDot2 = componentVariableName2.indexOf("."),
-            variableName2 = componentVariableName2.slice(indexOfDot2 + 1); // J_NHE3_Na
-
-        if (cellmlModelName == cellmlModelName2 && variableName == variableName2) {
-            return true;
-        }
-    }
-
-    return false;
-};
-
-var uniqueifySVG = function (es) {
-    var retval = [];
-    es.forEach(function (e) {
-        for (var j = 0; j < retval.length; j++) {
-            if (retval[j].source === e.source && retval[j].target === e.target)
-                return;
-        }
-        retval.push(e);
-    });
-    return retval;
-};
-
-var parseModelName = function (modelEntity) {
-    var indexOfHash = modelEntity.search("#"),
-        modelName = modelEntity.slice(0, indexOfHash);
-
-    return modelName;
-};
-
-// split PR_ from protein identifier
-var splitPRFromProtein = function (modelEntity, PID, enteredIndex) {
-    var enteredPrId, proteinID, indexOfPR;
-    for (var i = 0; i < modelEntity.length; i++) {
-        if (modelEntity[i].protein == "") {
-            modelEntity[i].scoreEBI = "epithelial cell";
-        }
-        else {
-            indexOfPR = modelEntity[i].protein.search("PR_");
-            proteinID = modelEntity[i].protein.slice(indexOfPR + 3, modelEntity[i].protein.length);
-
-            PID.push(proteinID);
-        }
-
-        if (i == enteredIndex)
-            enteredPrId = proteinID;
-    }
-
-    return enteredPrId;
-};
-
-// split PR_ from protein identifier
-var splitPR = function (proteinURI) {
-    var indexOfPR = proteinURI.search("PR_");
-    return proteinURI.slice(indexOfPR + 3, proteinURI.length);
-};
-
-// process EBI similarity matrix
-var similarityMatrixEBI = function (identityMatrix, PID, enteredPrID, modelEntity) {
-    // console.log("Identity Matrix: ", identityMatrix);
-
-    var indexOfColon = identityMatrix.search("1:"), m, n, i, j;
-
-    // console.log("index1stBar: ", identityMatrix.slice(indexOfColon - 1, identityMatrix.length));
-    identityMatrix = identityMatrix.slice(indexOfColon - 1, identityMatrix.length);
-
-    // console.log("New Identity Matrix: ", identityMatrix);
-
-    var matrixArray = identityMatrix.match(/[(\w\:)*\d\.]+/gi),
-        proteinIndex = [],
-        twoDMatrix = [];
-
-    // console.log("matrixArray: ", matrixArray);
-
-    for (i = 0; i < matrixArray.length; i = i + PID.length + 3) // +3 for digit:, PID, and Genes and Species
-        matrixArray.splice(i, 1);
-
-    for (i = 0; i < matrixArray.length; i = i + PID.length + 2) // +2 for PID and Genes and Species
-        matrixArray.splice(i, 1);
-
-    for (i = 1; i < matrixArray.length; i = i + PID.length + 1) // +1 for PID
-        matrixArray.splice(i, 1);
-
-    // console.log("matrixArray: ", matrixArray);
-
-    for (i = 0; i < matrixArray.length; i++) {
-        if (matrixArray[i].charAt(0).match(/[A-Za-z]/gi)) {
-            proteinIndex.push([matrixArray[i], i]);
-        }
-    }
-
-    // console.log("proteinIndex: ", proteinIndex);
-
-    // 1D to 2D array
-    while (matrixArray.length) {
-        matrixArray.splice(0, 1); // remove protein ID
-        twoDMatrix.push(matrixArray.splice(0, proteinIndex.length));
-    }
-
-    for (i = 0; i < twoDMatrix.length; i++) {
-        for (j = 0; j < twoDMatrix[i].length; j++) {
-            twoDMatrix[i][j] = parseFloat(twoDMatrix[i][j]);
-        }
-    }
-
-    // console.log("twoDMatrix: ", twoDMatrix);
-
-    var similarityOBJ = [];
-    for (i = 0; i < twoDMatrix.length; i++) {
-        for (j = 0; j < twoDMatrix.length; j++) {
-            if (i == j || j < i) continue;
-
-            similarityOBJ.push({
-                "PID1": proteinIndex[i][0],
-                "PID2": proteinIndex[j][0],
-                "similarity": twoDMatrix[i][j]
-            })
-        }
-    }
-
-    console.log("similarityOBJ: ", similarityOBJ);
-    console.log("enteredPrID: ", enteredPrID);
-
-    // length is empty when 100% matching
-    // appended a 0 bit after its protein id and make a comparision
-    if (similarityOBJ.length != 0) {
-        for (m = 0; m < modelEntity.length; m++) {
-
-            if (modelEntity[m].protein == "") continue;
-
-            if (splitPR(modelEntity[m].protein) == enteredPrID)
-                modelEntity[m].scoreEBI = 100;
-
-            for (n = 0; n < similarityOBJ.length; n++) {
-                if ((splitPR(modelEntity[m].protein) == similarityOBJ[n].PID1 && enteredPrID == similarityOBJ[n].PID2) ||
-                    (splitPR(modelEntity[m].protein) == similarityOBJ[n].PID2 && enteredPrID == similarityOBJ[n].PID1)) {
-                    modelEntity[m].scoreEBI = similarityOBJ[n].similarity;
-                }
-            }
-        }
-    }
-};
-
-function d3CheckBox() {
-
-    var size = 20,
-        x = 0,
-        y = 0,
-        rx = 0,
-        ry = 0,
-        markStrokeWidth = 2,
-        boxStrokeWidth = 2,
-        checked = false,
-        clickEvent,
-        xtext = 0,
-        ytext = 0,
-        text = "Empty";
-
-    function checkBox(selection) {
-        var g = selection.append("g"),
-            box = g.append("rect")
-                .attr("width", size)
-                .attr("height", size)
-                .attr("x", x)
-                .attr("y", y)
-                .attr("rx", rx)
-                .attr("ry", ry)
-                .styles({
-                    "fill-opacity": 0,
-                    "stroke-width": boxStrokeWidth,
-                    "stroke": "black"
-                }),
-            txt = g.append("text").attr("x", xtext).attr("y", ytext).text("" + text + "");
-
-        //Data to represent the check mark
-        var coordinates = [
-            {x: x + (size / 8), y: y + (size / 3)},
-            {x: x + (size / 2.2), y: (y + size) - (size / 4)},
-            {x: (x + size) - (size / 8), y: (y + (size / 10))}
-        ];
-
-        var line = d3.line()
-            .x(function (d) {
-                return d.x;
-            })
-            .y(function (d) {
-                return d.y;
-            });
-
-        var mark = g.append("path")
-            .attr("d", line(coordinates))
-            .styles({
-                "stroke-width": markStrokeWidth,
-                "stroke": "black",
-                "fill": "none",
-                "opacity": (checked) ? 1 : 0
-            });
-
-        g.on("click", function () {
-            checked = !checked;
-            mark.style("opacity", (checked) ? 1 : 0);
-
-            if (clickEvent) {
-                clickEvent();
-            }
-
-            d3.event.stopPropagation();
-        });
-    }
-
-    checkBox.size = function (val) {
-        size = val;
-        return checkBox;
-    };
-
-    checkBox.x = function (val) {
-        x = val;
-        return checkBox;
-    };
-
-    checkBox.y = function (val) {
-        y = val;
-        return checkBox;
-    };
-
-    checkBox.rx = function (val) {
-        rx = val;
-        return checkBox;
-    };
-
-    checkBox.ry = function (val) {
-        ry = val;
-        return checkBox;
-    };
-
-    checkBox.markStrokeWidth = function (val) {
-        markStrokeWidth = val;
-        return checkBox;
-    };
-
-    checkBox.boxStrokeWidth = function (val) {
-        boxStrokeWidth = val;
-        return checkBox;
-    };
-
-    checkBox.checked = function (val) {
-        if (val === undefined) {
-            return checked;
-        } else {
-            checked = val;
-            return checkBox;
-        }
-    };
-
-    checkBox.clickEvent = function (val) {
-        clickEvent = val;
-        return checkBox;
-    };
-
-    checkBox.xtext = function (val) {
-        xtext = val;
-        return checkBox;
-    };
-
-    checkBox.ytext = function (val) {
-        ytext = val;
-        return checkBox;
-    };
-
-    checkBox.text = function (val) {
-        text = val;
-        return checkBox;
-    };
-
-    return checkBox;
-}
-
-var minMax = function (tempArray) {
-    var min, max;
-    for (var i = 0; i < tempArray.length; i++) {
-        if (i == 0)
-            min = tempArray[i];
-        else if (tempArray[i] <= min)
-            min = tempArray[i];
-
-        if (i == 0)
-            max = tempArray[i];
-        else if (tempArray[i] >= max)
-            max = tempArray[i];
-    }
-
-    return [min, max];
-}
-
-// compare component and varible name of two model entities
-var isExistProtocolElem = function (element, element2) {
-    // remove duplicate components with same variable and cellml model
-    var indexOfHash = element.search("#"),
-        cellmlModelName = element.slice(0, indexOfHash), // weinstein_1995.cellml
-        componentVariableName = element.slice(indexOfHash + 1), // NHE3.J_NHE3_Na
-        indexOfDot = componentVariableName.indexOf("."),
-        variableName = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
-
-    var indexOfHash2 = element2.search("#"),
-        cellmlModelName2 = element2.slice(0, indexOfHash2), // weinstein_1995.cellml
-        componentVariableName2 = element2.slice(indexOfHash2 + 1), // NHE3.J_NHE3_Na
-        indexOfDot2 = componentVariableName2.indexOf("."),
-        variableName2 = componentVariableName2.slice(indexOfDot2 + 1); // J_NHE3_Na
-
-    if (cellmlModelName == cellmlModelName2 && variableName == variableName2) {
-        return true;
-    }
-
-    return false;
-};
-
-var tempModelHelper = function (tempOBJ, templistOfModel) {
-    var icounter = 0;
-    for (var i = 0; i < templistOfModel.length; i++) {
-        tempOBJ.push({model: templistOfModel[i], alias: []});
-        for (var j = i + 1; j < templistOfModel.length; j++) {
-            if (isExistProtocolElem(templistOfModel[i], templistOfModel[j])) {
-                icounter++;
-                tempOBJ[tempOBJ.length - 1].alias.push(templistOfModel[j]);
-            }
-        }
-
-        if (icounter > 0) {
-            i = i + icounter;
-            icounter = 0;
-        }
-    }
-
-    // return tempOBJ;
-}
-
-var isModelExist = function (modelEntity, cellmlModels) {
-    var cellmlModelEntityName = modelEntity.slice(0, modelEntity.indexOf("#"));
-
-    console.log(cellmlModelEntityName);
-
-    for (var i = 0; i < cellmlModels.length; i++) {
-        var cellmlModelName = cellmlModels[i].model.slice(0, cellmlModels[i].model.indexOf("#"));
-
-        if (cellmlModelEntityName == cellmlModelName)
-            return true;
-    }
-
-    return false;
-}
-
-exports.showLoading = showLoading;
-exports.isExist = isExist;
-exports.uniqueifySVG = uniqueifySVG;
-exports.parseModelName = parseModelName;
-exports.similarityMatrixEBI = similarityMatrixEBI;
-exports.splitPRFromProtein = splitPRFromProtein;
-exports.d3CheckBox = d3CheckBox;
-exports.minMax = minMax;
-exports.tempModelHelper = tempModelHelper;
-exports.isModelExist = isModelExist;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-/**
- * Created by Dewan Sarwar on 14/01/2018.
- */
-var cors_api_url = "https://cors-anywhere.herokuapp.com/";
-var endpoint = cors_api_url + "https://models.physiomeproject.org/pmr2_virtuoso_search";
-
-var ebiOntoEndpoint = "https://www.ebi.ac.uk/ols/api/ontologies";
-var abiOntoEndpoint = "http://ontology.cer.auckland.ac.nz/ols-boot/api/ontologies";
-
-var homeHtml = "./snippets/home-snippet.html";
-var searchHtml = "./snippets/search-snippet.html";
-var similarityHtml = "./snippets/similarity-snippet.html";
-var drawSEDMLHtml = "./snippets/drawSEDML-snippet.html";
-
-var sodium = "http://purl.obolibrary.org/obo/CHEBI_29101";
-var potassium = "http://purl.obolibrary.org/obo/CHEBI_29103";
-var chloride = "http://purl.obolibrary.org/obo/CHEBI_17996";
-var luminalID = "http://purl.obolibrary.org/obo/FMA_74550";
-var cytosolID = "http://purl.obolibrary.org/obo/FMA_66836";
-var interstitialID = "http://purl.obolibrary.org/obo/FMA_9673";
-var apicalID = "http://purl.obolibrary.org/obo/FMA_84666";
-var basolateralID = "http://purl.obolibrary.org/obo/FMA_84669";
-
-var partOfCHEBIUri = "http://purl.obolibrary.org/obo/CHEBI";
-var partOfFMAUri = "http://purl.obolibrary.org/obo/FMA";
-
-var opbTime = "http://identifiers.org/opb/OPB_01023";
-
-// Definition of protocols
-var sedmlWorkspaceName = cors_api_url + "https://models.physiomeproject.org/workspace/267/rawfile/HEAD/weinstein_1995.sedml";
-
-var sparqlOBJ = {
-    protocol1Concentration: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
-    "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
-    "PREFIX dcterms: <http://purl.org/dc/terms/>" +
-    "SELECT ?modelEntity " +
-    "WHERE { " +
-    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
-    "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
-    "?model_prop semsim:physicalPropertyOf ?source_entity. " +
-    "?source_entity ro:part_of ?source_part_of_entity. " +
-    "?source_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_74550>. " +
-    "?source_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_29101>. " +
-    "}",
-    protocol1Time: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
-    "SELECT ?modelEntity " +
-    "WHERE { " +
-    "?modelEntity semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_01023>. " +
-    "}",
-    protocol2Currrent: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
-    "SELECT ?modelEntity " +
-    "WHERE { " +
-    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
-    "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00318>. " +
-    "?model_prop semsim:physicalPropertyOf ?model_proc. " +
-    "?model_proc semsim:hasMediatorParticipant ?model_medparticipant. " +
-    "?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. " +
-    "?med_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84666>. " +
-    "}",
-    protocol2Potential: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
-    "SELECT ?modelEntity " +
-    "WHERE { " +
-    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
-    "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00506>. " +
-    "?model_prop semsim:physicalPropertyOf ?entity. " +
-    "?entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84666>. " +
-    "}",
-    protocol3Flux: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
-    "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
-    "PREFIX dcterms: <http://purl.org/dc/terms/>" +
-    "SELECT ?modelEntity " +
-    "WHERE { " +
-    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
-    "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00593>. " +
-    "?model_prop semsim:physicalPropertyOf ?model_proc. " +
-    "?model_proc semsim:hasSourceParticipant ?model_srcparticipant. " +
-    "?model_srcparticipant semsim:hasPhysicalEntityReference ?source_entity. " +
-    "?source_entity ro:part_of ?source_part_of_entity. " +
-    "?source_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_74550>. " +
-    "?source_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_29101>. " +
-    "?model_proc semsim:hasSinkParticipant ?model_sinkparticipant. " +
-    "?model_sinkparticipant semsim:hasPhysicalEntityReference ?sink_entity. " +
-    "?sink_entity ro:part_of ?sink_part_of_entity. " +
-    "?sink_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_66836>. " +
-    "?model_proc semsim:hasMediatorParticipant ?model_medparticipant. " +
-    "?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. " +
-    "?med_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84666>. " +
-    "}",
-    protocol4Concentration: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
-    "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
-    "PREFIX dcterms: <http://purl.org/dc/terms/>" +
-    "SELECT ?modelEntity " +
-    "WHERE { " +
-    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
-    "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
-    "?model_prop semsim:physicalPropertyOf ?source_entity. " +
-    "?source_entity ro:part_of ?source_part_of_entity. " +
-    "?source_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_74550>. " +
-    "?source_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_28938>. " +
-    "}",
-    protocol2AConcentration: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
-    "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>" +
-    "PREFIX dcterms: <http://purl.org/dc/terms/>" +
-    "SELECT ?modelEntity " +
-    "WHERE { " +
-    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
-    "?model_prop semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
-    "?model_prop semsim:physicalPropertyOf ?source_entity. " +
-    "?source_entity ro:part_of ?source_part_of_entity. " +
-    "?source_part_of_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_74550>. " +
-    "?source_entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_15378>. " +
-    "}"
-}
-
-var concentrationOPB = function () {
-    var query = 'PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> ' +
-        'PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> ' +
-        'SELECT DISTINCT ?g ?model_entity ?chebi ?fma ' +
-        'WHERE { GRAPH ?g { ' +
-        '?property semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. ' +
-        '?model_entity semsim:isComputationalComponentFor ?property. ' +
-        '?property semsim:physicalPropertyOf ?entity. ' +
-        '?entity semsim:hasPhysicalDefinition ?chebi. ' +
-        '?entity ro:part_of ?entity2. ' +
-        '?entity2 semsim:hasPhysicalDefinition ?fma. ' +
-        '}}';
-
-    return query;
-};
-
-var fluxOPB = function () {
-    var query = 'PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> ' +
-        'PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> ' +
-        'SELECT DISTINCT ?g ?model_entity ?sourceCHEBI ?sourceFMA ?sinkFMA ?mediatorFMA ' +
-        'WHERE { GRAPH ?g { ' +
-        '?property semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00593>. ' +
-        '?model_entity semsim:isComputationalComponentFor ?property. ' +
-        '?property semsim:physicalPropertyOf ?process. ' +
-        '?process semsim:hasSourceParticipant ?source. ' +
-        '?process semsim:hasSinkParticipant ?sink. ' +
-        '?process semsim:hasMediatorParticipant ?mediator. ' +
-        '?source semsim:hasPhysicalEntityReference ?entitySRC. ' +
-        '?entitySRC semsim:hasPhysicalDefinition ?sourceCHEBI. ' +
-        '?source semsim:hasPhysicalEntityReference ?entitySRC. ' +
-        '?entitySRC ro:part_of ?entity11. ' +
-        '?entity11 semsim:hasPhysicalDefinition ?sourceFMA. ' +
-        '?sink semsim:hasPhysicalEntityReference ?entityDST. ' +
-        '?entityDST ro:part_of ?entity22. ' +
-        '?entity22 semsim:hasPhysicalDefinition ?sinkFMA. ' +
-        '?mediator semsim:hasPhysicalEntityReference ?entityMED. ' +
-        '?entityMED semsim:hasPhysicalDefinition ?mediatorFMA. ' +
-        '}}';
-
-    return query;
-};
-
-exports.concentrationOPB = concentrationOPB;
-exports.fluxOPB = fluxOPB;
-exports.apicalID = apicalID;
-exports.basolateralID = basolateralID;
-exports.partOfCHEBIUri = partOfCHEBIUri;
-exports.luminalID = luminalID;
-exports.cytosolID = cytosolID;
-exports.interstitialID = interstitialID;
-exports.partOfFMAUri = partOfFMAUri;
-exports.endpoint = endpoint;
-exports.ebiOntoEndpoint = ebiOntoEndpoint;
-exports.abiOntoEndpoint = abiOntoEndpoint;
-exports.sodium = sodium;
-exports.potassium = potassium;
-exports.chloride = chloride;
-exports.homeHtml = homeHtml;
-exports.searchHtml = searchHtml;
-exports.similarityHtml = similarityHtml;
-exports.drawSEDMLHtml = drawSEDMLHtml;
-exports.opbTime = opbTime;
-exports.sedmlWorkspaceName = sedmlWorkspaceName;
-exports.sparqlOBJ = sparqlOBJ;
-exports.cors_api_url = cors_api_url;
-
-/***/ }),
 /* 5 */
 /***/ (function(module, exports) {
 
@@ -4003,6 +4003,8 @@ var miscellaneous = __webpack_require__(8);
 var ajaxUtils = __webpack_require__(1);
 var sparqlUtils = __webpack_require__(0);
 var svgPlatform = __webpack_require__(9);
+var sparqlUtilsMain = __webpack_require__(3);
+var miscellaneousMain = __webpack_require__(2);
 
 var combinedMembrane = [
     {
@@ -11437,7 +11439,7 @@ var epithelialPlatform = function () {
         var combinedMembrane = [
             {
                 med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
-                med_pr: "http://purl.obolibrary.org/obo/PR_P55018",
+                med_pr: "http://purl.obolibrary.org/obo/PR_P59158", // PR_P55018 (RAT)
                 med_pr_text: "solute carrier family 12 member 3 (rat)",
                 med_pr_text_syn: "TSC",
                 model_entity: "chang_fujita_b_1999.cellml#total_transepithelial_sodium_flux.J_mc_Na",
@@ -11711,131 +11713,253 @@ var epithelialPlatform = function () {
                 variable_text3: "diffusiveflux"
             }
         ];
-        //Legend titles
-        var LegendOptions = ['chang_fujita_1999', 'chang_fujita_b_1999', 'weinstein_1995', 'mackenzie_1996'];
+        var query = "SELECT ?modelname ?protein " +
+            "WHERE { GRAPH ?workspaceName { ?modelname <http://www.obofoundry.org/ro/ro.owl#modelOf> ?protein . " +
+            "}}";
 
-        //Data
-        var d = [
-            [
-                {axis: combinedMembrane[0].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[1].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[2].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[3].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[4].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[5].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[6].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[7].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[8].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[9].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[10].med_pr_text_syn, value: 0.0}
-            ], [
-                {axis: combinedMembrane[0].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[1].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[2].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[3].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[4].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[5].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[6].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[7].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[8].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[9].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[10].med_pr_text_syn, value: 1.1}
-            ], [
-                {axis: combinedMembrane[0].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[1].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[2].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[3].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[4].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[5].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[6].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[7].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[8].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[9].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[10].med_pr_text_syn, value: 0.0}
-            ], [
-                {axis: combinedMembrane[0].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[1].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[2].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[3].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[4].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[5].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[6].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[7].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[8].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[9].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[10].med_pr_text_syn, value: 0.0}
-            ]
-        ];
+        ajaxUtils.sendPostRequest(
+            sparqlUtils.endpoint,
+            query,
+            function (jsonObj) {
+                console.log("jsonObj: ", jsonObj);
 
-        //Options for the Radar chart, other than default
-        var mycfg = {
-            w: w,
-            h: h,
-            maxValue: 1.1,
-            levels: 11,
-            ExtraWidthX: 300
-        }
+                //Legend titles
+                var LegendOptions = [], LegendOptionsProtein = [];
+                for (var i = 0; i < jsonObj.results.bindings.length; i++) {
+                    var temp = jsonObj.results.bindings[i].modelname.value;
+                    LegendOptions.push(temp.slice(0, temp.indexOf("#")));
+                    LegendOptionsProtein.push(jsonObj.results.bindings[i].protein.value);
+                }
 
-        //Call function to draw the Radar chart
-        //Will expect that data is in %'s
-        RadarChart.draw("#chart", d, mycfg);
+                console.log("LegendOptions: ", LegendOptions);
+                console.log("LegendOptionsProtein: ", LegendOptionsProtein);
 
-        ////////////////////////////////////////////
-        /////////// Initiate legend ////////////////
-        ////////////////////////////////////////////
+                //Legend titles
+                // var LegendOptions = ['chang_fujita_1999', 'chang_fujita_b_1999', 'weinstein_1995', 'mackenzie_1996'];
 
-        var svg = d3.select('#chart')
-            .selectAll('svg')
-            .append('svg')
-            .attr("width", w + 300)
-            .attr("height", h);
+                // Legend Model Entities
+                var modelEntity = [];
+                for (var i = 0; i < LegendOptions.length; i++) {
+                    modelEntity.push(
+                        {
+                            model: LegendOptions[i],
+                            concentration: [],
+                            flux: [],
+                            protein: LegendOptionsProtein[i]
+                        }
+                    );
+                }
 
-        //Create the title for the legend
-        var text = svg.append("text")
-            .attr("class", "title")
-            .attr('transform', 'translate(90,0)')
-            .attr("x", w - 70)
-            .attr("y", 10)
-            .attr("font-size", "12px")
-            .attr("fill", "#404040")
-            .text("Which models match wrt the assembled model");
+                // Find similarities for Legend Model Entities
+                var query = sparqlUtilsMain.concentrationOPB();
+                ajaxUtils.sendPostRequest(
+                    sparqlUtilsMain.endpoint,
+                    query,
+                    function (jsonObjCons) {
 
-        //Initiate Legend
-        var legend = svg.append("g")
-            .attr("class", "legend")
-            .attr("height", 100)
-            .attr("width", 200)
-            .attr('transform', 'translate(90,20)');
+                        console.log("jsonObjCons: ", jsonObjCons);
 
-        //Create colour squares
-        legend.selectAll('rect')
-            .data(LegendOptions)
-            .enter()
-            .append("rect")
-            .attr("x", w - 65)
-            .attr("y", function (d, i) {
-                return i * 20;
-            })
-            .attr("width", 10)
-            .attr("height", 10)
-            .style("fill", function (d, i) {
-                return colorscale(i);
-            });
+                        var query = sparqlUtilsMain.fluxOPB();
+                        ajaxUtils.sendPostRequest(
+                            sparqlUtilsMain.endpoint,
+                            query,
+                            function (jsonObjFlux) {
 
-        //Create text next to squares
-        legend.selectAll('text')
-            .data(LegendOptions)
-            .enter()
-            .append("text")
-            .attr("x", w - 52)
-            .attr("y", function (d, i) {
-                return i * 20 + 9;
-            })
-            .attr("font-size", "11px")
-            .attr("fill", "#737373")
-            .text(function (d) {
-                return d;
-            });
+                                console.log("jsonObjFlux: ", jsonObjFlux);
+
+                                // CHEBI term and anatomical locations for a solute concentration
+                                for (var i in modelEntity) {
+                                    for (var j in jsonObjCons.results.bindings) {
+                                        var indexOfHash = jsonObjCons.results.bindings[j].model_entity.value.search("#"),
+                                            cellmlname = jsonObjCons.results.bindings[j].model_entity.value.slice(0, indexOfHash);
+
+                                        if (modelEntity[i].model == cellmlname) {
+                                            if (!miscellaneousMain.isExist(jsonObjCons.results.bindings[j].model_entity.value, modelEntity[i].concentration)) {
+                                                modelEntity[i].concentration.push({
+                                                    model_entity: jsonObjCons.results.bindings[j].model_entity.value,
+                                                    chebi: jsonObjCons.results.bindings[j].chebi.value,
+                                                    fma: jsonObjCons.results.bindings[j].fma.value
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // CHEBI term and anatomical locations of sources, sinks and mediators
+                                for (var i in modelEntity) {
+                                    for (var j in jsonObjFlux.results.bindings) {
+                                        var indexOfHash = jsonObjFlux.results.bindings[j].model_entity.value.search("#"),
+                                            cellmlname = jsonObjFlux.results.bindings[j].model_entity.value.slice(0, indexOfHash);
+
+                                        if (modelEntity[i].model == cellmlname) {
+                                            // Exceptional: J_Na (TODOs)
+                                            if (!miscellaneousMain.isExist(jsonObjFlux.results.bindings[j].model_entity.value, modelEntity[i].flux)) {
+                                                modelEntity[i].flux.push({
+                                                    model_entity: jsonObjFlux.results.bindings[j].model_entity.value,
+                                                    sourceCHEBI: jsonObjFlux.results.bindings[j].sourceCHEBI.value,
+                                                    sourceFMA: jsonObjFlux.results.bindings[j].sourceFMA.value,
+                                                    sinkFMA: jsonObjFlux.results.bindings[j].sinkFMA.value,
+                                                    mediatorFMA: jsonObjFlux.results.bindings[j].mediatorFMA.value
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+
+                                console.log("Legend modelEntity: ", modelEntity);
+
+                                // Combined Membrane Model Entities
+                                var combinedMembraneModelEntity = [];
+                                for (var i = 0; i < combinedMembrane.length; i++) {
+                                    var status = 0;
+                                    for (var j = 0; j < modelEntity.length; j++) {
+                                        if (combinedMembrane[i].med_pr == modelEntity[j].protein) {
+                                            combinedMembraneModelEntity.push({model: modelEntity[j].model});
+                                            status = 1;
+                                            break;
+                                        }
+                                    }
+
+                                    if (status == 0) {
+                                        combinedMembraneModelEntity.push(
+                                            {
+                                                model: "Not Exist in PMR",
+                                                concentration: [],
+                                                flux: []
+                                            });
+                                    }
+                                }
+
+                                // Assign concentrations and fluxes from modelEntity to combinedMembraneModelEntity
+                                for (var i = 0; i < modelEntity.length; i++) {
+                                    for (var j = 0; j < combinedMembraneModelEntity.length; j++) {
+                                        if (modelEntity[i].model == combinedMembraneModelEntity[j].model) {
+                                            combinedMembraneModelEntity[j].concentration = modelEntity[i].concentration;
+                                            combinedMembraneModelEntity[j].flux = modelEntity[i].flux;
+                                        }
+                                    }
+                                }
+
+                                console.log("Combined Membrane modelEntity: ", combinedMembraneModelEntity);
+
+                                var calculateSimilarity = function (modelEntityObj, combinedMembraneModelEntityObj) {
+                                    var count = 0;
+                                    for (var i = 0; i < modelEntityObj.concentration.length; i++) {
+                                        for (var j = 0; j < combinedMembraneModelEntityObj.concentration.length; j++) {
+                                            if ((modelEntityObj.concentration[i].chebi == combinedMembraneModelEntityObj.concentration[j].chebi) &&
+                                                (modelEntityObj.concentration[i].fma == combinedMembraneModelEntityObj.concentration[j].fma)) {
+                                                count++;
+                                            }
+                                        }
+                                    }
+
+                                    for (var i = 0; i < modelEntityObj.flux.length; i++) {
+                                        for (var j = 0; j < combinedMembraneModelEntityObj.flux.length; j++) {
+                                            if ((modelEntityObj.flux[i].sourceCHEBI == combinedMembraneModelEntityObj.flux[j].sourceCHEBI) &&
+                                                (modelEntityObj.flux[i].sourceFMA == combinedMembraneModelEntityObj.flux[j].sourceFMA) &&
+                                                (modelEntityObj.flux[i].sinkFMA == combinedMembraneModelEntityObj.flux[j].sinkFMA) &&
+                                                (modelEntityObj.flux[i].mediatorFMA == combinedMembraneModelEntityObj.flux[j].mediatorFMA)) {
+                                                count++;
+                                            }
+                                        }
+                                    }
+
+                                    if (count == 0)
+                                        return 0.0;
+                                    else
+                                        return count / (combinedMembraneModelEntityObj.concentration.length + combinedMembraneModelEntityObj.flux.length);
+                                }
+
+                                // Data
+                                var d = [];
+                                for (var i = 0; i < LegendOptions.length; i++) {
+                                    d[i] = [];
+                                    for (var j = 0; j < combinedMembrane.length; j++) {
+                                        d[i].push(
+                                            {
+                                                axis: combinedMembrane[j].med_pr_text_syn,
+                                                value: calculateSimilarity(modelEntity[i], combinedMembraneModelEntity[j])
+                                            }
+                                        );
+                                    }
+                                }
+
+                                console.log("d: ", d);
+
+                                //Options for the Radar chart, other than default
+                                var mycfg = {
+                                    w: w,
+                                    h: h,
+                                    maxValue: 1,
+                                    levels: 11,
+                                    ExtraWidthX: 300
+                                }
+
+                                //Call function to draw the Radar chart
+                                //Will expect that data is in %'s
+                                RadarChart.draw("#chart", d, mycfg);
+
+                                ////////////////////////////////////////////
+                                /////////// Initiate legend ////////////////
+                                ////////////////////////////////////////////
+                                var svg = d3.select('#chart')
+                                    .selectAll('svg')
+                                    .append('svg')
+                                    .attr("width", w + 300)
+                                    .attr("height", h);
+
+                                //Create the title for the legend
+                                var text = svg.append("text")
+                                    .attr("class", "title")
+                                    .attr('transform', 'translate(90,0)')
+                                    .attr("x", w - 70)
+                                    .attr("y", 10)
+                                    .attr("font-size", "12px")
+                                    .attr("fill", "#404040")
+                                    .text("Which models match wrt the assembled model");
+
+                                //Initiate Legend
+                                var legend = svg.append("g")
+                                    .attr("class", "legend")
+                                    .attr("height", 100)
+                                    .attr("width", 200)
+                                    .attr('transform', 'translate(90,20)');
+
+                                //Create colour squares
+                                legend.selectAll('rect')
+                                    .data(LegendOptions)
+                                    .enter()
+                                    .append("rect")
+                                    .attr("x", w - 65)
+                                    .attr("y", function (d, i) {
+                                        return i * 20;
+                                    })
+                                    .attr("width", 10)
+                                    .attr("height", 10)
+                                    .style("fill", function (d, i) {
+                                        return colorscale(i);
+                                    });
+
+                                //Create text next to squares
+                                legend.selectAll('text')
+                                    .data(LegendOptions)
+                                    .enter()
+                                    .append("text")
+                                    .attr("x", w - 52)
+                                    .attr("y", function (d, i) {
+                                        return i * 20 + 9;
+                                    })
+                                    .attr("font-size", "11px")
+                                    .attr("fill", "#737373")
+                                    .text(function (d) {
+                                        return d;
+                                    });
+                            },
+                            true);
+                    },
+                    true);
+            },
+            true);
     }
     radarplot();
 };

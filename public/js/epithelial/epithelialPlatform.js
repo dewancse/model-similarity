@@ -6,6 +6,8 @@ var miscellaneous = require("./miscellaneous.js");
 var ajaxUtils = require("../../libs/ajax-utils.js");
 var sparqlUtils = require("./sparqlUtils.js");
 var svgPlatform = require("./svgPlatform.js");
+var sparqlUtilsMain = require("../sparqlUtils.js");
+var miscellaneousMain = require("../miscellaneous.js");
 
 var combinedMembrane = [
     {
@@ -7440,7 +7442,7 @@ var epithelialPlatform = function () {
         var combinedMembrane = [
             {
                 med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
-                med_pr: "http://purl.obolibrary.org/obo/PR_P55018",
+                med_pr: "http://purl.obolibrary.org/obo/PR_P59158", // PR_P55018 (RAT)
                 med_pr_text: "solute carrier family 12 member 3 (rat)",
                 med_pr_text_syn: "TSC",
                 model_entity: "chang_fujita_b_1999.cellml#total_transepithelial_sodium_flux.J_mc_Na",
@@ -7714,131 +7716,251 @@ var epithelialPlatform = function () {
                 variable_text3: "diffusiveflux"
             }
         ];
-        //Legend titles
-        var LegendOptions = ['chang_fujita_1999', 'chang_fujita_b_1999', 'weinstein_1995', 'mackenzie_1996'];
 
-        //Data
-        var d = [
-            [
-                {axis: combinedMembrane[0].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[1].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[2].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[3].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[4].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[5].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[6].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[7].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[8].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[9].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[10].med_pr_text_syn, value: 0.0}
-            ], [
-                {axis: combinedMembrane[0].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[1].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[2].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[3].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[4].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[5].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[6].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[7].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[8].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[9].med_pr_text_syn, value: 1.1},
-                {axis: combinedMembrane[10].med_pr_text_syn, value: 1.1}
-            ], [
-                {axis: combinedMembrane[0].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[1].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[2].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[3].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[4].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[5].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[6].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[7].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[8].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[9].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[10].med_pr_text_syn, value: 0.0}
-            ], [
-                {axis: combinedMembrane[0].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[1].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[2].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[3].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[4].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[5].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[6].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[7].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[8].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[9].med_pr_text_syn, value: 0.0},
-                {axis: combinedMembrane[10].med_pr_text_syn, value: 0.0}
-            ]
-        ];
+        var query = "SELECT ?modelname ?protein " +
+            "WHERE { GRAPH ?workspaceName { ?modelname <http://www.obofoundry.org/ro/ro.owl#modelOf> ?protein . " +
+            "}}";
 
-        //Options for the Radar chart, other than default
-        var mycfg = {
-            w: w,
-            h: h,
-            maxValue: 1.1,
-            levels: 11,
-            ExtraWidthX: 300
-        }
+        ajaxUtils.sendPostRequest(
+            sparqlUtils.endpoint,
+            query,
+            function (jsonObj) {
+                console.log("jsonObj: ", jsonObj);
 
-        //Call function to draw the Radar chart
-        //Will expect that data is in %'s
-        RadarChart.draw("#chart", d, mycfg);
+                //Legend titles
+                var LegendOptions = [], LegendOptionsProtein = [];
+                for (var i = 0; i < jsonObj.results.bindings.length; i++) {
+                    var temp = jsonObj.results.bindings[i].modelname.value;
+                    LegendOptions.push(temp.slice(0, temp.indexOf("#")));
+                    LegendOptionsProtein.push(jsonObj.results.bindings[i].protein.value);
+                }
 
-        ////////////////////////////////////////////
-        /////////// Initiate legend ////////////////
-        ////////////////////////////////////////////
+                console.log("LegendOptions: ", LegendOptions);
+                console.log("LegendOptionsProtein: ", LegendOptionsProtein);
 
-        var svg = d3.select('#chart')
-            .selectAll('svg')
-            .append('svg')
-            .attr("width", w + 300)
-            .attr("height", h);
+                // Legend Model Entities
+                var modelEntity = [];
+                for (var i = 0; i < LegendOptions.length; i++) {
+                    modelEntity.push(
+                        {
+                            model: LegendOptions[i],
+                            concentration: [],
+                            flux: [],
+                            protein: LegendOptionsProtein[i]
+                        }
+                    );
+                }
 
-        //Create the title for the legend
-        var text = svg.append("text")
-            .attr("class", "title")
-            .attr('transform', 'translate(90,0)')
-            .attr("x", w - 70)
-            .attr("y", 10)
-            .attr("font-size", "12px")
-            .attr("fill", "#404040")
-            .text("Which models match wrt the assembled model");
+                // Find similarities for Legend Model Entities
+                var query = sparqlUtilsMain.concentrationOPB();
+                ajaxUtils.sendPostRequest(
+                    sparqlUtilsMain.endpoint,
+                    query,
+                    function (jsonObjCons) {
 
-        //Initiate Legend
-        var legend = svg.append("g")
-            .attr("class", "legend")
-            .attr("height", 100)
-            .attr("width", 200)
-            .attr('transform', 'translate(90,20)');
+                        console.log("jsonObjCons: ", jsonObjCons);
 
-        //Create colour squares
-        legend.selectAll('rect')
-            .data(LegendOptions)
-            .enter()
-            .append("rect")
-            .attr("x", w - 65)
-            .attr("y", function (d, i) {
-                return i * 20;
-            })
-            .attr("width", 10)
-            .attr("height", 10)
-            .style("fill", function (d, i) {
-                return colorscale(i);
-            });
+                        var query = sparqlUtilsMain.fluxOPB();
+                        ajaxUtils.sendPostRequest(
+                            sparqlUtilsMain.endpoint,
+                            query,
+                            function (jsonObjFlux) {
 
-        //Create text next to squares
-        legend.selectAll('text')
-            .data(LegendOptions)
-            .enter()
-            .append("text")
-            .attr("x", w - 52)
-            .attr("y", function (d, i) {
-                return i * 20 + 9;
-            })
-            .attr("font-size", "11px")
-            .attr("fill", "#737373")
-            .text(function (d) {
-                return d;
-            });
+                                console.log("jsonObjFlux: ", jsonObjFlux);
+
+                                // CHEBI term and anatomical locations for a solute concentration
+                                for (var i in modelEntity) {
+                                    for (var j in jsonObjCons.results.bindings) {
+                                        var indexOfHash = jsonObjCons.results.bindings[j].model_entity.value.search("#"),
+                                            cellmlname = jsonObjCons.results.bindings[j].model_entity.value.slice(0, indexOfHash);
+
+                                        if (modelEntity[i].model == cellmlname) {
+                                            if (!miscellaneousMain.isExist(jsonObjCons.results.bindings[j].model_entity.value, modelEntity[i].concentration)) {
+                                                modelEntity[i].concentration.push({
+                                                    model_entity: jsonObjCons.results.bindings[j].model_entity.value,
+                                                    chebi: jsonObjCons.results.bindings[j].chebi.value,
+                                                    fma: jsonObjCons.results.bindings[j].fma.value
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // CHEBI term and anatomical locations of sources, sinks and mediators
+                                for (var i in modelEntity) {
+                                    for (var j in jsonObjFlux.results.bindings) {
+                                        var indexOfHash = jsonObjFlux.results.bindings[j].model_entity.value.search("#"),
+                                            cellmlname = jsonObjFlux.results.bindings[j].model_entity.value.slice(0, indexOfHash);
+
+                                        if (modelEntity[i].model == cellmlname) {
+                                            // Exceptional: J_Na (TODOs)
+                                            if (!miscellaneousMain.isExist(jsonObjFlux.results.bindings[j].model_entity.value, modelEntity[i].flux)) {
+                                                modelEntity[i].flux.push({
+                                                    model_entity: jsonObjFlux.results.bindings[j].model_entity.value,
+                                                    sourceCHEBI: jsonObjFlux.results.bindings[j].sourceCHEBI.value,
+                                                    sourceFMA: jsonObjFlux.results.bindings[j].sourceFMA.value,
+                                                    sinkFMA: jsonObjFlux.results.bindings[j].sinkFMA.value,
+                                                    mediatorFMA: jsonObjFlux.results.bindings[j].mediatorFMA.value
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+
+                                console.log("Legend modelEntity: ", modelEntity);
+
+                                // Combined Membrane Model Entities
+                                var combinedMembraneModelEntity = [];
+                                for (var i = 0; i < combinedMembrane.length; i++) {
+                                    var status = 0;
+                                    for (var j = 0; j < modelEntity.length; j++) {
+                                        if (combinedMembrane[i].med_pr == modelEntity[j].protein) {
+                                            combinedMembraneModelEntity.push({model: modelEntity[j].model});
+                                            status = 1;
+                                            break;
+                                        }
+                                    }
+
+                                    if (status == 0) {
+                                        combinedMembraneModelEntity.push(
+                                            {
+                                                model: "Not Exist in PMR",
+                                                concentration: [],
+                                                flux: []
+                                            });
+                                    }
+                                }
+
+                                // Assign concentrations and fluxes from modelEntity to combinedMembraneModelEntity
+                                for (var i = 0; i < modelEntity.length; i++) {
+                                    for (var j = 0; j < combinedMembraneModelEntity.length; j++) {
+                                        if (modelEntity[i].model == combinedMembraneModelEntity[j].model) {
+                                            combinedMembraneModelEntity[j].concentration = modelEntity[i].concentration;
+                                            combinedMembraneModelEntity[j].flux = modelEntity[i].flux;
+                                        }
+                                    }
+                                }
+
+                                console.log("Combined Membrane modelEntity: ", combinedMembraneModelEntity);
+
+                                var calculateSimilarity = function (modelEntityObj, combinedMembraneModelEntityObj) {
+                                    var count = 0;
+                                    for (var i = 0; i < modelEntityObj.concentration.length; i++) {
+                                        for (var j = 0; j < combinedMembraneModelEntityObj.concentration.length; j++) {
+                                            if ((modelEntityObj.concentration[i].chebi == combinedMembraneModelEntityObj.concentration[j].chebi) &&
+                                                (modelEntityObj.concentration[i].fma == combinedMembraneModelEntityObj.concentration[j].fma)) {
+                                                count++;
+                                            }
+                                        }
+                                    }
+
+                                    for (var i = 0; i < modelEntityObj.flux.length; i++) {
+                                        for (var j = 0; j < combinedMembraneModelEntityObj.flux.length; j++) {
+                                            if ((modelEntityObj.flux[i].sourceCHEBI == combinedMembraneModelEntityObj.flux[j].sourceCHEBI) &&
+                                                (modelEntityObj.flux[i].sourceFMA == combinedMembraneModelEntityObj.flux[j].sourceFMA) &&
+                                                (modelEntityObj.flux[i].sinkFMA == combinedMembraneModelEntityObj.flux[j].sinkFMA) &&
+                                                (modelEntityObj.flux[i].mediatorFMA == combinedMembraneModelEntityObj.flux[j].mediatorFMA)) {
+                                                count++;
+                                            }
+                                        }
+                                    }
+
+                                    if (count == 0)
+                                        return 0.0;
+                                    else
+                                        return count / (combinedMembraneModelEntityObj.concentration.length + combinedMembraneModelEntityObj.flux.length);
+                                }
+
+                                // Data
+                                var d = [];
+                                for (var i = 0; i < LegendOptions.length; i++) {
+                                    d[i] = [];
+                                    for (var j = 0; j < combinedMembrane.length; j++) {
+                                        d[i].push(
+                                            {
+                                                axis: combinedMembrane[j].med_pr_text_syn,
+                                                value: calculateSimilarity(modelEntity[i], combinedMembraneModelEntity[j])
+                                            }
+                                        );
+                                    }
+                                }
+
+                                console.log("d: ", d);
+
+                                //Options for the Radar chart, other than default
+                                var mycfg = {
+                                    w: w,
+                                    h: h,
+                                    maxValue: 1,
+                                    levels: 11,
+                                    ExtraWidthX: 300
+                                }
+
+                                //Call function to draw the Radar chart
+                                //Will expect that data is in %'s
+                                RadarChart.draw("#chart", d, mycfg);
+
+                                ////////////////////////////////////////////
+                                /////////// Initiate legend ////////////////
+                                ////////////////////////////////////////////
+                                var svg = d3.select('#chart')
+                                    .selectAll('svg')
+                                    .append('svg')
+                                    .attr("width", w + 300)
+                                    .attr("height", h);
+
+                                //Create the title for the legend
+                                var text = svg.append("text")
+                                    .attr("class", "title")
+                                    .attr('transform', 'translate(90,0)')
+                                    .attr("x", w - 70)
+                                    .attr("y", 10)
+                                    .attr("font-size", "12px")
+                                    .attr("fill", "#404040")
+                                    .text("Which models match wrt the assembled model");
+
+                                //Initiate Legend
+                                var legend = svg.append("g")
+                                    .attr("class", "legend")
+                                    .attr("height", 100)
+                                    .attr("width", 200)
+                                    .attr('transform', 'translate(90,20)');
+
+                                //Create colour squares
+                                legend.selectAll('rect')
+                                    .data(LegendOptions)
+                                    .enter()
+                                    .append("rect")
+                                    .attr("x", w - 65)
+                                    .attr("y", function (d, i) {
+                                        return i * 20;
+                                    })
+                                    .attr("width", 10)
+                                    .attr("height", 10)
+                                    .style("fill", function (d, i) {
+                                        return colorscale(i);
+                                    });
+
+                                //Create text next to squares
+                                legend.selectAll('text')
+                                    .data(LegendOptions)
+                                    .enter()
+                                    .append("text")
+                                    .attr("x", w - 52)
+                                    .attr("y", function (d, i) {
+                                        return i * 20 + 9;
+                                    })
+                                    .attr("font-size", "11px")
+                                    .attr("fill", "#737373")
+                                    .text(function (d) {
+                                        return d;
+                                    });
+                            },
+                            true);
+                    },
+                    true);
+            },
+            true);
     }
     radarplot();
 };
