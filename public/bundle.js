@@ -11807,10 +11807,16 @@ var epithelialPlatform = function () {
                             console.log("Legend modelEntity: ", modelEntity);
 
                             // helper function to compare proteins wrt to the assembled model
-                            var calculateSimilarity = function (modelEntityPrArray, combinedMembraneMedPr) {
+                            // med_pr and med_pr_text_syn properties in combinedMembrane
+                            var calculateSimilarity = function (modelEntityPrArray, combinedMembraneMed) {
                                 for (var i = 0; i < modelEntityPrArray.length; i++) {
-                                    if (modelEntityPrArray[i].id == combinedMembraneMedPr) {
+                                    if ((modelEntityPrArray[i].id == combinedMembraneMed.med_pr) &&
+                                        (modelEntityPrArray[i].syn == combinedMembraneMed.med_pr_text_syn)) {
                                         return 1;
+                                    }
+                                    else if ((modelEntityPrArray[i].id != combinedMembraneMed.med_pr) &&
+                                        (modelEntityPrArray[i].syn == combinedMembraneMed.med_pr_text_syn)) {
+                                        return [modelEntityPrArray[i].id, combinedMembraneMed.med_pr];
                                     }
                                 }
                                 return 0;
@@ -11824,98 +11830,308 @@ var epithelialPlatform = function () {
                                     d[i].push(
                                         {
                                             axis: combinedMembrane[j].med_pr_text_syn,
-                                            value: calculateSimilarity(modelEntity[i].protein, combinedMembrane[j].med_pr)
+                                            value: calculateSimilarity(modelEntity[i].protein, combinedMembrane[j])
                                         }
                                     );
                                 }
                             }
 
-                            console.log("d: ", d);
+                            // draw function 2
+                            var draw2Function = function () {
+                                console.log("d: ", d);
 
-                            //Options for the Radar chart, other than default
-                            var mycfg = {
-                                w: w,
-                                h: h,
-                                maxValue: 1,
-                                levels: 11,
-                                ExtraWidthX: 300
+                                //Options for the Radar chart, other than default
+                                var mycfg = {
+                                    w: w,
+                                    h: h,
+                                    maxValue: 1,
+                                    levels: 11,
+                                    ExtraWidthX: 300
+                                }
+
+                                //Remove zero values from d and corresponding indexes in
+                                // LegendOptions, LegendOptionsProtein and modelEntity
+                                for (var i = 0; i < d.length; i++) {
+                                    var counter = 0;
+                                    for (var j = 0; j < d[i].length; j++) {
+                                        if (d[i][j].value == 0) {
+                                            counter++;
+                                        }
+                                    }
+
+                                    if (counter == d[i].length) {
+                                        d.splice(i, 1);
+                                        LegendOptions.splice(i, 1);
+                                        LegendOptionsProtein.splice(i, 1);
+                                        modelEntity.splice(i, 1);
+                                        i--;
+                                    }
+                                }
+
+                                //Call function to draw the Radar chart
+                                //Will expect that data is in %'s
+                                RadarChart.draw("#chart", d, mycfg);
+
+                                ////////////////////////////////////////////
+                                /////////// Initiate legend ////////////////
+                                ////////////////////////////////////////////
+                                var svg = d3.select('#chart')
+                                    .selectAll('svg')
+                                    .append('svg')
+                                    .attr("width", w + 300)
+                                    .attr("height", h);
+
+                                //Create the title for the legend
+                                var text = svg.append("text")
+                                    .attr("class", "title")
+                                    .attr('transform', 'translate(90,0)')
+                                    .attr("x", w - 70)
+                                    .attr("y", 10)
+                                    .attr("font-size", "12px")
+                                    .attr("fill", "#404040")
+                                    .text("Which models match wrt the assembled model");
+
+                                //Initiate Legend
+                                var legend = svg.append("g")
+                                    .attr("class", "legend")
+                                    .attr("height", 100)
+                                    .attr("width", 200)
+                                    .attr('transform', 'translate(90,20)');
+
+                                //Create colour squares
+                                legend.selectAll('rect')
+                                    .data(LegendOptions)
+                                    .enter()
+                                    .append("rect")
+                                    .attr("x", w - 65)
+                                    .attr("y", function (d, i) {
+                                        return i * 20;
+                                    })
+                                    .attr("width", 10)
+                                    .attr("height", 10)
+                                    .style("fill", function (d, i) {
+                                        return colorscale(i);
+                                    });
+
+                                //Create text next to squares
+                                legend.selectAll('text')
+                                    .data(LegendOptions)
+                                    .enter()
+                                    .append("text")
+                                    .attr("x", w - 52)
+                                    .attr("y", function (d, i) {
+                                        return i * 20 + 9;
+                                    })
+                                    .attr("font-size", "11px")
+                                    .attr("fill", "#737373")
+                                    .text(function (d) {
+                                        return d;
+                                    });
                             }
 
-                            //Call function to draw the Radar chart
-                            //Will expect that data is in %'s
-                            RadarChart.draw("#chart", d, mycfg);
+                            // EBI OLS
+                            var outerCounter = 0;
+                            var webServiceFunction = function (dPr) {
+                                var innerCounter = 0;
+                                var innerWebServiceFunction = function (dPrInner) {
+                                    var WSDbfetchREST = function (PID, fstPr, sndPr, index, ProteinSeq, requestData, baseUrl) {
 
-                            ////////////////////////////////////////////
-                            /////////// Initiate legend ////////////////
-                            ////////////////////////////////////////////
-                            var svg = d3.select('#chart')
-                                .selectAll('svg')
-                                .append('svg')
-                                .attr("width", w + 300)
-                                .attr("height", h);
+                                        var dbfectendpoint = "https://www.ebi.ac.uk/Tools/dbfetch/dbfetch/uniprotkb/" + PID[index] + "/fasta";
+                                        // var dbfectendpoint = "/.api/ebi/uniprotkb/" + PID[index] + "/fasta";
 
-                            //Create the title for the legend
-                            var text = svg.append("text")
-                                .attr("class", "title")
-                                .attr('transform', 'translate(90,0)')
-                                .attr("x", w - 70)
-                                .attr("y", 10)
-                                .attr("font-size", "12px")
-                                .attr("fill", "#404040")
-                                .text("Which models match wrt the assembled model");
+                                        ajaxUtils.sendGetRequest(
+                                            dbfectendpoint,
+                                            function (psequence) {
+                                                ProteinSeq += psequence;
 
-                            //Initiate Legend
-                            var legend = svg.append("g")
-                                .attr("class", "legend")
-                                .attr("height", 100)
-                                .attr("width", 200)
-                                .attr('transform', 'translate(90,20)');
+                                                index++;
+                                                if (index == PID.length) {
+                                                    // console.log("ProteinSeq: ", ProteinSeq);
 
-                            //Create colour squares
-                            legend.selectAll('rect')
-                                .data(LegendOptions)
-                                .enter()
-                                .append("rect")
-                                .attr("x", w - 65)
-                                .attr("y", function (d, i) {
-                                    return i * 20;
-                                })
-                                .attr("width", 10)
-                                .attr("height", 10)
-                                .style("fill", function (d, i) {
-                                    return colorscale(i);
-                                });
+                                                    requestData = {
+                                                        "sequence": ProteinSeq,
+                                                        "email": "dsar941@aucklanduni.ac.nz"
+                                                    }
 
-                            //Create text next to squares
-                            legend.selectAll('text')
-                                .data(LegendOptions)
-                                .enter()
-                                .append("text")
-                                .attr("x", w - 52)
-                                .attr("y", function (d, i) {
-                                    return i * 20 + 9;
-                                })
-                                .attr("font-size", "11px")
-                                .attr("fill", "#737373")
-                                .text(function (d) {
-                                    return d;
-                                });
+                                                    var requestUrl = baseUrl + "/run/";
+
+                                                    ajaxUtils.sendEBIPostRequest(
+                                                        requestUrl,
+                                                        requestData,
+                                                        function (jobId) {
+                                                            // console.log("jobId: ", jobId); // jobId
+
+                                                            var chkJobStatus = function (jobId) {
+                                                                var jobIdUrl = baseUrl + "/status/" + jobId;
+                                                                ajaxUtils.sendGetRequest(
+                                                                    jobIdUrl,
+                                                                    function (resultObj) {
+                                                                        console.log("result: ", resultObj); // jobId status
+
+                                                                        if (resultObj == "RUNNING") {
+                                                                            setTimeout(function () {
+                                                                                chkJobStatus(jobId);
+                                                                            }, 5000);
+                                                                        }
+
+                                                                        var pimUrl = baseUrl + "/result/" + jobId + "/pim";
+                                                                        ajaxUtils.sendGetRequest(
+                                                                            pimUrl,
+                                                                            function (identityMatrix) {
+
+                                                                                // console.log("tempList: ", tempList);
+                                                                                console.log("identityMatrix: ", identityMatrix);
+
+                                                                                var indexOfColon = identityMatrix.search("1:"),
+                                                                                    m, n, i, j;
+
+                                                                                // console.log("index1stBar: ", identityMatrix.slice(indexOfColon - 1, identityMatrix.length));
+                                                                                identityMatrix = identityMatrix.slice(indexOfColon - 1, identityMatrix.length);
+
+                                                                                // console.log("New Identity Matrix: ", identityMatrix);
+
+                                                                                var matrixArray = identityMatrix.match(/[(\w\:)*\d\.]+/gi),
+                                                                                    proteinIndex = [],
+                                                                                    twoDMatrix = [];
+
+                                                                                // console.log("matrixArray: ", matrixArray);
+
+                                                                                for (i = 0; i < matrixArray.length; i = i + PID.length + 3) // +3 for digit:, PID, and Genes and Species
+                                                                                    matrixArray.splice(i, 1);
+
+                                                                                for (i = 0; i < matrixArray.length; i = i + PID.length + 2) // +2 for PID and Genes and Species
+                                                                                    matrixArray.splice(i, 1);
+
+                                                                                for (i = 1; i < matrixArray.length; i = i + PID.length + 1) // +1 for PID
+                                                                                    matrixArray.splice(i, 1);
+
+                                                                                console.log("matrixArray: ", matrixArray);
+
+                                                                                for (i = 0; i < matrixArray.length; i++) {
+                                                                                    if (matrixArray[i].charAt(0).match(/[A-Za-z]/gi)) {
+                                                                                        proteinIndex.push([matrixArray[i], i]);
+                                                                                    }
+                                                                                }
+
+                                                                                // console.log("proteinIndex: ", proteinIndex);
+
+                                                                                // 1D to 2D array
+                                                                                while (matrixArray.length) {
+                                                                                    matrixArray.splice(0, 1); // remove protein ID
+                                                                                    twoDMatrix.push(matrixArray.splice(0, proteinIndex.length));
+                                                                                }
+
+                                                                                for (i = 0; i < twoDMatrix.length; i++) {
+                                                                                    for (j = 0; j < twoDMatrix[i].length; j++) {
+                                                                                        twoDMatrix[i][j] = parseFloat(twoDMatrix[i][j]);
+                                                                                    }
+                                                                                }
+
+                                                                                console.log("twoDMatrix: ", twoDMatrix);
+                                                                                console.log("twoDMatrix[0][1]: ", (twoDMatrix[0][1] / 100));
+
+                                                                                // assign computed value from similarity matrix
+                                                                                d[outerCounter][innerCounter].value = twoDMatrix[0][1] / 100;
+
+                                                                                innerCounter++;
+
+                                                                                if (innerCounter == d[outerCounter].length) {
+                                                                                    outerCounter++;
+                                                                                    if (outerCounter == d.length) {
+                                                                                        draw2Function();
+                                                                                    }
+                                                                                    else {
+                                                                                        webServiceFunction(d[outerCounter]);
+                                                                                    }
+                                                                                }
+                                                                                else {
+                                                                                    innerWebServiceFunction(d[outerCounter][innerCounter]);
+                                                                                }
+                                                                            },
+                                                                            false);
+                                                                    },
+                                                                    false);
+                                                            }
+
+                                                            chkJobStatus(jobId);
+                                                            console.log("AFTER chkJobStatus(jobId)!");
+
+                                                            return;
+                                                        },
+                                                        false);
+
+                                                    return;
+                                                }
+
+                                                // callback
+                                                WSDbfetchREST(PID, fstPr, sndPr, index, ProteinSeq, requestData, baseUrl);
+                                                console.log("AFTER WSDbfetchREST!");
+                                            },
+                                            false);
+                                    };
+
+                                    if (typeof dPrInner.value == "object") {
+                                        var index = 0, ProteinSeq = "", requestData, PID = [];
+                                        var baseUrl = "https://www.ebi.ac.uk/Tools/services/rest/clustalo";
+                                        // var baseUrl = "/.api/ebi/clustalo";
+
+                                        var fstPr = dPrInner.value[0];
+                                        var sndPr = dPrInner.value[1];
+                                        fstPr = fstPr.slice(fstPr.search("PR_") + 3, fstPr.length);
+                                        sndPr = sndPr.slice(sndPr.search("PR_") + 3, sndPr.length);
+
+                                        PID.push(fstPr);
+                                        PID.push(sndPr);
+
+                                        console.log("PID Before: ", PID);
+
+                                        // PID does NOT start with P or Q
+                                        for (var key in PID) {
+                                            // console.log("PID[key]: ", PID[key]);
+                                            if (PID[key].charAt(0) == "Q") continue;
+
+                                            if (PID[key].charAt(0) != "P") {
+                                                PID[key] = "P" + PID[key].replace(/^0+/, ""); // Or parseInt("065", 10);
+                                            }
+                                        }
+
+                                        console.log("PID AFTER: ", PID);
+
+                                        WSDbfetchREST(PID, fstPr, sndPr, index, ProteinSeq, requestData, baseUrl);
+                                    }
+                                    else {
+                                        innerCounter++;
+
+                                        if (innerCounter == d[outerCounter].length) {
+                                            outerCounter++;
+                                            if (outerCounter == d.length) {
+                                                draw2Function();
+                                            }
+                                            else {
+                                                webServiceFunction(d[outerCounter]);
+                                            }
+                                        }
+                                        else {
+                                            innerWebServiceFunction(d[outerCounter][innerCounter]);
+                                        }
+                                    }
+                                }
+
+                                innerWebServiceFunction(d[outerCounter][innerCounter])
+                            }
+
+                            webServiceFunction(d[outerCounter]);
                         }
 
                         var outerCounter = 0;
                         var mediatorFunction = function (modelEntityProteinArray) {
-                            console.log("modelEntityProteinArray: ", modelEntityProteinArray);
                             var innerCounter = 0;
                             var innermediatorFunction = function (modelEntityInnerProteinArray) {
-                                console.log("modelEntityInnerProteinArray: ", modelEntityInnerProteinArray);
                                 var endpointOLS = sparqlUtils.abiOntoEndpoint + "/pr/terms?iri=" + modelEntityInnerProteinArray.id;
 
                                 ajaxUtils.sendGetRequest(
                                     endpointOLS,
                                     function (jsonObjOLSMedPr) {
-
-                                        console.log("jsonObjOLSMedPr: ", jsonObjOLSMedPr);
-
                                         var med_pr_text_syn;
                                         if (jsonObjOLSMedPr._embedded.terms[0].annotation["has_related_synonym"] == undefined) {
                                             med_pr_text_syn = jsonObjOLSMedPr._embedded.terms[0].annotation["id"][0].slice(3);
@@ -11925,7 +12141,6 @@ var epithelialPlatform = function () {
                                             med_pr_text_syn = tempvar[0].toUpperCase();
                                         }
 
-                                        console.log("modelEntity[outerCounter].protein[innerCounter]: ", modelEntity[outerCounter].protein[innerCounter]);
                                         modelEntity[outerCounter].protein[innerCounter].syn = med_pr_text_syn;
 
                                         innerCounter++;
