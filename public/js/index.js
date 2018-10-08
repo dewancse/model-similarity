@@ -6,8 +6,7 @@ var ajaxUtils = require("./../libs/ajax-utils.js");
 var miscellaneous = require("./miscellaneous.js");
 var sparqlUtils = require("./sparqlUtils.js");
 var similarity = require("./similarity.js");
-var epithelialsparqlUtils = require("./epithelial/sparqlUtils.js");
-var epithelialplatform = require("./epithelial/epithelialPlatform.js");
+var epithelialplatform = require("./epithelialPlatform.js");
 
 "use strict";
 
@@ -87,7 +86,7 @@ var modelSimilarity = (function (global) {
 
     var discoverModelSimilarity = function () {
 
-        var query = sparqlUtils.concentrationOPB();
+        var query = sparqlUtils.concentrationOPBSPARQL2();
         ajaxUtils.sendPostRequest(
             sparqlUtils.endpoint,
             query,
@@ -95,7 +94,7 @@ var modelSimilarity = (function (global) {
 
                 console.log("jsonObjCons: ", jsonObj);
 
-                var query = sparqlUtils.fluxOPB();
+                var query = sparqlUtils.fluxOPBSPARQL();
                 ajaxUtils.sendPostRequest(
                     sparqlUtils.endpoint,
                     query,
@@ -110,7 +109,7 @@ var modelSimilarity = (function (global) {
                                     cellmlname = jsonObj.results.bindings[j].model_entity.value.slice(0, indexOfHash);
 
                                 if (modelEntity[i].model == cellmlname) {
-                                    if (!miscellaneous.isExist(jsonObj.results.bindings[j].model_entity.value, modelEntity[i].concentration)) {
+                                    if (!miscellaneous.isExist2(jsonObj.results.bindings[j].model_entity.value, modelEntity[i].concentration)) {
                                         modelEntity[i].concentration.push({
                                             model_entity: jsonObj.results.bindings[j].model_entity.value,
                                             chebi: jsonObj.results.bindings[j].chebi.value,
@@ -129,7 +128,7 @@ var modelSimilarity = (function (global) {
 
                                 if (modelEntity[i].model == cellmlname) {
                                     // Exceptional: J_Na (TODOs)
-                                    if (!miscellaneous.isExist(jsonObjFlux.results.bindings[j].model_entity.value, modelEntity[i].flux)) {
+                                    if (!miscellaneous.isExist2(jsonObjFlux.results.bindings[j].model_entity.value, modelEntity[i].flux)) {
                                         modelEntity[i].flux.push({
                                             model_entity: jsonObjFlux.results.bindings[j].model_entity.value,
                                             sourceCHEBI: jsonObjFlux.results.bindings[j].sourceCHEBI.value,
@@ -408,7 +407,7 @@ var modelSimilarity = (function (global) {
             var index = 0, ProteinSeq = "", requestData, PID = [],
                 baseUrl = "https://www.ebi.ac.uk/Tools/services/rest/clustalo";
 
-            var enteredPrID = miscellaneous.splitPRFromProtein(modelEntity, PID, enteredIndex);
+            var enteredPrID = miscellaneous.splitPRFromProtein2(modelEntity, PID, enteredIndex);
 
             // PID does NOT start with P or Q
             for (var key in PID) {
@@ -426,7 +425,7 @@ var modelSimilarity = (function (global) {
             // https://www.ebi.ac.uk/seqdb/confluence/display/WEBSERVICES/clustalo_rest
             var WSDbfetchREST = function () {
 
-                var dbfectendpoint = sparqlUtils.cors_api_url + "https://www.ebi.ac.uk/Tools/dbfetch/dbfetch/uniprotkb/" + PID[index] + "/fasta";
+                var dbfectendpoint = "https://www.ebi.ac.uk/Tools/dbfetch/dbfetch/uniprotkb/" + PID[index] + "/fasta";
 
                 ajaxUtils.sendGetRequest(
                     dbfectendpoint,
@@ -467,7 +466,7 @@ var modelSimilarity = (function (global) {
                                                 ajaxUtils.sendGetRequest(
                                                     pimUrl,
                                                     function (identityMatrix) {
-                                                        miscellaneous.similarityMatrixEBI(
+                                                        miscellaneous.similarityMatrixEBI2(
                                                             identityMatrix,
                                                             PID,
                                                             enteredPrID,
@@ -1162,7 +1161,7 @@ var modelSimilarity = (function (global) {
 
                                 var counter = 0;
                                 var cellmlWorkspaceFunction = function (counter) {
-                                    var cellmlWorkspaceName = sparqlUtils.cors_api_url + "https://models.physiomeproject.org/workspace/267/rawfile/HEAD/" + tempOBJy[counter].model;
+                                    var cellmlWorkspaceName = "https://models.physiomeproject.org/workspace/267/rawfile/HEAD/" + tempOBJy[counter].model;
                                     ajaxUtils.sendGetRequest(
                                         cellmlWorkspaceName,
                                         function (cellmlWorkspaceHtml) {
@@ -1282,7 +1281,7 @@ var modelSimilarity = (function (global) {
         ajaxUtils.sendGetRequest(
             sparqlUtils.drawSEDMLHtml,
             function (drawSEDMLHtmlContent) {
-                $("#main-content").html(drawSEDMLHtmlContent);
+                $("#platform-content").html(drawSEDMLHtmlContent);
             },
             false);
     }
@@ -1840,18 +1839,47 @@ var modelSimilarity = (function (global) {
     };
 
     /*******************************************/
-    /********* EPITHELIAL Platform *************/
+    /********* Platform *************/
     /*******************************************/
-    console.log("epithelialsparqlUtils.epithelialHtml:", epithelialsparqlUtils.epithelialHtml);
-    mainUtils.loadEpithelialHtml = function () {
+    mainUtils.loadPlatformHtml = function () {
         ajaxUtils.sendGetRequest(
-            epithelialsparqlUtils.epithelialHtml,
-            function (epithelialHtmlContent) {
-                console.log("epithelialHtmlContent: ", epithelialHtmlContent);
-                $("#main-content").html(epithelialHtmlContent);
-                ajaxUtils.sendGetRequest(epithelialsparqlUtils.epithelialHtml, epithelialplatform.epithelialPlatform, false);
+            sparqlUtils.platformHtml,
+            function (platformHtmlContent) {
+                $("#main-content").html(platformHtmlContent);
+                mainUtils.loadEpithelialHtml();
             },
             false);
+    };
+
+    /*******************************************/
+    /********* EPITHELIAL Platform *************/
+    /*******************************************/
+    mainUtils.loadEpithelialHtml = function () {
+        ajaxUtils.sendGetRequest(
+            sparqlUtils.epithelialHtml,
+            function (epithelialHtmlContent) {
+                $("#platform-content").html(epithelialHtmlContent);
+                ajaxUtils.sendGetRequest(sparqlUtils.epithelialHtml, epithelialplatform.epithelialPlatform, false);
+            },
+            false);
+    };
+
+    /*******************************************/
+    /********* Radar Plot *************/
+    /*******************************************/
+    mainUtils.loadChartHtml = function () {
+        if (sessionStorage.getItem("drawChartContent")) {
+            $("#platform-content").html(sessionStorage.getItem("drawChartContent"));
+        }
+        else {
+            ajaxUtils.sendGetRequest(
+                sparqlUtils.chartHtml,
+                function (chartHtmlContent) {
+                    $("#platform-content").html(chartHtmlContent);
+                    ajaxUtils.sendGetRequest(sparqlUtils.chartHtml, epithelialplatform.radarplot, false);
+                },
+                false);
+        }
     };
 
     // Expose utility to the global object

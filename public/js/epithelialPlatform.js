@@ -1,13 +1,11 @@
 /**
  * Created by dsar941 on 5/11/2017.
  */
+var ajaxUtils = require("../libs/ajax-utils.js");
 var solutesBouncing = require("./solutesBouncing.js");
-var miscellaneous = require("./miscellaneous.js");
-var ajaxUtils = require("../../libs/ajax-utils.js");
-var sparqlUtils = require("./sparqlUtils.js");
 var svgPlatform = require("./svgPlatform.js");
-var sparqlUtilsMain = require("../sparqlUtils.js");
-var miscellaneousMain = require("../miscellaneous.js");
+var sparqlUtils = require("./sparqlUtils.js");
+var miscellaneous = require("./miscellaneous.js");
 
 var combinedMembrane = [
     {
@@ -7428,753 +7426,753 @@ var epithelialPlatform = function () {
 
         jQuery(window).trigger("resize");
     }
+};
 
-    /**********************************/
-    /*********** Radar Plot ***********/
-    /**********************************/
-    var radarplot = function () {
-        var w = 500,
-            h = 500;
+var radarplot = function () {
+    var w = 500,
+        h = 500;
 
-        // var colorscale = d3.scale.category10(); // v3
-        var colorscale = d3.scaleOrdinal(d3.schemeCategory20); // v4
+    // var colorscale = d3.scale.category10(); // v3
+    var colorscale = d3.scaleOrdinal(d3.schemeCategory20); // v4
 
-        var combinedMembrane = [
-            {
-                med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
-                med_pr: "http://purl.obolibrary.org/obo/PR_P59158", // PR_P55018 (RAT) and PR_P59158 (Mouse)
-                med_pr_text: "solute carrier family 12 member 3 (rat)",
-                med_pr_text_syn: "TSC",
-                model_entity: "chang_fujita_b_1999.cellml#total_transepithelial_sodium_flux.J_mc_Na",
-                model_entity2: "chang_fujita_b_1999.cellml#solute_concentrations.J_mc_Cl",
-                model_entity3: "",
-                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
-                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
-                sink_fma2: "http://purl.obolibrary.org/obo/FMA_66836",
-                sink_fma3: "",
-                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29101",
-                solute_chebi2: "http://purl.obolibrary.org/obo/CHEBI_17996",
-                solute_chebi3: "",
-                solute_text: "Na+",
-                solute_text2: "Cl-",
-                solute_text3: "",
-                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
-                source_fma2: "http://purl.obolibrary.org/obo/FMA_74550",
-                source_fma3: "",
-                variable_text: "J_mc_Na",
-                variable_text2: "J_mc_Cl",
-                variable_text3: ""
-            },
-            {
-                med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
-                med_pr: "http://purl.obolibrary.org/obo/PR_Q63633",
-                med_pr_text: "solute carrier family 12 member 5 (rat)",
-                med_pr_text_syn: "Q63633",
-                model_entity: "chang_fujita_b_1999.cellml#solute_concentrations.J_mc_Cl",
-                model_entity2: "chang_fujita_b_1999.cellml#total_transepithelial_potassium_flux.J_mc_K",
-                model_entity3: "",
-                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
-                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
-                sink_fma2: "http://purl.obolibrary.org/obo/FMA_66836",
-                sink_fma3: "",
-                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_17996",
-                solute_chebi2: "http://purl.obolibrary.org/obo/CHEBI_29103",
-                solute_chebi3: "",
-                solute_text: "Cl-",
-                solute_text2: "K+",
-                solute_text3: "",
-                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
-                source_fma2: "http://purl.obolibrary.org/obo/FMA_74550",
-                source_fma3: "",
-                variable_text: "J_mc_Cl",
-                variable_text2: "J_mc_K",
-                variable_text3: ""
-            },
-            {
-                med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
-                med_pr: "http://purl.obolibrary.org/obo/PR_P37089",
-                med_pr_text: "amiloride-sensitive sodium channel subunit alpha (rat)",
-                med_pr_text_syn: "RENAC",
-                model_entity: "chang_fujita_b_1999.cellml#mc_sodium_flux.G_mc_Na",
-                model_entity2: "",
-                model_entity3: "",
-                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
-                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
-                sink_fma2: "channel",
-                sink_fma3: "channel",
-                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29101",
-                solute_chebi2: "channel",
-                solute_chebi3: "channel",
-                solute_text: "Na+",
-                solute_text2: "channel",
-                solute_text3: "channel",
-                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
-                source_fma2: "channel",
-                source_fma3: "channel",
-                variable_text: "G_mc_Na",
-                variable_text2: "channel",
-                variable_text3: "channel"
-            },
-            {
-                med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
-                med_pr: "http://purl.obolibrary.org/obo/PR_Q06393",
-                med_pr_text: "chloride channel protein ClC-Ka (rat)",
-                med_pr_text_syn: "CLCNK1",
-                model_entity: "chang_fujita_b_1999.cellml#mc_chloride_flux.G_mc_Cl",
-                model_entity2: "",
-                model_entity3: "",
-                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
-                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
-                sink_fma2: "channel",
-                sink_fma3: "channel",
-                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_17996",
-                solute_chebi2: "channel",
-                solute_chebi3: "channel",
-                solute_text: "Cl-",
-                solute_text2: "channel",
-                solute_text3: "channel",
-                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
-                source_fma2: "channel",
-                source_fma3: "channel",
-                variable_text: "G_mc_Cl",
-                variable_text2: "channel",
-                variable_text3: "channel"
-            },
-            {
-                med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
-                med_pr: "http://purl.obolibrary.org/obo/PR_P15387",
-                med_pr_text: "potassium voltage-gated channel subfamily B member 1 (rat)",
-                med_pr_text_syn: "P15387",
-                model_entity: "chang_fujita_b_1999.cellml#mc_potassium_flux.G_mc_K",
-                model_entity2: "",
-                model_entity3: "",
-                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
-                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
-                sink_fma2: "channel",
-                sink_fma3: "channel",
-                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29103",
-                solute_chebi2: "channel",
-                solute_chebi3: "channel",
-                solute_text: "K+",
-                solute_text2: "channel",
-                solute_text3: "channel",
-                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
-                source_fma2: "channel",
-                source_fma3: "channel",
-                variable_text: "G_mc_K",
-                variable_text2: "channel",
-                variable_text3: "channel"
-            },
-            {
-                med_fma: "http://purl.obolibrary.org/obo/FMA_84669",
-                med_pr: "http://purl.obolibrary.org/obo/PR_P06685",
-                med_pr_text: "sodium/potassium-transporting ATPase subunit alpha-1 (rat)",
-                med_pr_text_syn: "P06685",
-                model_entity: "chang_fujita_b_1999.cellml#solute_concentrations.J_sc_Na",
-                model_entity2: "chang_fujita_b_1999.cellml#sc_potassium_flux.J_sc_K",
-                model_entity3: "",
-                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
-                sink_fma: "http://purl.obolibrary.org/obo/FMA_9673",
-                sink_fma2: "http://purl.obolibrary.org/obo/FMA_66836",
-                sink_fma3: "",
-                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29101",
-                solute_chebi2: "http://purl.obolibrary.org/obo/CHEBI_29103",
-                solute_chebi3: "",
-                solute_text: "Na+",
-                solute_text2: "K+",
-                solute_text3: "",
-                source_fma: "http://purl.obolibrary.org/obo/FMA_66836",
-                source_fma2: "http://purl.obolibrary.org/obo/FMA_9673",
-                source_fma3: "",
-                variable_text: "J_sc_Na",
-                variable_text2: "J_sc_K",
-                variable_text3: ""
-            },
-            {
-                med_fma: "http://purl.obolibrary.org/obo/FMA_84669",
-                med_pr: "http://purl.obolibrary.org/obo/PR_Q06393",
-                med_pr_text: "chloride channel protein ClC-Ka (rat)",
-                med_pr_text_syn: "CLCNK1",
-                model_entity: "chang_fujita_b_1999.cellml#sc_chloride_flux.G_sc_Cl",
-                model_entity2: "",
-                model_entity3: "",
-                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
-                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
-                sink_fma2: "channel",
-                sink_fma3: "channel",
-                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_17996",
-                solute_chebi2: "channel",
-                solute_chebi3: "channel",
-                solute_text: "Cl-",
-                solute_text2: "channel",
-                solute_text3: "channel",
-                source_fma: "http://purl.obolibrary.org/obo/FMA_9673",
-                source_fma2: "channel",
-                source_fma3: "channel",
-                variable_text: "G_sc_Cl",
-                variable_text2: "channel",
-                variable_text3: "channel"
-            },
-            {
-                med_fma: "http://purl.obolibrary.org/obo/FMA_84669",
-                med_pr: "http://purl.obolibrary.org/obo/PR_P15387",
-                med_pr_text: "potassium voltage-gated channel subfamily B member 1 (rat)",
-                med_pr_text_syn: "P15387",
-                model_entity: "chang_fujita_b_1999.cellml#sc_potassium_flux.G_sc_K",
-                model_entity2: "",
-                model_entity3: "",
-                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
-                sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
-                sink_fma2: "channel",
-                sink_fma3: "channel",
-                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29103",
-                solute_chebi2: "channel",
-                solute_chebi3: "channel",
-                solute_text: "K+",
-                solute_text2: "channel",
-                solute_text3: "channel",
-                source_fma: "http://purl.obolibrary.org/obo/FMA_9673",
-                source_fma2: "channel",
-                source_fma3: "channel",
-                variable_text: "G_sc_K",
-                variable_text2: "channel",
-                variable_text3: "channel"
-            },
-            {
-                med_fma: "http://purl.obolibrary.org/obo/FMA_67394",
-                med_pr: "http://purl.obolibrary.org/obo/PR_Q9Z0S6",
-                med_pr_text: "claudin-10 (mouse)",
-                med_pr_text_syn: "CLDN10A",
-                model_entity: "chang_fujita_b_1999.cellml#ms_sodium_flux.G_ms_Na",
-                model_entity2: "",
-                model_entity3: "",
-                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
-                sink_fma: "http://purl.obolibrary.org/obo/FMA_9673",
-                sink_fma2: "diffusiveflux",
-                sink_fma3: "diffusiveflux",
-                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29101",
-                solute_chebi2: "diffusiveflux",
-                solute_chebi3: "diffusiveflux",
-                solute_text: "Na+",
-                solute_text2: "diffusiveflux",
-                solute_text3: "diffusiveflux",
-                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
-                source_fma2: "diffusiveflux",
-                source_fma3: "diffusiveflux",
-                variable_text: "G_ms_Na",
-                variable_text2: "diffusiveflux",
-                variable_text3: "diffusiveflux"
-            },
-            {
-                med_fma: "http://purl.obolibrary.org/obo/FMA_67394",
-                med_pr: "http://purl.obolibrary.org/obo/PR_O35054",
-                med_pr_text: "claudin-4 (mouse)",
-                med_pr_text_syn: "CPETR1",
-                model_entity: "chang_fujita_b_1999.cellml#ms_chloride_flux.G_ms_Cl",
-                model_entity2: "",
-                model_entity3: "",
-                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
-                sink_fma: "http://purl.obolibrary.org/obo/FMA_9673",
-                sink_fma2: "diffusiveflux",
-                sink_fma3: "diffusiveflux",
-                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_17996",
-                solute_chebi2: "diffusiveflux",
-                solute_chebi3: "diffusiveflux",
-                solute_text: "Cl-",
-                solute_text2: "diffusiveflux",
-                solute_text3: "diffusiveflux",
-                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
-                source_fma2: "diffusiveflux",
-                source_fma3: "diffusiveflux",
-                variable_text: "G_ms_Cl",
-                variable_text2: "diffusiveflux",
-                variable_text3: "diffusiveflux"
-            },
-            {
-                med_fma: "http://purl.obolibrary.org/obo/FMA_67394",
-                med_pr: "http://purl.obolibrary.org/obo/PR_F1LZ52",
-                med_pr_text: "kelch-like protein 3 (rat)",
-                med_pr_text_syn: "F1LZ52",
-                model_entity: "chang_fujita_b_1999.cellml#ms_potassium_flux.G_ms_K",
-                model_entity2: "",
-                model_entity3: "",
-                protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
-                sink_fma: "http://purl.obolibrary.org/obo/FMA_9673",
-                sink_fma2: "diffusiveflux",
-                sink_fma3: "diffusiveflux",
-                solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29103",
-                solute_chebi2: "diffusiveflux",
-                solute_chebi3: "diffusiveflux",
-                solute_text: "K+",
-                solute_text2: "diffusiveflux",
-                solute_text3: "diffusiveflux",
-                source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
-                source_fma2: "diffusiveflux",
-                source_fma3: "diffusiveflux",
-                variable_text: "G_ms_K",
-                variable_text2: "diffusiveflux",
-                variable_text3: "diffusiveflux"
+    var combinedMembrane = [
+        {
+            med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
+            med_pr: "http://purl.obolibrary.org/obo/PR_P59158", // PR_P55018 (RAT) and PR_P59158 (Mouse)
+            med_pr_text: "solute carrier family 12 member 3 (rat)",
+            med_pr_text_syn: "TSC",
+            model_entity: "chang_fujita_b_1999.cellml#total_transepithelial_sodium_flux.J_mc_Na",
+            model_entity2: "chang_fujita_b_1999.cellml#solute_concentrations.J_mc_Cl",
+            model_entity3: "",
+            protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+            sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+            sink_fma2: "http://purl.obolibrary.org/obo/FMA_66836",
+            sink_fma3: "",
+            solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29101",
+            solute_chebi2: "http://purl.obolibrary.org/obo/CHEBI_17996",
+            solute_chebi3: "",
+            solute_text: "Na+",
+            solute_text2: "Cl-",
+            solute_text3: "",
+            source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+            source_fma2: "http://purl.obolibrary.org/obo/FMA_74550",
+            source_fma3: "",
+            variable_text: "J_mc_Na",
+            variable_text2: "J_mc_Cl",
+            variable_text3: ""
+        },
+        {
+            med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
+            med_pr: "http://purl.obolibrary.org/obo/PR_Q63633",
+            med_pr_text: "solute carrier family 12 member 5 (rat)",
+            med_pr_text_syn: "Q63633",
+            model_entity: "chang_fujita_b_1999.cellml#solute_concentrations.J_mc_Cl",
+            model_entity2: "chang_fujita_b_1999.cellml#total_transepithelial_potassium_flux.J_mc_K",
+            model_entity3: "",
+            protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+            sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+            sink_fma2: "http://purl.obolibrary.org/obo/FMA_66836",
+            sink_fma3: "",
+            solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_17996",
+            solute_chebi2: "http://purl.obolibrary.org/obo/CHEBI_29103",
+            solute_chebi3: "",
+            solute_text: "Cl-",
+            solute_text2: "K+",
+            solute_text3: "",
+            source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+            source_fma2: "http://purl.obolibrary.org/obo/FMA_74550",
+            source_fma3: "",
+            variable_text: "J_mc_Cl",
+            variable_text2: "J_mc_K",
+            variable_text3: ""
+        },
+        {
+            med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
+            med_pr: "http://purl.obolibrary.org/obo/PR_P37089",
+            med_pr_text: "amiloride-sensitive sodium channel subunit alpha (rat)",
+            med_pr_text_syn: "RENAC",
+            model_entity: "chang_fujita_b_1999.cellml#mc_sodium_flux.G_mc_Na",
+            model_entity2: "",
+            model_entity3: "",
+            protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+            sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+            sink_fma2: "channel",
+            sink_fma3: "channel",
+            solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29101",
+            solute_chebi2: "channel",
+            solute_chebi3: "channel",
+            solute_text: "Na+",
+            solute_text2: "channel",
+            solute_text3: "channel",
+            source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+            source_fma2: "channel",
+            source_fma3: "channel",
+            variable_text: "G_mc_Na",
+            variable_text2: "channel",
+            variable_text3: "channel"
+        },
+        {
+            med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
+            med_pr: "http://purl.obolibrary.org/obo/PR_Q06393",
+            med_pr_text: "chloride channel protein ClC-Ka (rat)",
+            med_pr_text_syn: "CLCNK1",
+            model_entity: "chang_fujita_b_1999.cellml#mc_chloride_flux.G_mc_Cl",
+            model_entity2: "",
+            model_entity3: "",
+            protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+            sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+            sink_fma2: "channel",
+            sink_fma3: "channel",
+            solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_17996",
+            solute_chebi2: "channel",
+            solute_chebi3: "channel",
+            solute_text: "Cl-",
+            solute_text2: "channel",
+            solute_text3: "channel",
+            source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+            source_fma2: "channel",
+            source_fma3: "channel",
+            variable_text: "G_mc_Cl",
+            variable_text2: "channel",
+            variable_text3: "channel"
+        },
+        {
+            med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
+            med_pr: "http://purl.obolibrary.org/obo/PR_P15387",
+            med_pr_text: "potassium voltage-gated channel subfamily B member 1 (rat)",
+            med_pr_text_syn: "P15387",
+            model_entity: "chang_fujita_b_1999.cellml#mc_potassium_flux.G_mc_K",
+            model_entity2: "",
+            model_entity3: "",
+            protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+            sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+            sink_fma2: "channel",
+            sink_fma3: "channel",
+            solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29103",
+            solute_chebi2: "channel",
+            solute_chebi3: "channel",
+            solute_text: "K+",
+            solute_text2: "channel",
+            solute_text3: "channel",
+            source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+            source_fma2: "channel",
+            source_fma3: "channel",
+            variable_text: "G_mc_K",
+            variable_text2: "channel",
+            variable_text3: "channel"
+        },
+        {
+            med_fma: "http://purl.obolibrary.org/obo/FMA_84669",
+            med_pr: "http://purl.obolibrary.org/obo/PR_P06685",
+            med_pr_text: "sodium/potassium-transporting ATPase subunit alpha-1 (rat)",
+            med_pr_text_syn: "P06685",
+            model_entity: "chang_fujita_b_1999.cellml#solute_concentrations.J_sc_Na",
+            model_entity2: "chang_fujita_b_1999.cellml#sc_potassium_flux.J_sc_K",
+            model_entity3: "",
+            protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+            sink_fma: "http://purl.obolibrary.org/obo/FMA_9673",
+            sink_fma2: "http://purl.obolibrary.org/obo/FMA_66836",
+            sink_fma3: "",
+            solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29101",
+            solute_chebi2: "http://purl.obolibrary.org/obo/CHEBI_29103",
+            solute_chebi3: "",
+            solute_text: "Na+",
+            solute_text2: "K+",
+            solute_text3: "",
+            source_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+            source_fma2: "http://purl.obolibrary.org/obo/FMA_9673",
+            source_fma3: "",
+            variable_text: "J_sc_Na",
+            variable_text2: "J_sc_K",
+            variable_text3: ""
+        },
+        {
+            med_fma: "http://purl.obolibrary.org/obo/FMA_84669",
+            med_pr: "http://purl.obolibrary.org/obo/PR_Q06393",
+            med_pr_text: "chloride channel protein ClC-Ka (rat)",
+            med_pr_text_syn: "CLCNK1",
+            model_entity: "chang_fujita_b_1999.cellml#sc_chloride_flux.G_sc_Cl",
+            model_entity2: "",
+            model_entity3: "",
+            protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+            sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+            sink_fma2: "channel",
+            sink_fma3: "channel",
+            solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_17996",
+            solute_chebi2: "channel",
+            solute_chebi3: "channel",
+            solute_text: "Cl-",
+            solute_text2: "channel",
+            solute_text3: "channel",
+            source_fma: "http://purl.obolibrary.org/obo/FMA_9673",
+            source_fma2: "channel",
+            source_fma3: "channel",
+            variable_text: "G_sc_Cl",
+            variable_text2: "channel",
+            variable_text3: "channel"
+        },
+        {
+            med_fma: "http://purl.obolibrary.org/obo/FMA_84669",
+            med_pr: "http://purl.obolibrary.org/obo/PR_P15387",
+            med_pr_text: "potassium voltage-gated channel subfamily B member 1 (rat)",
+            med_pr_text_syn: "P15387",
+            model_entity: "chang_fujita_b_1999.cellml#sc_potassium_flux.G_sc_K",
+            model_entity2: "",
+            model_entity3: "",
+            protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+            sink_fma: "http://purl.obolibrary.org/obo/FMA_66836",
+            sink_fma2: "channel",
+            sink_fma3: "channel",
+            solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29103",
+            solute_chebi2: "channel",
+            solute_chebi3: "channel",
+            solute_text: "K+",
+            solute_text2: "channel",
+            solute_text3: "channel",
+            source_fma: "http://purl.obolibrary.org/obo/FMA_9673",
+            source_fma2: "channel",
+            source_fma3: "channel",
+            variable_text: "G_sc_K",
+            variable_text2: "channel",
+            variable_text3: "channel"
+        },
+        {
+            med_fma: "http://purl.obolibrary.org/obo/FMA_67394",
+            med_pr: "http://purl.obolibrary.org/obo/PR_Q9Z0S6",
+            med_pr_text: "claudin-10 (mouse)",
+            med_pr_text_syn: "CLDN10A",
+            model_entity: "chang_fujita_b_1999.cellml#ms_sodium_flux.G_ms_Na",
+            model_entity2: "",
+            model_entity3: "",
+            protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+            sink_fma: "http://purl.obolibrary.org/obo/FMA_9673",
+            sink_fma2: "diffusiveflux",
+            sink_fma3: "diffusiveflux",
+            solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29101",
+            solute_chebi2: "diffusiveflux",
+            solute_chebi3: "diffusiveflux",
+            solute_text: "Na+",
+            solute_text2: "diffusiveflux",
+            solute_text3: "diffusiveflux",
+            source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+            source_fma2: "diffusiveflux",
+            source_fma3: "diffusiveflux",
+            variable_text: "G_ms_Na",
+            variable_text2: "diffusiveflux",
+            variable_text3: "diffusiveflux"
+        },
+        {
+            med_fma: "http://purl.obolibrary.org/obo/FMA_67394",
+            med_pr: "http://purl.obolibrary.org/obo/PR_O35054",
+            med_pr_text: "claudin-4 (mouse)",
+            med_pr_text_syn: "CPETR1",
+            model_entity: "chang_fujita_b_1999.cellml#ms_chloride_flux.G_ms_Cl",
+            model_entity2: "",
+            model_entity3: "",
+            protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+            sink_fma: "http://purl.obolibrary.org/obo/FMA_9673",
+            sink_fma2: "diffusiveflux",
+            sink_fma3: "diffusiveflux",
+            solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_17996",
+            solute_chebi2: "diffusiveflux",
+            solute_chebi3: "diffusiveflux",
+            solute_text: "Cl-",
+            solute_text2: "diffusiveflux",
+            solute_text3: "diffusiveflux",
+            source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+            source_fma2: "diffusiveflux",
+            source_fma3: "diffusiveflux",
+            variable_text: "G_ms_Cl",
+            variable_text2: "diffusiveflux",
+            variable_text3: "diffusiveflux"
+        },
+        {
+            med_fma: "http://purl.obolibrary.org/obo/FMA_67394",
+            med_pr: "http://purl.obolibrary.org/obo/PR_F1LZ52",
+            med_pr_text: "kelch-like protein 3 (rat)",
+            med_pr_text_syn: "F1LZ52",
+            model_entity: "chang_fujita_b_1999.cellml#ms_potassium_flux.G_ms_K",
+            model_entity2: "",
+            model_entity3: "",
+            protein_name: "http://purl.obolibrary.org/obo/CL_0000066",
+            sink_fma: "http://purl.obolibrary.org/obo/FMA_9673",
+            sink_fma2: "diffusiveflux",
+            sink_fma3: "diffusiveflux",
+            solute_chebi: "http://purl.obolibrary.org/obo/CHEBI_29103",
+            solute_chebi2: "diffusiveflux",
+            solute_chebi3: "diffusiveflux",
+            solute_text: "K+",
+            solute_text2: "diffusiveflux",
+            solute_text3: "diffusiveflux",
+            source_fma: "http://purl.obolibrary.org/obo/FMA_74550",
+            source_fma2: "diffusiveflux",
+            source_fma3: "diffusiveflux",
+            variable_text: "G_ms_K",
+            variable_text2: "diffusiveflux",
+            variable_text3: "diffusiveflux"
+        }
+    ];
+
+    // query for model entities and proteins
+    var query = "SELECT ?modelname ?protein " +
+        "WHERE { GRAPH ?workspaceName { ?modelname <http://www.obofoundry.org/ro/ro.owl#modelOf> ?protein . " +
+        "}}";
+
+    ajaxUtils.sendPostRequest(
+        sparqlUtils.endpoint,
+        query,
+        function (jsonObj) {
+            console.log("jsonObj: ", jsonObj);
+
+            //Legend titles
+            var LegendOptions = [], LegendOptionsProtein = [];
+            for (var i = 0; i < jsonObj.results.bindings.length; i++) {
+                var temp = jsonObj.results.bindings[i].modelname.value;
+                LegendOptions.push(temp.slice(0, temp.indexOf("#")));
+                LegendOptionsProtein.push(jsonObj.results.bindings[i].protein.value);
             }
-        ];
 
-        // query for model entities and proteins
-        var query = "SELECT ?modelname ?protein " +
-            "WHERE { GRAPH ?workspaceName { ?modelname <http://www.obofoundry.org/ro/ro.owl#modelOf> ?protein . " +
-            "}}";
+            console.log("LegendOptions: ", LegendOptions);
+            console.log("LegendOptionsProtein: ", LegendOptionsProtein);
 
-        ajaxUtils.sendPostRequest(
-            sparqlUtils.endpoint,
-            query,
-            function (jsonObj) {
-                console.log("jsonObj: ", jsonObj);
+            // Legend Model Entities
+            var modelEntity = [];
+            for (var i = 0; i < LegendOptions.length; i++) {
+                modelEntity.push(
+                    {
+                        model: LegendOptions[i],
+                        concentration: [],
+                        flux: [],
+                        protein: []
+                    }
+                );
 
-                //Legend titles
-                var LegendOptions = [], LegendOptionsProtein = [];
-                for (var i = 0; i < jsonObj.results.bindings.length; i++) {
-                    var temp = jsonObj.results.bindings[i].modelname.value;
-                    LegendOptions.push(temp.slice(0, temp.indexOf("#")));
-                    LegendOptionsProtein.push(jsonObj.results.bindings[i].protein.value);
-                }
-
-                console.log("LegendOptions: ", LegendOptions);
-                console.log("LegendOptionsProtein: ", LegendOptionsProtein);
-
-                // Legend Model Entities
-                var modelEntity = [];
-                for (var i = 0; i < LegendOptions.length; i++) {
-                    modelEntity.push(
+                // Insert protein IDs
+                if (!LegendOptionsProtein[i].indexOf("http://purl.obolibrary.org/obo/PR_"))
+                    modelEntity[i].protein.push(
                         {
-                            model: LegendOptions[i],
-                            concentration: [],
-                            flux: [],
-                            protein: []
+                            id: LegendOptionsProtein[i],
+                            syn: ""
                         }
                     );
+            }
 
-                    // Insert protein IDs
-                    if (!LegendOptionsProtein[i].indexOf("http://purl.obolibrary.org/obo/PR_"))
-                        modelEntity[i].protein.push(
-                            {
-                                id: LegendOptionsProtein[i],
-                                syn: ""
+            // query for model entities and mediator proteins
+            var query = "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+                "SELECT ?modelEntity ?mediator " +
+                "WHERE { " +
+                "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+                "?model_prop semsim:physicalPropertyOf ?model_proc. " +
+                "?model_proc semsim:hasMediatorParticipant ?model_medparticipant. " +
+                "?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. " +
+                "?med_entity semsim:hasPhysicalDefinition ?mediator. " +
+                "}";
+
+            ajaxUtils.sendPostRequest(
+                sparqlUtils.endpoint,
+                query,
+                function (jsonObjPr) {
+
+                    // Insert mediator proteins in modelEntity
+                    for (var i = 0; i < modelEntity.length; i++) {
+                        for (var j = 0; j < jsonObjPr.results.bindings.length; j++) {
+                            var tModelEntity = jsonObjPr.results.bindings[j].modelEntity.value;
+                            var tMediator = jsonObjPr.results.bindings[j].mediator.value;
+                            if (modelEntity[i].model == tModelEntity.slice(0, tModelEntity.indexOf("#")) &&
+                                !tMediator.indexOf("http://purl.obolibrary.org/obo/PR_")) {
+                                modelEntity[i].protein.push(
+                                    {
+                                        id: tMediator,
+                                        syn: ""
+                                    }
+                                );
                             }
-                        );
-                }
+                        }
+                    }
 
-                // query for model entities and mediator proteins
-                var query = "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
-                    "SELECT ?modelEntity ?mediator " +
-                    "WHERE { " +
-                    "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
-                    "?model_prop semsim:physicalPropertyOf ?model_proc. " +
-                    "?model_proc semsim:hasMediatorParticipant ?model_medparticipant. " +
-                    "?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. " +
-                    "?med_entity semsim:hasPhysicalDefinition ?mediator. " +
-                    "}";
-
-                ajaxUtils.sendPostRequest(
-                    sparqlUtilsMain.endpoint,
-                    query,
-                    function (jsonObjPr) {
-
-                        // Insert mediator proteins in modelEntity
-                        for (var i = 0; i < modelEntity.length; i++) {
-                            for (var j = 0; j < jsonObjPr.results.bindings.length; j++) {
-                                var tModelEntity = jsonObjPr.results.bindings[j].modelEntity.value;
-                                var tMediator = jsonObjPr.results.bindings[j].mediator.value;
-                                if (modelEntity[i].model == tModelEntity.slice(0, tModelEntity.indexOf("#")) &&
-                                    !tMediator.indexOf("http://purl.obolibrary.org/obo/PR_")) {
-                                    modelEntity[i].protein.push(
-                                        {
-                                            id: tMediator,
-                                            syn: ""
-                                        }
-                                    );
+                    // Filter proteins
+                    for (var i = 0; i < modelEntity.length; i++) {
+                        for (var j = 0; j < modelEntity[i].protein.length; j++) {
+                            for (var k = j + 1; k < modelEntity[i].protein.length; k++) {
+                                if (modelEntity[i].protein[j].id == modelEntity[i].protein[k].id) {
+                                    modelEntity[i].protein.splice(k, 1);
+                                    k--;
                                 }
                             }
                         }
+                    }
 
-                        // Filter proteins
-                        for (var i = 0; i < modelEntity.length; i++) {
-                            for (var j = 0; j < modelEntity[i].protein.length; j++) {
-                                for (var k = j + 1; k < modelEntity[i].protein.length; k++) {
-                                    if (modelEntity[i].protein[j].id == modelEntity[i].protein[k].id) {
-                                        modelEntity[i].protein.splice(k, 1);
-                                        k--;
-                                    }
+                    var drawFunction = function () {
+                        console.log("Legend modelEntity: ", modelEntity);
+
+                        // helper function to compare proteins wrt to the assembled model
+                        // med_pr and med_pr_text_syn properties in combinedMembrane
+                        var calculateSimilarity = function (modelEntityPrArray, combinedMembraneMed) {
+                            for (var i = 0; i < modelEntityPrArray.length; i++) {
+                                if ((modelEntityPrArray[i].id == combinedMembraneMed.med_pr) &&
+                                    (modelEntityPrArray[i].syn == combinedMembraneMed.med_pr_text_syn)) {
+                                    return 1;
                                 }
+                                else if ((modelEntityPrArray[i].id != combinedMembraneMed.med_pr) &&
+                                    (modelEntityPrArray[i].syn == combinedMembraneMed.med_pr_text_syn)) {
+                                    return [modelEntityPrArray[i].id, combinedMembraneMed.med_pr];
+                                }
+                            }
+                            return 0;
+                        }
+
+                        // Data
+                        var d = [];
+                        for (var i = 0; i < modelEntity.length; i++) {
+                            d[i] = [];
+                            for (var j = 0; j < combinedMembrane.length; j++) {
+                                d[i].push(
+                                    {
+                                        axis: combinedMembrane[j].med_pr_text_syn,
+                                        value: calculateSimilarity(modelEntity[i].protein, combinedMembrane[j])
+                                    }
+                                );
                             }
                         }
 
-                        var drawFunction = function () {
-                            console.log("Legend modelEntity: ", modelEntity);
+                        // draw function 2
+                        var draw2Function = function () {
+                            console.log("d: ", d);
 
-                            // helper function to compare proteins wrt to the assembled model
-                            // med_pr and med_pr_text_syn properties in combinedMembrane
-                            var calculateSimilarity = function (modelEntityPrArray, combinedMembraneMed) {
-                                for (var i = 0; i < modelEntityPrArray.length; i++) {
-                                    if ((modelEntityPrArray[i].id == combinedMembraneMed.med_pr) &&
-                                        (modelEntityPrArray[i].syn == combinedMembraneMed.med_pr_text_syn)) {
-                                        return 1;
-                                    }
-                                    else if ((modelEntityPrArray[i].id != combinedMembraneMed.med_pr) &&
-                                        (modelEntityPrArray[i].syn == combinedMembraneMed.med_pr_text_syn)) {
-                                        return [modelEntityPrArray[i].id, combinedMembraneMed.med_pr];
-                                    }
-                                }
-                                return 0;
+                            //Options for the Radar chart, other than default
+                            var mycfg = {
+                                w: w,
+                                h: h,
+                                maxValue: 1,
+                                levels: 11,
+                                ExtraWidthX: 300
                             }
 
-                            // Data
-                            var d = [];
-                            for (var i = 0; i < modelEntity.length; i++) {
-                                d[i] = [];
-                                for (var j = 0; j < combinedMembrane.length; j++) {
-                                    d[i].push(
-                                        {
-                                            axis: combinedMembrane[j].med_pr_text_syn,
-                                            value: calculateSimilarity(modelEntity[i].protein, combinedMembrane[j])
-                                        }
-                                    );
-                                }
-                            }
-
-                            // draw function 2
-                            var draw2Function = function () {
-                                console.log("d: ", d);
-
-                                //Options for the Radar chart, other than default
-                                var mycfg = {
-                                    w: w,
-                                    h: h,
-                                    maxValue: 1,
-                                    levels: 11,
-                                    ExtraWidthX: 300
-                                }
-
-                                //Remove zero values from d and corresponding indexes in
-                                // LegendOptions, LegendOptionsProtein and modelEntity
-                                for (var i = 0; i < d.length; i++) {
-                                    var counter = 0;
-                                    for (var j = 0; j < d[i].length; j++) {
-                                        if (d[i][j].value == 0) {
-                                            counter++;
-                                        }
-                                    }
-
-                                    if (counter == d[i].length) {
-                                        d.splice(i, 1);
-                                        LegendOptions.splice(i, 1);
-                                        LegendOptionsProtein.splice(i, 1);
-                                        modelEntity.splice(i, 1);
-                                        i--;
+                            //Remove zero values from d and corresponding indexes in
+                            // LegendOptions, LegendOptionsProtein and modelEntity
+                            for (var i = 0; i < d.length; i++) {
+                                var counter = 0;
+                                for (var j = 0; j < d[i].length; j++) {
+                                    if (d[i][j].value == 0) {
+                                        counter++;
                                     }
                                 }
 
-                                //Call function to draw the Radar chart
-                                //Will expect that data is in %'s
-                                RadarChart.draw("#chart", d, mycfg);
-
-                                ////////////////////////////////////////////
-                                /////////// Initiate legend ////////////////
-                                ////////////////////////////////////////////
-                                var svg = d3.select('#chart')
-                                    .selectAll('svg')
-                                    .append('svg')
-                                    .attr("width", w + 300)
-                                    .attr("height", h);
-
-                                //Create the title for the legend
-                                var text = svg.append("text")
-                                    .attr("class", "title")
-                                    .attr('transform', 'translate(90,0)')
-                                    .attr("x", w - 70)
-                                    .attr("y", 10)
-                                    .attr("font-size", "12px")
-                                    .attr("fill", "#404040")
-                                    .text("Which models match wrt the assembled model");
-
-                                //Initiate Legend
-                                var legend = svg.append("g")
-                                    .attr("class", "legend")
-                                    .attr("height", 100)
-                                    .attr("width", 200)
-                                    .attr('transform', 'translate(90,20)');
-
-                                //Create colour squares
-                                legend.selectAll('rect')
-                                    .data(LegendOptions)
-                                    .enter()
-                                    .append("rect")
-                                    .attr("x", w - 65)
-                                    .attr("y", function (d, i) {
-                                        return i * 20;
-                                    })
-                                    .attr("width", 10)
-                                    .attr("height", 10)
-                                    .style("fill", function (d, i) {
-                                        return colorscale(i);
-                                    });
-
-                                //Create text next to squares
-                                legend.selectAll('text')
-                                    .data(LegendOptions)
-                                    .enter()
-                                    .append("text")
-                                    .attr("x", w - 52)
-                                    .attr("y", function (d, i) {
-                                        return i * 20 + 9;
-                                    })
-                                    .attr("font-size", "11px")
-                                    .attr("fill", "#737373")
-                                    .text(function (d) {
-                                        return d;
-                                    });
+                                if (counter == d[i].length) {
+                                    d.splice(i, 1);
+                                    LegendOptions.splice(i, 1);
+                                    LegendOptionsProtein.splice(i, 1);
+                                    modelEntity.splice(i, 1);
+                                    i--;
+                                }
                             }
 
-                            // EBI OLS
-                            var outerCounter = 0;
-                            var webServiceFunction = function (dPr) {
-                                var innerCounter = 0;
-                                var innerWebServiceFunction = function (dPrInner) {
-                                    var WSDbfetchREST = function (PID, fstPr, sndPr, index, ProteinSeq, requestData, baseUrl) {
+                            //Call function to draw the Radar chart
+                            //Will expect that data is in %'s
+                            RadarChart.draw("#chart", d, mycfg);
 
-                                        var dbfectendpoint = "https://www.ebi.ac.uk/Tools/dbfetch/dbfetch/uniprotkb/" + PID[index] + "/fasta";
-                                        // var dbfectendpoint = "/.api/ebi/uniprotkb/" + PID[index] + "/fasta";
+                            ////////////////////////////////////////////
+                            /////////// Initiate legend ////////////////
+                            ////////////////////////////////////////////
+                            var svg = d3.select('#chart')
+                                .selectAll('svg')
+                                .append('svg')
+                                .attr("width", w + 300)
+                                .attr("height", h);
 
-                                        ajaxUtils.sendGetRequest(
-                                            dbfectendpoint,
-                                            function (psequence) {
-                                                ProteinSeq += psequence;
+                            //Create the title for the legend
+                            var text = svg.append("text")
+                                .attr("class", "title")
+                                .attr('transform', 'translate(90,0)')
+                                .attr("x", w - 70)
+                                .attr("y", 10)
+                                .attr("font-size", "12px")
+                                .attr("fill", "#404040")
+                                .text("Which models match wrt the assembled model");
 
-                                                index++;
-                                                if (index == PID.length) {
-                                                    // console.log("ProteinSeq: ", ProteinSeq);
+                            //Initiate Legend
+                            var legend = svg.append("g")
+                                .attr("class", "legend")
+                                .attr("height", 100)
+                                .attr("width", 200)
+                                .attr('transform', 'translate(90,20)');
 
-                                                    requestData = {
-                                                        "sequence": ProteinSeq,
-                                                        "email": "dsar941@aucklanduni.ac.nz"
-                                                    }
+                            //Create colour squares
+                            legend.selectAll('rect')
+                                .data(LegendOptions)
+                                .enter()
+                                .append("rect")
+                                .attr("x", w - 65)
+                                .attr("y", function (d, i) {
+                                    return i * 20;
+                                })
+                                .attr("width", 10)
+                                .attr("height", 10)
+                                .style("fill", function (d, i) {
+                                    return colorscale(i);
+                                });
 
-                                                    var requestUrl = baseUrl + "/run/";
+                            //Create text next to squares
+                            legend.selectAll('text')
+                                .data(LegendOptions)
+                                .enter()
+                                .append("text")
+                                .attr("x", w - 52)
+                                .attr("y", function (d, i) {
+                                    return i * 20 + 9;
+                                })
+                                .attr("font-size", "11px")
+                                .attr("fill", "#737373")
+                                .text(function (d) {
+                                    return d;
+                                });
 
-                                                    ajaxUtils.sendEBIPostRequest(
-                                                        requestUrl,
-                                                        requestData,
-                                                        function (jobId) {
-                                                            // console.log("jobId: ", jobId); // jobId
+                            // Set visualized chart in local storage
+                            sessionStorage.setItem("drawChartContent", $("#platform-content").html());
+                        }
 
-                                                            var chkJobStatus = function (jobId) {
-                                                                var jobIdUrl = baseUrl + "/status/" + jobId;
-                                                                ajaxUtils.sendGetRequest(
-                                                                    jobIdUrl,
-                                                                    function (resultObj) {
-                                                                        console.log("result: ", resultObj); // jobId status
+                        // EBI OLS
+                        var outerCounter = 0;
+                        var webServiceFunction = function (dPr) {
+                            var innerCounter = 0;
+                            var innerWebServiceFunction = function (dPrInner) {
+                                var WSDbfetchREST = function (PID, fstPr, sndPr, index, ProteinSeq, requestData, baseUrl) {
 
-                                                                        if (resultObj == "RUNNING") {
-                                                                            setTimeout(function () {
-                                                                                chkJobStatus(jobId);
-                                                                            }, 5000);
-                                                                        }
+                                    var dbfectendpoint = "https://www.ebi.ac.uk/Tools/dbfetch/dbfetch/uniprotkb/" + PID[index] + "/fasta";
+                                    // var dbfectendpoint = "/.api/ebi/uniprotkb/" + PID[index] + "/fasta";
 
-                                                                        var pimUrl = baseUrl + "/result/" + jobId + "/pim";
-                                                                        ajaxUtils.sendGetRequest(
-                                                                            pimUrl,
-                                                                            function (identityMatrix) {
+                                    ajaxUtils.sendGetRequest(
+                                        dbfectendpoint,
+                                        function (psequence) {
+                                            ProteinSeq += psequence;
 
-                                                                                // console.log("tempList: ", tempList);
-                                                                                console.log("identityMatrix: ", identityMatrix);
+                                            index++;
+                                            if (index == PID.length) {
+                                                // console.log("ProteinSeq: ", ProteinSeq);
 
-                                                                                var indexOfColon = identityMatrix.search("1:"),
-                                                                                    m, n, i, j;
-
-                                                                                // console.log("index1stBar: ", identityMatrix.slice(indexOfColon - 1, identityMatrix.length));
-                                                                                identityMatrix = identityMatrix.slice(indexOfColon - 1, identityMatrix.length);
-
-                                                                                // console.log("New Identity Matrix: ", identityMatrix);
-
-                                                                                var matrixArray = identityMatrix.match(/[(\w\:)*\d\.]+/gi),
-                                                                                    proteinIndex = [],
-                                                                                    twoDMatrix = [];
-
-                                                                                // console.log("matrixArray: ", matrixArray);
-
-                                                                                for (i = 0; i < matrixArray.length; i = i + PID.length + 3) // +3 for digit:, PID, and Genes and Species
-                                                                                    matrixArray.splice(i, 1);
-
-                                                                                for (i = 0; i < matrixArray.length; i = i + PID.length + 2) // +2 for PID and Genes and Species
-                                                                                    matrixArray.splice(i, 1);
-
-                                                                                for (i = 1; i < matrixArray.length; i = i + PID.length + 1) // +1 for PID
-                                                                                    matrixArray.splice(i, 1);
-
-                                                                                console.log("matrixArray: ", matrixArray);
-
-                                                                                for (i = 0; i < matrixArray.length; i++) {
-                                                                                    if (matrixArray[i].charAt(0).match(/[A-Za-z]/gi)) {
-                                                                                        proteinIndex.push([matrixArray[i], i]);
-                                                                                    }
-                                                                                }
-
-                                                                                // console.log("proteinIndex: ", proteinIndex);
-
-                                                                                // 1D to 2D array
-                                                                                while (matrixArray.length) {
-                                                                                    matrixArray.splice(0, 1); // remove protein ID
-                                                                                    twoDMatrix.push(matrixArray.splice(0, proteinIndex.length));
-                                                                                }
-
-                                                                                for (i = 0; i < twoDMatrix.length; i++) {
-                                                                                    for (j = 0; j < twoDMatrix[i].length; j++) {
-                                                                                        twoDMatrix[i][j] = parseFloat(twoDMatrix[i][j]);
-                                                                                    }
-                                                                                }
-
-                                                                                console.log("twoDMatrix: ", twoDMatrix);
-                                                                                console.log("twoDMatrix[0][1]: ", (twoDMatrix[0][1] / 100));
-
-                                                                                // assign computed value from similarity matrix
-                                                                                d[outerCounter][innerCounter].value = twoDMatrix[0][1] / 100;
-
-                                                                                innerCounter++;
-
-                                                                                if (innerCounter == d[outerCounter].length) {
-                                                                                    outerCounter++;
-                                                                                    if (outerCounter == d.length) {
-                                                                                        draw2Function();
-                                                                                    }
-                                                                                    else {
-                                                                                        webServiceFunction(d[outerCounter]);
-                                                                                    }
-                                                                                }
-                                                                                else {
-                                                                                    innerWebServiceFunction(d[outerCounter][innerCounter]);
-                                                                                }
-                                                                            },
-                                                                            false);
-                                                                    },
-                                                                    false);
-                                                            }
-
-                                                            chkJobStatus(jobId);
-                                                            console.log("AFTER chkJobStatus(jobId)!");
-
-                                                            return;
-                                                        },
-                                                        false);
-
-                                                    return;
+                                                requestData = {
+                                                    "sequence": ProteinSeq,
+                                                    "email": "dsar941@aucklanduni.ac.nz"
                                                 }
 
-                                                // callback
-                                                WSDbfetchREST(PID, fstPr, sndPr, index, ProteinSeq, requestData, baseUrl);
-                                                console.log("AFTER WSDbfetchREST!");
-                                            },
-                                            false);
-                                    };
+                                                var requestUrl = baseUrl + "/run/";
 
-                                    if (typeof dPrInner.value == "object") {
-                                        var index = 0, ProteinSeq = "", requestData, PID = [];
-                                        var baseUrl = "https://www.ebi.ac.uk/Tools/services/rest/clustalo";
-                                        // var baseUrl = "/.api/ebi/clustalo";
+                                                ajaxUtils.sendEBIPostRequest(
+                                                    requestUrl,
+                                                    requestData,
+                                                    function (jobId) {
+                                                        // console.log("jobId: ", jobId); // jobId
 
-                                        var fstPr = dPrInner.value[0];
-                                        var sndPr = dPrInner.value[1];
-                                        fstPr = fstPr.slice(fstPr.search("PR_") + 3, fstPr.length);
-                                        sndPr = sndPr.slice(sndPr.search("PR_") + 3, sndPr.length);
+                                                        var chkJobStatus = function (jobId) {
+                                                            var jobIdUrl = baseUrl + "/status/" + jobId;
+                                                            ajaxUtils.sendGetRequest(
+                                                                jobIdUrl,
+                                                                function (resultObj) {
+                                                                    console.log("result: ", resultObj); // jobId status
 
-                                        PID.push(fstPr);
-                                        PID.push(sndPr);
+                                                                    if (resultObj == "RUNNING") {
+                                                                        setTimeout(function () {
+                                                                            chkJobStatus(jobId);
+                                                                        }, 5000);
+                                                                    }
 
-                                        console.log("PID Before: ", PID);
+                                                                    var pimUrl = baseUrl + "/result/" + jobId + "/pim";
+                                                                    ajaxUtils.sendGetRequest(
+                                                                        pimUrl,
+                                                                        function (identityMatrix) {
 
-                                        // PID does NOT start with P or Q
-                                        for (var key in PID) {
-                                            // console.log("PID[key]: ", PID[key]);
-                                            if (PID[key].charAt(0) == "Q") continue;
+                                                                            // console.log("tempList: ", tempList);
+                                                                            console.log("identityMatrix: ", identityMatrix);
 
-                                            if (PID[key].charAt(0) != "P") {
-                                                PID[key] = "P" + PID[key].replace(/^0+/, ""); // Or parseInt("065", 10);
+                                                                            var indexOfColon = identityMatrix.search("1:"),
+                                                                                m, n, i, j;
+
+                                                                            // console.log("index1stBar: ", identityMatrix.slice(indexOfColon - 1, identityMatrix.length));
+                                                                            identityMatrix = identityMatrix.slice(indexOfColon - 1, identityMatrix.length);
+
+                                                                            // console.log("New Identity Matrix: ", identityMatrix);
+
+                                                                            var matrixArray = identityMatrix.match(/[(\w\:)*\d\.]+/gi),
+                                                                                proteinIndex = [],
+                                                                                twoDMatrix = [];
+
+                                                                            // console.log("matrixArray: ", matrixArray);
+
+                                                                            for (i = 0; i < matrixArray.length; i = i + PID.length + 3) // +3 for digit:, PID, and Genes and Species
+                                                                                matrixArray.splice(i, 1);
+
+                                                                            for (i = 0; i < matrixArray.length; i = i + PID.length + 2) // +2 for PID and Genes and Species
+                                                                                matrixArray.splice(i, 1);
+
+                                                                            for (i = 1; i < matrixArray.length; i = i + PID.length + 1) // +1 for PID
+                                                                                matrixArray.splice(i, 1);
+
+                                                                            console.log("matrixArray: ", matrixArray);
+
+                                                                            for (i = 0; i < matrixArray.length; i++) {
+                                                                                if (matrixArray[i].charAt(0).match(/[A-Za-z]/gi)) {
+                                                                                    proteinIndex.push([matrixArray[i], i]);
+                                                                                }
+                                                                            }
+
+                                                                            // console.log("proteinIndex: ", proteinIndex);
+
+                                                                            // 1D to 2D array
+                                                                            while (matrixArray.length) {
+                                                                                matrixArray.splice(0, 1); // remove protein ID
+                                                                                twoDMatrix.push(matrixArray.splice(0, proteinIndex.length));
+                                                                            }
+
+                                                                            for (i = 0; i < twoDMatrix.length; i++) {
+                                                                                for (j = 0; j < twoDMatrix[i].length; j++) {
+                                                                                    twoDMatrix[i][j] = parseFloat(twoDMatrix[i][j]);
+                                                                                }
+                                                                            }
+
+                                                                            console.log("twoDMatrix: ", twoDMatrix);
+                                                                            console.log("twoDMatrix[0][1]: ", (twoDMatrix[0][1] / 100));
+
+                                                                            // assign computed value from similarity matrix
+                                                                            d[outerCounter][innerCounter].value = twoDMatrix[0][1] / 100;
+
+                                                                            innerCounter++;
+
+                                                                            if (innerCounter == d[outerCounter].length) {
+                                                                                outerCounter++;
+                                                                                if (outerCounter == d.length) {
+                                                                                    draw2Function();
+                                                                                }
+                                                                                else {
+                                                                                    webServiceFunction(d[outerCounter]);
+                                                                                }
+                                                                            }
+                                                                            else {
+                                                                                innerWebServiceFunction(d[outerCounter][innerCounter]);
+                                                                            }
+                                                                        },
+                                                                        false);
+                                                                },
+                                                                false);
+                                                        }
+
+                                                        chkJobStatus(jobId);
+                                                        console.log("AFTER chkJobStatus(jobId)!");
+
+                                                        return;
+                                                    },
+                                                    false);
+
+                                                return;
                                             }
+
+                                            // callback
+                                            WSDbfetchREST(PID, fstPr, sndPr, index, ProteinSeq, requestData, baseUrl);
+                                            console.log("AFTER WSDbfetchREST!");
+                                        },
+                                        false);
+                                };
+
+                                if (typeof dPrInner.value == "object") {
+                                    var index = 0, ProteinSeq = "", requestData, PID = [];
+                                    var baseUrl = "https://www.ebi.ac.uk/Tools/services/rest/clustalo";
+                                    // var baseUrl = "/.api/ebi/clustalo";
+
+                                    var fstPr = dPrInner.value[0];
+                                    var sndPr = dPrInner.value[1];
+                                    fstPr = fstPr.slice(fstPr.search("PR_") + 3, fstPr.length);
+                                    sndPr = sndPr.slice(sndPr.search("PR_") + 3, sndPr.length);
+
+                                    PID.push(fstPr);
+                                    PID.push(sndPr);
+
+                                    console.log("PID Before: ", PID);
+
+                                    // PID does NOT start with P or Q
+                                    for (var key in PID) {
+                                        // console.log("PID[key]: ", PID[key]);
+                                        if (PID[key].charAt(0) == "Q") continue;
+
+                                        if (PID[key].charAt(0) != "P") {
+                                            PID[key] = "P" + PID[key].replace(/^0+/, ""); // Or parseInt("065", 10);
                                         }
+                                    }
 
-                                        console.log("PID AFTER: ", PID);
+                                    console.log("PID AFTER: ", PID);
 
-                                        WSDbfetchREST(PID, fstPr, sndPr, index, ProteinSeq, requestData, baseUrl);
+                                    WSDbfetchREST(PID, fstPr, sndPr, index, ProteinSeq, requestData, baseUrl);
+                                }
+                                else {
+                                    innerCounter++;
+
+                                    if (innerCounter == d[outerCounter].length) {
+                                        outerCounter++;
+                                        if (outerCounter == d.length) {
+                                            draw2Function();
+                                        }
+                                        else {
+                                            webServiceFunction(d[outerCounter]);
+                                        }
                                     }
                                     else {
-                                        innerCounter++;
-
-                                        if (innerCounter == d[outerCounter].length) {
-                                            outerCounter++;
-                                            if (outerCounter == d.length) {
-                                                draw2Function();
-                                            }
-                                            else {
-                                                webServiceFunction(d[outerCounter]);
-                                            }
-                                        }
-                                        else {
-                                            innerWebServiceFunction(d[outerCounter][innerCounter]);
-                                        }
+                                        innerWebServiceFunction(d[outerCounter][innerCounter]);
                                     }
                                 }
-
-                                innerWebServiceFunction(d[outerCounter][innerCounter])
                             }
 
-                            webServiceFunction(d[outerCounter]);
+                            innerWebServiceFunction(d[outerCounter][innerCounter])
                         }
 
-                        var outerCounter = 0;
-                        var mediatorFunction = function (modelEntityProteinArray) {
-                            var innerCounter = 0;
-                            var innermediatorFunction = function (modelEntityInnerProteinArray) {
-                                var endpointOLS = sparqlUtils.abiOntoEndpoint + "/pr/terms?iri=" + modelEntityInnerProteinArray.id;
+                        webServiceFunction(d[outerCounter]);
+                    }
 
-                                ajaxUtils.sendGetRequest(
-                                    endpointOLS,
-                                    function (jsonObjOLSMedPr) {
-                                        var med_pr_text_syn;
-                                        if (jsonObjOLSMedPr._embedded.terms[0].annotation["has_related_synonym"] == undefined) {
-                                            med_pr_text_syn = jsonObjOLSMedPr._embedded.terms[0].annotation["id"][0].slice(3);
-                                        }
-                                        else {
-                                            var tempvar = jsonObjOLSMedPr._embedded.terms[0].annotation["has_related_synonym"];
-                                            med_pr_text_syn = tempvar[0].toUpperCase();
-                                        }
+                    var outerCounter = 0;
+                    var mediatorFunction = function (modelEntityProteinArray) {
+                        var innerCounter = 0;
+                        var innermediatorFunction = function (modelEntityInnerProteinArray) {
+                            var endpointOLS = sparqlUtils.abiOntoEndpoint + "/pr/terms?iri=" + modelEntityInnerProteinArray.id;
 
-                                        modelEntity[outerCounter].protein[innerCounter].syn = med_pr_text_syn;
+                            ajaxUtils.sendGetRequest(
+                                endpointOLS,
+                                function (jsonObjOLSMedPr) {
+                                    var med_pr_text_syn;
+                                    if (jsonObjOLSMedPr._embedded.terms[0].annotation["has_related_synonym"] == undefined) {
+                                        med_pr_text_syn = jsonObjOLSMedPr._embedded.terms[0].annotation["id"][0].slice(3);
+                                    }
+                                    else {
+                                        var tempvar = jsonObjOLSMedPr._embedded.terms[0].annotation["has_related_synonym"];
+                                        med_pr_text_syn = tempvar[0].toUpperCase();
+                                    }
 
-                                        innerCounter++;
+                                    modelEntity[outerCounter].protein[innerCounter].syn = med_pr_text_syn;
 
-                                        if (innerCounter == modelEntity[outerCounter].protein.length) {
-                                            outerCounter++;
-                                            mediatorFunction(modelEntity[outerCounter]);
-                                        }
-                                        else {
-                                            innermediatorFunction(modelEntity[outerCounter].protein[innerCounter]); // callback
-                                        }
-                                    },
-                                    true);
-                            }
+                                    innerCounter++;
 
-                            if (outerCounter == modelEntity.length) {
-                                drawFunction();
-                            }
-                            else {
-                                innermediatorFunction(modelEntity[outerCounter].protein[innerCounter]); //First call
-                            }
+                                    if (innerCounter == modelEntity[outerCounter].protein.length) {
+                                        outerCounter++;
+                                        mediatorFunction(modelEntity[outerCounter]);
+                                    }
+                                    else {
+                                        innermediatorFunction(modelEntity[outerCounter].protein[innerCounter]); // callback
+                                    }
+                                },
+                                true);
                         }
 
-                        mediatorFunction(modelEntity[outerCounter].protein); // First call
-                    },
-                    true);
-            },
-            true
-        );
-    }
-    radarplot();
+                        if (outerCounter == modelEntity.length) {
+                            drawFunction();
+                        }
+                        else {
+                            innermediatorFunction(modelEntity[outerCounter].protein[innerCounter]); //First call
+                        }
+                    }
+
+                    mediatorFunction(modelEntity[outerCounter].protein); // First call
+                },
+                true);
+        },
+        true
+    );
 };
 
 exports.epithelialPlatform = epithelialPlatform;
+exports.radarplot = radarplot;
