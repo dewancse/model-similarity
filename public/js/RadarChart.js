@@ -1,13 +1,3 @@
-//Practically all this code comes from https://github.com/alangrafu/radar-chart-d3
-//I only made some additions and aesthetic adjustments to make the chart look better
-//(of course, that is only my point of view)
-//Such as a better placement of the titles at each line end,
-//adding numbers that reflect what each circular level stands for
-//Not placing the last level and slight differences in color
-//
-//For a bit of extra information check the blog about it:
-//http://nbremer.blogspot.nl/2013/09/making-d3-radar-chart-look-bit-better.html
-
 var RadarChart = {
     draw: function (id, d, options) {
         var cfg = {
@@ -27,7 +17,7 @@ var RadarChart = {
             ExtraWidthY: 100,
             // color: d3.scale.category10() // v3
             color: d3.scaleOrdinal(d3.schemeCategory20) // v4
-    };
+        };
 
         if ('undefined' !== typeof options) {
             for (var i in options) {
@@ -245,15 +235,39 @@ var RadarChart = {
                 })
                 .append("svg:title")
                 .text(function (j) {
-                    return Math.max(j.value, 0)
+                    var tmpv = Math.max(j.value, 0) * 100;
+
+                    var str = "";
+                    for (var i = 0; i < j.dvalue.length; i++) {
+                        if (j.dvalue[i].value != 0)
+                            str += j.dvalue[i].axis + " ";
+                    }
+
+                    if (tmpv != 100 && tmpv != 0) {
+                        return "Protein Name: " + j.assembledProteinName + "\n" +
+                            "Protein Name': " + j.proteinName + "\n" +
+                            "Similarity: " + Math.max(j.value, 0) * 100 +
+                            " % similar to " + j.axis + " due to different species. \n" +
+                            "Group Member: " + str
+                    }
+                    else if (tmpv == 0) {
+                        return 0
+                    }
+                    else {
+                        return "Protein Name: " + j.assembledProteinName + "\n" +
+                            "Protein Name': " + j.proteinName + "\n" +
+                            "Similarity: " + Math.max(j.value, 0) * 100 +
+                            " % similar to " + j.axis + "\n" +
+                            "Group Member: " + str
+                    }
                 });
 
             series++;
         });
         //Tooltip
-        tooltip = g.append('text')
-            .style('opacity', 0)
-            .style('font-family', 'sans-serif')
-            .style('font-size', '13px');
+        // tooltip = g.append('text')
+        //     .style('opacity', 0)
+        //     .style('font-family', 'sans-serif')
+        //     .style('font-size', '13px');
     }
 };

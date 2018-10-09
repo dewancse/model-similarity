@@ -11769,7 +11769,7 @@ var radarplot = function () {
         {
             med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
             med_pr: "http://purl.obolibrary.org/obo/PR_P59158", // PR_P55018 (RAT) and PR_P59158 (Mouse)
-            med_pr_text: "solute carrier family 12 member 3 (rat)",
+            med_pr_text: "solute carrier family 12 member 3 (mouse)",
             med_pr_text_syn: "TSC",
             model_entity: "chang_fujita_b_1999.cellml#total_transepithelial_sodium_flux.J_mc_Na",
             model_entity2: "chang_fujita_b_1999.cellml#solute_concentrations.J_mc_Cl",
@@ -12081,8 +12081,7 @@ var radarplot = function () {
                 if (!LegendOptionsProtein[i].indexOf("http://purl.obolibrary.org/obo/PR_"))
                     modelEntity[i].protein.push(
                         {
-                            id: LegendOptionsProtein[i],
-                            syn: ""
+                            id: LegendOptionsProtein[i]
                         }
                     );
             }
@@ -12112,8 +12111,7 @@ var radarplot = function () {
                                 !tMediator.indexOf("http://purl.obolibrary.org/obo/PR_")) {
                                 modelEntity[i].protein.push(
                                     {
-                                        id: tMediator,
-                                        syn: ""
+                                        id: tMediator
                                     }
                                 );
                             }
@@ -12151,6 +12149,16 @@ var radarplot = function () {
                             return 0;
                         }
 
+                        var calculateProteinNameSimilarity = function (modelEntityPrArray, combinedMembraneMed) {
+                            for (var i = 0; i < modelEntityPrArray.length; i++) {
+                                if ((modelEntityPrArray[i].id != combinedMembraneMed.med_pr) &&
+                                    (modelEntityPrArray[i].syn == combinedMembraneMed.med_pr_text_syn)) {
+                                    return modelEntityPrArray[i].proteinName;
+                                }
+                            }
+                            return combinedMembraneMed.med_pr_text;
+                        }
+
                         // Data
                         var d = [];
                         for (var i = 0; i < modelEntity.length; i++) {
@@ -12159,7 +12167,10 @@ var radarplot = function () {
                                 d[i].push(
                                     {
                                         axis: combinedMembrane[j].med_pr_text_syn,
-                                        value: calculateSimilarity(modelEntity[i].protein, combinedMembrane[j])
+                                        assembledProteinName: combinedMembrane[j].med_pr_text,
+                                        proteinName: calculateProteinNameSimilarity(modelEntity[i].protein, combinedMembrane[j]),
+                                        value: calculateSimilarity(modelEntity[i].protein, combinedMembrane[j]),
+                                        dvalue: d[i]
                                     }
                                 );
                             }
@@ -12465,6 +12476,7 @@ var radarplot = function () {
                                 endpointOLS,
                                 function (jsonObjOLSMedPr) {
                                     var med_pr_text_syn;
+                                    proteinName = jsonObjOLSMedPr._embedded.terms[0].label
                                     if (jsonObjOLSMedPr._embedded.terms[0].annotation["has_related_synonym"] == undefined) {
                                         med_pr_text_syn = jsonObjOLSMedPr._embedded.terms[0].annotation["id"][0].slice(3);
                                     }
@@ -12474,6 +12486,7 @@ var radarplot = function () {
                                     }
 
                                     modelEntity[outerCounter].protein[innerCounter].syn = med_pr_text_syn;
+                                    modelEntity[outerCounter].protein[innerCounter].proteinName = proteinName;
 
                                     innerCounter++;
 
