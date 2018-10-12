@@ -7438,7 +7438,7 @@ var radarplot = function () {
     var combinedMembrane = [
         {
             med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
-            med_pr: "http://purl.obolibrary.org/obo/PR_P59158", // PR_P55018 (RAT) and PR_P59158 (Mouse)
+            med_pr: "http://purl.obolibrary.org/obo/PR_P59158", // PR_P55018 (RAT), PR_P59158 (Mouse) and PR_P55017 (human)
             med_pr_text: "solute carrier family 12 member 3 (mouse)",
             med_pr_text_syn: "TSC",
             model_entity: "chang_fujita_b_1999.cellml#total_transepithelial_sodium_flux.J_mc_Na",

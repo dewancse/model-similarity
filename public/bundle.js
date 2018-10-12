@@ -1949,6 +1949,9 @@ var modelSimilarity = (function (global) {
     var csvArray = [], tempxAxis = [], tempyAxis = [], tcsvArray = [];
     var csvCounter = 0, xAxis = [], yAxis = [], csvname = [], dataLen = 0;
 
+    /*******************************************/
+    /*************** Home Page *****************/
+    /*******************************************/
     mainUtils.loadHomeHtml = function () {
         miscellaneous.showLoading("#main-content");
         ajaxUtils.sendGetRequest(
@@ -2618,7 +2621,6 @@ var modelSimilarity = (function (global) {
     /*******************************************/
     /********* SED-ML based annotation *********/
     /*******************************************/
-
     // svg graph
     var svgDiagram = function (csvData, xDomain, yDomain, csvname) {
 
@@ -3174,8 +3176,9 @@ var modelSimilarity = (function (global) {
             false);
     }
 
-    // similarity graph
-    // SEDML based annotation and visualization of protocols
+    /*******************************************/
+    /************ Similarity Graph *************/
+    /*******************************************/
     mainUtils.similarityModelsHtml = function () {
         ajaxUtils.sendGetRequest(
             sparqlUtils.similarityHtml,
@@ -3727,7 +3730,7 @@ var modelSimilarity = (function (global) {
     };
 
     /*******************************************/
-    /********* Platform *************/
+    /*************** Platform ******************/
     /*******************************************/
     mainUtils.loadPlatformHtml = function () {
         ajaxUtils.sendGetRequest(
@@ -3740,7 +3743,7 @@ var modelSimilarity = (function (global) {
     };
 
     /*******************************************/
-    /********* EPITHELIAL Platform *************/
+    /********* Epithelial Platform *************/
     /*******************************************/
     mainUtils.loadEpithelialHtml = function () {
         ajaxUtils.sendGetRequest(
@@ -11768,7 +11771,7 @@ var radarplot = function () {
     var combinedMembrane = [
         {
             med_fma: "http://purl.obolibrary.org/obo/FMA_84666",
-            med_pr: "http://purl.obolibrary.org/obo/PR_P59158", // PR_P55018 (RAT) and PR_P59158 (Mouse)
+            med_pr: "http://purl.obolibrary.org/obo/PR_P59158", // PR_P55018 (RAT), PR_P59158 (Mouse) and PR_P55017 (human)
             med_pr_text: "solute carrier family 12 member 3 (mouse)",
             med_pr_text_syn: "TSC",
             model_entity: "chang_fujita_b_1999.cellml#total_transepithelial_sodium_flux.J_mc_Na",

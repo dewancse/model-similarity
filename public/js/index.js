@@ -61,6 +61,9 @@ var modelSimilarity = (function (global) {
     var csvArray = [], tempxAxis = [], tempyAxis = [], tcsvArray = [];
     var csvCounter = 0, xAxis = [], yAxis = [], csvname = [], dataLen = 0;
 
+    /*******************************************/
+    /*************** Home Page *****************/
+    /*******************************************/
     mainUtils.loadHomeHtml = function () {
         miscellaneous.showLoading("#main-content");
         ajaxUtils.sendGetRequest(
@@ -730,7 +733,6 @@ var modelSimilarity = (function (global) {
     /*******************************************/
     /********* SED-ML based annotation *********/
     /*******************************************/
-
     // svg graph
     var svgDiagram = function (csvData, xDomain, yDomain, csvname) {
 
@@ -1286,8 +1288,9 @@ var modelSimilarity = (function (global) {
             false);
     }
 
-    // similarity graph
-    // SEDML based annotation and visualization of protocols
+    /*******************************************/
+    /************ Similarity Graph *************/
+    /*******************************************/
     mainUtils.similarityModelsHtml = function () {
         ajaxUtils.sendGetRequest(
             sparqlUtils.similarityHtml,
@@ -1839,7 +1842,7 @@ var modelSimilarity = (function (global) {
     };
 
     /*******************************************/
-    /********* Platform *************/
+    /*************** Platform ******************/
     /*******************************************/
     mainUtils.loadPlatformHtml = function () {
         ajaxUtils.sendGetRequest(
@@ -1852,7 +1855,7 @@ var modelSimilarity = (function (global) {
     };
 
     /*******************************************/
-    /********* EPITHELIAL Platform *************/
+    /********* Epithelial Platform *************/
     /*******************************************/
     mainUtils.loadEpithelialHtml = function () {
         ajaxUtils.sendGetRequest(
