@@ -2,12 +2,6 @@
  * Model Similarity Measurements
  * Created by dsar941 on 6/2/2018.
  */
-var ajaxUtils = require("./../libs/ajax-utils.js");
-var miscellaneous = require("./miscellaneous.js");
-var sparqlUtils = require("./sparqlUtils.js");
-var similarity = require("./similarity.js");
-var epithelialplatform = require("./epithelialPlatform.js");
-
 "use strict";
 
 var modelSimilarity = (function (global) {
@@ -65,9 +59,9 @@ var modelSimilarity = (function (global) {
     /*************** Home Page *****************/
     /*******************************************/
     mainUtils.loadHomeHtml = function () {
-        miscellaneous.showLoading("#main-content");
-        ajaxUtils.sendGetRequest(
-            sparqlUtils.homeHtml,
+        showLoading("#main-content");
+        sendGetRequest(
+            homeHtml,
             function (homeHtmlContent) {
                 $("#main-content").html(homeHtmlContent);
             },
@@ -79,8 +73,8 @@ var modelSimilarity = (function (global) {
     /*******************************************/
 
     mainUtils.loadSearchHtml = function () {
-        ajaxUtils.sendGetRequest(
-            sparqlUtils.searchHtml,
+        sendGetRequest(
+            searchHtml,
             function (searchHtmlContent) {
                 $("#main-content").html(searchHtmlContent);
             },
@@ -89,17 +83,17 @@ var modelSimilarity = (function (global) {
 
     var discoverModelSimilarity = function () {
 
-        var query = sparqlUtils.concentrationOPBSPARQL2();
-        ajaxUtils.sendPostRequest(
-            sparqlUtils.endpoint,
+        var query = concentrationOPBSPARQL2();
+        sendPostRequest(
+            endpoint,
             query,
             function (jsonObj) {
 
                 console.log("jsonObjCons: ", jsonObj);
 
-                var query = sparqlUtils.fluxOPBSPARQL();
-                ajaxUtils.sendPostRequest(
-                    sparqlUtils.endpoint,
+                var query = fluxOPBSPARQL();
+                sendPostRequest(
+                    endpoint,
                     query,
                     function (jsonObjFlux) {
 
@@ -112,7 +106,7 @@ var modelSimilarity = (function (global) {
                                     cellmlname = jsonObj.results.bindings[j].model_entity.value.slice(0, indexOfHash);
 
                                 if (modelEntity[i].model == cellmlname) {
-                                    if (!miscellaneous.isExist2(jsonObj.results.bindings[j].model_entity.value, modelEntity[i].concentration)) {
+                                    if (!isExist2(jsonObj.results.bindings[j].model_entity.value, modelEntity[i].concentration)) {
                                         modelEntity[i].concentration.push({
                                             model_entity: jsonObj.results.bindings[j].model_entity.value,
                                             chebi: jsonObj.results.bindings[j].chebi.value,
@@ -131,7 +125,7 @@ var modelSimilarity = (function (global) {
 
                                 if (modelEntity[i].model == cellmlname) {
                                     // Exceptional: J_Na (TODOs)
-                                    if (!miscellaneous.isExist2(jsonObjFlux.results.bindings[j].model_entity.value, modelEntity[i].flux)) {
+                                    if (!isExist2(jsonObjFlux.results.bindings[j].model_entity.value, modelEntity[i].flux)) {
                                         modelEntity[i].flux.push({
                                             model_entity: jsonObjFlux.results.bindings[j].model_entity.value,
                                             sourceCHEBI: jsonObjFlux.results.bindings[j].sourceCHEBI.value,
@@ -378,11 +372,11 @@ var modelSimilarity = (function (global) {
     $(document).ready(function () {
 
         // On first load, show home view
-        miscellaneous.showLoading("#main-content");
+        showLoading("#main-content");
 
         // homepage
-        ajaxUtils.sendGetRequest(
-            sparqlUtils.homeHtml,
+        sendGetRequest(
+            homeHtml,
             function (homeHtmlContent) {
                 $("#main-content").html(homeHtmlContent);
             },
@@ -410,7 +404,7 @@ var modelSimilarity = (function (global) {
             var index = 0, ProteinSeq = "", requestData, PID = [],
                 baseUrl = "https://www.ebi.ac.uk/Tools/services/rest/clustalo";
 
-            var enteredPrID = miscellaneous.splitPRFromProtein2(modelEntity, PID, enteredIndex);
+            var enteredPrID = splitPRFromProtein2(modelEntity, PID, enteredIndex);
 
             // PID does NOT start with P or Q
             for (var key in PID) {
@@ -430,7 +424,7 @@ var modelSimilarity = (function (global) {
 
                 var dbfectendpoint = "https://www.ebi.ac.uk/Tools/dbfetch/dbfetch/uniprotkb/" + PID[index] + "/fasta";
 
-                ajaxUtils.sendGetRequest(
+                sendGetRequest(
                     dbfectendpoint,
                     function (psequence) {
                         ProteinSeq += psequence;
@@ -446,7 +440,7 @@ var modelSimilarity = (function (global) {
 
                             var requestUrl = baseUrl + "/run/";
 
-                            ajaxUtils.sendEBIPostRequest(
+                            sendEBIPostRequest(
                                 requestUrl,
                                 requestData,
                                 function (jobId) {
@@ -454,7 +448,7 @@ var modelSimilarity = (function (global) {
 
                                     var chkJobStatus = function (jobId) {
                                         var jobIdUrl = baseUrl + "/status/" + jobId;
-                                        ajaxUtils.sendGetRequest(
+                                        sendGetRequest(
                                             jobIdUrl,
                                             function (resultObj) {
                                                 console.log("result: ", resultObj); // jobId status
@@ -466,10 +460,10 @@ var modelSimilarity = (function (global) {
                                                 }
 
                                                 var pimUrl = baseUrl + "/result/" + jobId + "/pim";
-                                                ajaxUtils.sendGetRequest(
+                                                sendGetRequest(
                                                     pimUrl,
                                                     function (identityMatrix) {
-                                                        miscellaneous.similarityMatrixEBI2(
+                                                        similarityMatrixEBI2(
                                                             identityMatrix,
                                                             PID,
                                                             enteredPrID,
@@ -507,19 +501,19 @@ var modelSimilarity = (function (global) {
     var synonymFromEBIOLSCon = function (concentrationArr, enteredIndex) {
 
         var endpointOLS, chebi_uri, fma_uri;
-        if (concentrationArr.concentration[idCounter].chebi.indexOf(sparqlUtils.partOfCHEBIUri) != -1) {
-            endpointOLS = sparqlUtils.ebiOntoEndpoint + "/chebi/terms?iri=" + concentrationArr.concentration[idCounter].chebi;
+        if (concentrationArr.concentration[idCounter].chebi.indexOf(partOfCHEBIUri) != -1) {
+            endpointOLS = ebiOntoEndpoint + "/chebi/terms?iri=" + concentrationArr.concentration[idCounter].chebi;
         }
 
-        ajaxUtils.sendGetRequest(
+        sendGetRequest(
             endpointOLS,
             function (jsonObjOLSCHEBI) {
 
-                if (concentrationArr.concentration[idCounter].fma.indexOf(sparqlUtils.partOfFMAUri) != -1) {
-                    endpointOLS = sparqlUtils.ebiOntoEndpoint + "/fma/terms?iri=" + concentrationArr.concentration[idCounter].fma;
+                if (concentrationArr.concentration[idCounter].fma.indexOf(partOfFMAUri) != -1) {
+                    endpointOLS = ebiOntoEndpoint + "/fma/terms?iri=" + concentrationArr.concentration[idCounter].fma;
                 }
 
-                ajaxUtils.sendGetRequest(
+                sendGetRequest(
                     endpointOLS,
                     function (jsonObjOLSFMA) {
 
@@ -563,41 +557,41 @@ var modelSimilarity = (function (global) {
     var synonymFromEBIOLSFlux = function (fluxArr, enteredIndex) {
 
         var endpointOLS, chebi_uri, fma_uri;
-        if (fluxArr.flux[idCounter].sourceCHEBI.indexOf(sparqlUtils.partOfCHEBIUri) != -1) {
-            endpointOLS = sparqlUtils.ebiOntoEndpoint + "/chebi/terms?iri=" + fluxArr.flux[idCounter].sourceCHEBI;
+        if (fluxArr.flux[idCounter].sourceCHEBI.indexOf(partOfCHEBIUri) != -1) {
+            endpointOLS = ebiOntoEndpoint + "/chebi/terms?iri=" + fluxArr.flux[idCounter].sourceCHEBI;
         }
 
-        ajaxUtils.sendGetRequest(
+        sendGetRequest(
             endpointOLS,
             function (jsonObjOLSCHEBI) {
 
-                if (fluxArr.flux[idCounter].sourceFMA.indexOf(sparqlUtils.partOfFMAUri) != -1) {
+                if (fluxArr.flux[idCounter].sourceFMA.indexOf(partOfFMAUri) != -1) {
                     // var indexofColon = fluxArr.flux[idCounter].sourceFMA.indexOf("FMA:");
                     // fma_uri = "http://purl.org/sig/ont/fma/fma" + fluxArr.flux[idCounter].sourceFMA.slice(indexofColon + 4); // 3 + 1 (skip :)
-                    endpointOLS = sparqlUtils.ebiOntoEndpoint + "/fma/terms?iri=" + fluxArr.flux[idCounter].sourceFMA;
+                    endpointOLS = ebiOntoEndpoint + "/fma/terms?iri=" + fluxArr.flux[idCounter].sourceFMA;
                 }
 
-                ajaxUtils.sendGetRequest(
+                sendGetRequest(
                     endpointOLS,
                     function (jsonObjOLSSourceFMA) {
 
-                        if (fluxArr.flux[idCounter].sinkFMA.indexOf(sparqlUtils.partOfFMAUri) != -1) {
+                        if (fluxArr.flux[idCounter].sinkFMA.indexOf(partOfFMAUri) != -1) {
                             // var indexofColon = fluxArr.flux[idCounter].sinkFMA.indexOf("FMA:");
                             // fma_uri = "http://purl.org/sig/ont/fma/fma" + fluxArr.flux[idCounter].sinkFMA.slice(indexofColon + 4); // 3 + 1 (skip :)
-                            endpointOLS = sparqlUtils.ebiOntoEndpoint + "/fma/terms?iri=" + fluxArr.flux[idCounter].sinkFMA;
+                            endpointOLS = ebiOntoEndpoint + "/fma/terms?iri=" + fluxArr.flux[idCounter].sinkFMA;
                         }
 
-                        ajaxUtils.sendGetRequest(
+                        sendGetRequest(
                             endpointOLS,
                             function (jsonObjOLSSinkFMA) {
 
-                                if (fluxArr.flux[idCounter].mediatorFMA.indexOf(sparqlUtils.partOfFMAUri) != -1) {
+                                if (fluxArr.flux[idCounter].mediatorFMA.indexOf(partOfFMAUri) != -1) {
                                     // var indexofColon = fluxArr.flux[idCounter].mediatorFMA.indexOf("FMA:");
                                     // fma_uri = "http://purl.org/sig/ont/fma/fma" + fluxArr.flux[idCounter].mediatorFMA.slice(indexofColon + 4); // 3 + 1 (skip :)
-                                    endpointOLS = sparqlUtils.ebiOntoEndpoint + "/fma/terms?iri=" + fluxArr.flux[idCounter].mediatorFMA;
+                                    endpointOLS = ebiOntoEndpoint + "/fma/terms?iri=" + fluxArr.flux[idCounter].mediatorFMA;
                                 }
 
-                                ajaxUtils.sendGetRequest(
+                                sendGetRequest(
                                     endpointOLS,
                                     function (jsonObjOLSMediatorFMA) {
 
@@ -798,7 +792,7 @@ var modelSimilarity = (function (global) {
                 .attr("fill", "none")
                 .attr("stroke", function (d) {
 
-                    checkBox[c] = new miscellaneous.d3CheckBox();
+                    checkBox[c] = new d3CheckBox();
                     checkBox[c].x(700).y(py).checked(true).clickEvent(update);
 
                     g.call(checkBox[c]);
@@ -920,7 +914,7 @@ var modelSimilarity = (function (global) {
                     csvname = [csvname[csvname.length - 1], "data/experimental.csv"];
 
                     console.log(csvname);
-                    svgDiagram(csvArray, miscellaneous.minMax(tempxAxis), miscellaneous.minMax(tempyAxis), csvname);
+                    svgDiagram(csvArray, minMax(tempxAxis), minMax(tempyAxis), csvname);
                 }
             })
         }
@@ -980,7 +974,7 @@ var modelSimilarity = (function (global) {
                     expFunction(xAxis, yAxis, csvname, csvArray, tempxAxis, tempyAxis);
                 }
                 else {
-                    svgDiagram(csvArray, miscellaneous.minMax(tempxAxis), miscellaneous.minMax(tempyAxis), csvname);
+                    svgDiagram(csvArray, minMax(tempxAxis), minMax(tempyAxis), csvname);
                 }
 
                 return;
@@ -1072,8 +1066,8 @@ var modelSimilarity = (function (global) {
 
     // process protocols information
     var protocol = function (protocolName) {
-        ajaxUtils.sendGetRequest(
-            sparqlUtils.sedmlWorkspaceName,
+        sendGetRequest(
+            sedmlWorkspaceName,
             function (sedmlworkspaceHtml) {
                 // SEDML document
                 var parser = new DOMParser();
@@ -1103,19 +1097,19 @@ var modelSimilarity = (function (global) {
                 console.log("protocol values: ", id, name, opby, opbx, chebi, fma, sparqly, sparqlx, time);
 
                 // query for y axis
-                var query = sparqlUtils.sparqlOBJ[sparqly];
+                var query = sparqlOBJ[sparqly];
 
-                ajaxUtils.sendPostRequest(
-                    sparqlUtils.endpoint,
+                sendPostRequest(
+                    endpoint,
                     query,
                     function (jsonObjy) {
                         console.log("jsonObjy: ", jsonObjy);
 
                         // query for x axis
-                        var query = sparqlUtils.sparqlOBJ[sparqlx];
+                        var query = sparqlOBJ[sparqlx];
 
-                        ajaxUtils.sendPostRequest(
-                            sparqlUtils.endpoint,
+                        sendPostRequest(
+                            endpoint,
                             query,
                             function (jsonObjx) {
                                 console.log("jsonObjx: ", jsonObjx);
@@ -1134,8 +1128,8 @@ var modelSimilarity = (function (global) {
                                 console.log("templistOfModelx: ", templistOfModelx);
                                 console.log("templistOfModely: ", templistOfModely);
 
-                                miscellaneous.tempModelHelper(tempOBJx, templistOfModelx);
-                                miscellaneous.tempModelHelper(tempOBJy, templistOfModely);
+                                tempModelHelper(tempOBJx, templistOfModelx);
+                                tempModelHelper(tempOBJy, templistOfModely);
 
                                 console.log("tempOBJx and tempOBJy: ", tempOBJx, tempOBJy);
 
@@ -1143,7 +1137,7 @@ var modelSimilarity = (function (global) {
                                 if (tempOBJx.length != tempOBJy.length) {
                                     if (tempOBJx.length >= tempOBJy.length) {
                                         for (var i = 0; i < tempOBJx.length; i++) {
-                                            if (!miscellaneous.isModelExist(tempOBJx[i].model, tempOBJy)) {
+                                            if (!isModelExist(tempOBJx[i].model, tempOBJy)) {
                                                 tempOBJx.splice(i, 1);
                                                 i = i - 1;
                                             }
@@ -1151,7 +1145,7 @@ var modelSimilarity = (function (global) {
                                     }
                                     else {
                                         for (var i = 0; i < tempOBJy.length; i++) {
-                                            if (!miscellaneous.isModelExist(tempOBJy[i].model, tempOBJx)) {
+                                            if (!isModelExist(tempOBJy[i].model, tempOBJx)) {
                                                 tempOBJy.splice(i, 1);
                                                 i = i - 1;
                                             }
@@ -1164,7 +1158,7 @@ var modelSimilarity = (function (global) {
                                 var counter = 0;
                                 var cellmlWorkspaceFunction = function (counter) {
                                     var cellmlWorkspaceName = "https://models.physiomeproject.org/workspace/267/rawfile/HEAD/" + tempOBJy[counter].model;
-                                    ajaxUtils.sendGetRequest(
+                                    sendGetRequest(
                                         cellmlWorkspaceName,
                                         function (cellmlWorkspaceHtml) {
                                             // CellML document
@@ -1187,7 +1181,7 @@ var modelSimilarity = (function (global) {
                                                     "_" + id + ".csv");
 
                                             // TODO: special case for 'time'
-                                            if (sparqlUtils.opbTime == opbx || sparqlUtils.opbTime == opby) {
+                                            if (opbTime == opbx || opbTime == opby) {
                                                 // x axis component and variable name
                                                 var componentx = time.slice(time.indexOf("='") + 2, time.length - 2);
                                                 componentx = componentx.slice(0, componentx.indexOf("']"));
@@ -1280,8 +1274,8 @@ var modelSimilarity = (function (global) {
 
     // SEDML based annotation and visualization of protocols
     mainUtils.loadProtocolHtml = function () {
-        ajaxUtils.sendGetRequest(
-            sparqlUtils.drawSEDMLHtml,
+        sendGetRequest(
+            drawSEDMLHtml,
             function (drawSEDMLHtmlContent) {
                 $("#platform-content").html(drawSEDMLHtmlContent);
             },
@@ -1292,8 +1286,8 @@ var modelSimilarity = (function (global) {
     /************ Similarity Graph *************/
     /*******************************************/
     mainUtils.similarityModelsHtml = function () {
-        ajaxUtils.sendGetRequest(
-            sparqlUtils.similarityHtml,
+        sendGetRequest(
+            similarityHtml,
             function (similarityHtmlContent) {
                 $("#main-content").html(similarityHtmlContent);
 
@@ -1845,8 +1839,8 @@ var modelSimilarity = (function (global) {
     /*************** Platform ******************/
     /*******************************************/
     mainUtils.loadPlatformHtml = function () {
-        ajaxUtils.sendGetRequest(
-            sparqlUtils.platformHtml,
+        sendGetRequest(
+            platformHtml,
             function (platformHtmlContent) {
                 $("#main-content").html(platformHtmlContent);
                 mainUtils.loadEpithelialHtml();
@@ -1858,11 +1852,11 @@ var modelSimilarity = (function (global) {
     /********* Epithelial Platform *************/
     /*******************************************/
     mainUtils.loadEpithelialHtml = function () {
-        ajaxUtils.sendGetRequest(
-            sparqlUtils.epithelialHtml,
+        sendGetRequest(
+            epithelialHtml,
             function (epithelialHtmlContent) {
                 $("#platform-content").html(epithelialHtmlContent);
-                ajaxUtils.sendGetRequest(sparqlUtils.epithelialHtml, epithelialplatform.epithelialPlatform, false);
+                sendGetRequest(epithelialHtml, epithelialPlatform, false);
             },
             false);
     };
@@ -1875,11 +1869,11 @@ var modelSimilarity = (function (global) {
             $("#platform-content").html(sessionStorage.getItem("drawChartContent"));
         }
         else {
-            ajaxUtils.sendGetRequest(
-                sparqlUtils.chartHtml,
+            sendGetRequest(
+                chartHtml,
                 function (chartHtmlContent) {
                     $("#platform-content").html(chartHtmlContent);
-                    ajaxUtils.sendGetRequest(sparqlUtils.chartHtml, epithelialplatform.radarplot, false);
+                    sendGetRequest(chartHtml, radarplot, false);
                 },
                 false);
         }

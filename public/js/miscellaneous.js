@@ -687,33 +687,3 @@ var isModelExist = function (modelEntity, cellmlModels) {
 
     return false;
 }
-
-exports.parseModelName = parseModelName;
-exports.parserFmaNameText = parserFmaNameText;
-exports.uniqueify = uniqueify;
-exports.uniqueifyEpithelial = uniqueifyEpithelial;
-exports.uniqueifySVG = uniqueifySVG;
-exports.uniqueifyjsonFlux = uniqueifyjsonFlux;
-exports.createAnchor = createAnchor;
-exports.searchFn = searchFn;
-exports.getTextWidth = getTextWidth;
-exports.iteration = iteration;
-exports.showLoading = showLoading;
-exports.uniqueifymodel2DArray = uniqueifymodel2DArray;
-exports.uniqueifyjsonModel = uniqueifyjsonModel;
-exports.isExist = isExist;
-exports.isExist2 = isExist2;
-exports.isExistModel2DArray = isExistModel2DArray;
-exports.uniqueifyCombinedMembrane = uniqueifyCombinedMembrane;
-exports.splitPRFromProtein = splitPRFromProtein;
-exports.splitPRFromProtein2 = splitPRFromProtein2;
-exports.splitPR = splitPR;
-exports.proteinOrMedPrID = proteinOrMedPrID;
-exports.searchInCombinedMembrane = searchInCombinedMembrane;
-exports.similarityMatrixEBI = similarityMatrixEBI;
-exports.similarityMatrixEBI2 = similarityMatrixEBI2;
-exports.d3CheckBox = d3CheckBox;
-exports.minMax = minMax;
-exports.isExistProtocolElem = isExistProtocolElem;
-exports.tempModelHelper = tempModelHelper;
-exports.isModelExist = isModelExist;

@@ -540,5 +540,3 @@ var similarityModels = function () {
         d.fy = null;
     }
 };
-
-exports.similarityModels = similarityModels;
