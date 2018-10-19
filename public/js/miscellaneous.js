@@ -654,23 +654,15 @@ var isExistProtocolElem = function (element, element2) {
 };
 
 var tempModelHelper = function (tempOBJ, templistOfModel) {
-    var icounter = 0;
     for (var i = 0; i < templistOfModel.length; i++) {
-        tempOBJ.push({model: templistOfModel[i], alias: []});
+        tempOBJ.push({model: templistOfModel[i]});
         for (var j = i + 1; j < templistOfModel.length; j++) {
             if (isExistProtocolElem(templistOfModel[i], templistOfModel[j])) {
-                icounter++;
-                tempOBJ[tempOBJ.length - 1].alias.push(templistOfModel[j]);
+                templistOfModel.splice(j, 1);
+                j--;
             }
         }
-
-        if (icounter > 0) {
-            i = i + icounter;
-            icounter = 0;
-        }
     }
-
-    // return tempOBJ;
 }
 
 var isModelExist = function (modelEntity, cellmlModels) {

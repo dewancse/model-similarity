@@ -7427,7 +7427,8 @@ var radarplot = function () {
         h = 500;
 
     // var colorscale = d3.scale.category10(); // v3
-    var colorscale = d3.scaleOrdinal(d3.schemeCategory20); // v4
+    // var colorscale = d3.scaleOrdinal(d3.schemeCategory20); // v4
+    var colorscale = d3.scaleOrdinal(d3.schemeCategory10); // v4
 
     var combinedMembrane = [
         {

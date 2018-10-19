@@ -176,9 +176,11 @@ var homeHtml = "./snippets/home-snippet.html";
 var searchHtml = "./snippets/search-snippet.html";
 var similarityHtml = "./snippets/similarity-snippet.html";
 var drawSEDMLHtml = "./snippets/drawSEDML-snippet.html";
+var drawDecomposedSEDMLHtml = "./snippets/drawDecomposedSEDML-snippet.html";
 var epithelialHtml = "./snippets/epithelial-snippet.html";
 var chartHtml = "./snippets/chart-snippet.html";
 var platformHtml = "./snippets/platform-snippet.html";
+var recreateHtml = "./snippets/recreate-snippet.html";
 
 var sodium = "http://purl.obolibrary.org/obo/CHEBI_29101";
 var potassium = "http://purl.obolibrary.org/obo/CHEBI_29103";
@@ -400,6 +402,20 @@ var mediatorSPARQL = function (modelEntity) {
         "?model_proc semsim:hasMediatorParticipant ?model_medparticipant. " +
         "?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. " +
         "?med_entity semsim:hasPhysicalDefinition ?mediator. " +
+        "}";
+
+    return query;
+}
+
+var mediatorSPARQLRecreate = function (proteinModelElem) {
+    var query = "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#>" +
+        "SELECT ?modelEntity " +
+        "WHERE { " +
+        "?modelEntity semsim:isComputationalComponentFor ?model_prop. " +
+        "?model_prop semsim:physicalPropertyOf ?model_proc. " +
+        "?model_proc semsim:hasMediatorParticipant ?model_medparticipant. " +
+        "?model_medparticipant semsim:hasPhysicalEntityReference ?med_entity. " +
+        "?med_entity semsim:hasPhysicalDefinition <" + proteinModelElem + ">. " +
         "}";
 
     return query;

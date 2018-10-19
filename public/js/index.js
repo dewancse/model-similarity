@@ -730,6 +730,14 @@ var modelSimilarity = (function (global) {
     // svg graph
     var svgDiagram = function (csvData, xDomain, yDomain, csvname) {
 
+        // make equal length of arrays in csvData
+        for (var i = 1; i < csvData.length; i++) {
+            var length = csvData[0].length;
+            if (csvData[i].length != length) {
+                csvData[i] = csvData[i].slice(0, length);
+            }
+        }
+
         console.log("xDomain, yDomain, and csvname: ", xDomain, yDomain, csvname);
 
         var checkBox = [];
@@ -1004,59 +1012,90 @@ var modelSimilarity = (function (global) {
             if ($("#protocol option")[i].selected == true) {
                 console.log("selected: ", $("#protocol option")[i].selected);
 
-                $("#svgid").empty();
-                reinit();
-
                 // protocol #1
                 if ($("#protocol option")[i].innerText == "concentration vs time") {
+                    $("#svgid").empty();
+                    reinit();
                     protocol($("#protocol option")[i].innerText);
                     $("#protocol option")[i].selected = false;
                 }
 
                 // protocol #2
                 if ($("#protocol option")[i].innerText == "V vs I") {
+                    $("#svgid").empty();
+                    reinit();
                     protocol($("#protocol option")[i].innerText);
                     $("#protocol option")[i].selected = false;
                 }
 
                 // protocol #3A
                 if ($("#protocol option")[i].innerText == "concentration/flux vs concentration 3A") {
+                    $("#svgid").empty();
+                    reinit();
                     protocol($("#protocol option")[i].innerText);
                     $("#protocol option")[i].selected = false;
                 }
 
                 // protocol #3B
                 if ($("#protocol option")[i].innerText == "concentration/flux vs concentration 3B") {
+                    $("#svgid").empty();
+                    reinit();
                     protocol($("#protocol option")[i].innerText);
                     $("#protocol option")[i].selected = false;
                 }
 
                 // protocol #4A
                 if ($("#protocol option")[i].innerText == "1/flux vs concentration 4A") {
+                    $("#svgid").empty();
+                    reinit();
                     protocol($("#protocol option")[i].innerText);
                     $("#protocol option")[i].selected = false;
                 }
 
                 // protocol #4B
                 if ($("#protocol option")[i].innerText == "1/flux vs concentration 4B") {
+                    $("#svgid").empty();
+                    reinit();
                     protocol($("#protocol option")[i].innerText);
                     $("#protocol option")[i].selected = false;
                 }
 
                 // protocol #2A
                 if ($("#protocol option")[i].innerText == "flux vs external pH 2A") {
+                    $("#svgid").empty();
+                    reinit();
                     protocol($("#protocol option")[i].innerText);
                     $("#protocol option")[i].selected = false;
                 }
 
                 // protocol #2B
                 if ($("#protocol option")[i].innerText == "1/flux vs concentration 2B") {
+                    $("#svgid").empty();
+                    reinit();
+                    protocol($("#protocol option")[i].innerText);
+                    $("#protocol option")[i].selected = false;
+                }
+
+                // protocol #5A
+                if ($("#protocol option")[i].innerText == "flux vs concentration 5A") {
+                    $("#svgid").empty();
+                    reinit();
+                    protocol($("#protocol option")[i].innerText);
+                    $("#protocol option")[i].selected = false;
+                }
+
+                // protocol #5B
+                if ($("#protocol option")[i].innerText == "flux vs concentration 5B") {
+                    $("#svgid").empty();
+                    reinit();
                     protocol($("#protocol option")[i].innerText);
                     $("#protocol option")[i].selected = false;
                 }
 
                 // experimental
                 if ($("#protocol option")[i].innerText == "experimental") {
+                    $("#svgid").empty();
+                    reinit();
                     protocol($("#protocol option")[i].innerText);
                     $("#protocol option")[i].selected = false;
                 }
@@ -1133,9 +1172,10 @@ var modelSimilarity = (function (global) {
 
                                 console.log("tempOBJx and tempOBJy: ", tempOBJx, tempOBJy);
 
-                                // condition 1: cross-check and delete/replace
                                 if (tempOBJx.length != tempOBJy.length) {
-                                    if (tempOBJx.length >= tempOBJy.length) {
+
+                                    // condition 1: cross-check and delete/replace
+                                    if (tempOBJx.length > tempOBJy.length) {
                                         for (var i = 0; i < tempOBJx.length; i++) {
                                             if (!isModelExist(tempOBJx[i].model, tempOBJy)) {
                                                 tempOBJx.splice(i, 1);
@@ -1148,6 +1188,32 @@ var modelSimilarity = (function (global) {
                                             if (!isModelExist(tempOBJy[i].model, tempOBJx)) {
                                                 tempOBJy.splice(i, 1);
                                                 i = i - 1;
+                                            }
+                                        }
+                                    }
+
+                                    // condition 2: remove additional cellml models
+                                    if (tempOBJx.length > tempOBJy.length) {
+                                        for (var i = 0; i < tempOBJx.length; i++) {
+                                            var cellmlmodel = tempOBJx[i].model.slice(0, tempOBJx[i].model.indexOf("#"));
+                                            for (var j = i + 1; j < tempOBJx.length; j++) {
+                                                var cellmlmodel2 = tempOBJx[j].model.slice(0, tempOBJx[j].model.indexOf("#"));
+                                                if (cellmlmodel == cellmlmodel2) {
+                                                    tempOBJx.splice(j, 1);
+                                                    j--;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        for (var i = 0; i < tempOBJy.length; i++) {
+                                            var cellmlmodel = tempOBJy[i].model.slice(0, tempOBJy[i].model.indexOf("#"));
+                                            for (var j = i + 1; j < tempOBJy.length; j++) {
+                                                var cellmlmodel2 = tempOBJy[j].model.slice(0, tempOBJy[j].model.indexOf("#"));
+                                                if (cellmlmodel == cellmlmodel2) {
+                                                    tempOBJy.splice(j, 1);
+                                                    j--;
+                                                }
                                             }
                                         }
                                     }
@@ -1173,8 +1239,8 @@ var modelSimilarity = (function (global) {
                                                     ".csv");
                                             else if (ploty == "experimental")
                                                 csvname.push("data/" +
-                                                    tempOBJy[counter].model.slice(0, tempOBJy[counter].model.indexOf("_")) +
-                                                    ".csv");
+                                                    tempOBJy[counter].model.slice(0, tempOBJy[counter].model.indexOf(".cellml")) +
+                                                    "_exp" + ".csv");
                                             else
                                                 csvname.push("data/" +
                                                     tempOBJy[counter].model.slice(0, tempOBJy[counter].model.indexOf(".cellml")) +
@@ -1197,18 +1263,16 @@ var modelSimilarity = (function (global) {
                                                     variablex = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
                                             }
 
-                                            if (ploty == "undefined" || ploty == "experimental") {
-                                                // y axis component and variable name
-                                                var element = tempOBJy[counter].model,
-                                                    indexOfHash = element.search("#"),
-                                                    componentVariableName = element.slice(indexOfHash + 1), // NHE3.J_NHE3_Na
-                                                    indexOfDot = componentVariableName.indexOf("."),
-                                                    componenty = componentVariableName.slice(0, indexOfDot),
-                                                    variabley = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
-                                            }
-                                            else {
-                                                var variabley = ploty;
-                                            }
+                                            // y axis component and variable name
+                                            var element = tempOBJy[counter].model,
+                                                indexOfHash = element.search("#"),
+                                                componentVariableName = element.slice(indexOfHash + 1), // NHE3.J_NHE3_Na
+                                                indexOfDot = componentVariableName.indexOf("."),
+                                                componenty = componentVariableName.slice(0, indexOfDot),
+                                                variabley = componentVariableName.slice(indexOfDot + 1); // J_NHE3_Na
+
+                                            console.log("componentx, variablex: ", componentx, variablex);
+                                            console.log("componenty, variabley: ", componenty, variabley);
 
                                             var unitsVar;
                                             for (var i = 0; i < xmlCellMLDoc.getElementsByTagName("variable").length; i++) {
@@ -1225,19 +1289,25 @@ var modelSimilarity = (function (global) {
 
                                             if (counter == tempOBJy.length - 1) {
 
-                                                if (ploty != "undefined" && ploty != "experimental") {
-                                                    for (var i = 0; i < xAxis.length; i++) {
-                                                        yAxis.push(variabley);
-                                                    }
-                                                }
-
                                                 console.log("xAxis, yAxis and csv: ", xAxis, yAxis, csvname);
 
                                                 // checking size of csv files are Equal or Not!
                                                 var sizeOfCSV = function (csvCounter) {
 
                                                     d3.csv(csvname[csvCounter], function (data) {
-                                                        dataLen = data.length;
+                                                        console.log("data: ", data);
+
+                                                        if (data == null) {
+                                                            xAxis.splice(csvCounter, 1);
+                                                            yAxis.splice(csvCounter, 1);
+                                                            csvname.splice(csvCounter, 1);
+                                                            tempOBJx.splice(csvCounter, 1);
+                                                            tempOBJy.splice(csvCounter, 1);
+                                                            csvCounter--;
+                                                        }
+                                                        else {
+                                                            dataLen = data.length;
+                                                        }
 
                                                         if (csvCounter == tempOBJy.length - 1) {
                                                             csvCounter = 0;
@@ -1278,6 +1348,48 @@ var modelSimilarity = (function (global) {
             drawSEDMLHtml,
             function (drawSEDMLHtmlContent) {
                 $("#platform-content").html(drawSEDMLHtmlContent);
+            },
+            false);
+    }
+
+    /*******************************************/
+    /************ Decomposed Model *************/
+    /*******************************************/
+    // select protocol from dropdown menu
+    mainUtils.selectDecomposedProtocol = function () {
+        console.log("option: ", $("#protocolDecomposed option"));
+        for (var i = 0; i < $("#protocolDecomposed option").length; i++) {
+            if ($("#protocolDecomposed option")[i].selected == true) {
+                console.log("selected: ", $("#protocolDecomposed option")[i].selected);
+
+                // protocol #5A
+                if ($("#protocolDecomposed option")[i].innerText == "flux vs concentration 5A") {
+                    $("#decomposedID").empty();
+                    reinit();
+                    decomposedModel($("#protocolDecomposed option")[i].innerText);
+                    $("#protocolDecomposed option")[i].selected = false;
+                }
+
+                // protocol #5B
+                if ($("#protocolDecomposed option")[i].innerText == "flux vs concentration 5B") {
+                    $("#decomposedID").empty();
+                    reinit();
+                    decomposedModel($("#protocolDecomposed option")[i].innerText);
+                    $("#protocolDecomposed option")[i].selected = false;
+                }
+            }
+        }
+    }
+
+    mainUtils.loadDecomposedHtml = function () {
+        reinit();
+        reinitRecreate();
+        reinitDecomposed();
+
+        sendGetRequest(
+            drawDecomposedSEDMLHtml,
+            function (drawDecomposedSEDMLHtmlContent) {
+                $("#platform-content").html(drawDecomposedSEDMLHtmlContent);
             },
             false);
     }
@@ -1862,7 +1974,7 @@ var modelSimilarity = (function (global) {
     };
 
     /*******************************************/
-    /********* Radar Plot *************/
+    /*************** Radar Plot ****************/
     /*******************************************/
     mainUtils.loadChartHtml = function () {
         if (sessionStorage.getItem("drawChartContent")) {
@@ -1877,6 +1989,25 @@ var modelSimilarity = (function (global) {
                 },
                 false);
         }
+    };
+
+    /*******************************************/
+    /************** Recreate Model *************/
+    /*******************************************/
+    mainUtils.loadRecreateHtml = function () {
+        reinit();
+        reinitRecreate();
+        reinitDecomposed();
+
+        counterRecreate = 0;
+
+        sendGetRequest(
+            recreateHtml,
+            function (recreateHtmlContent) {
+                $("#platform-content").html(recreateHtmlContent);
+                sendGetRequest(recreateHtml, recreateModel, false);
+            },
+            false);
     };
 
     // Expose utility to the global object
