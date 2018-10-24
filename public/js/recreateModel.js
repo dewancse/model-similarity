@@ -5,17 +5,21 @@ var proteinModel = [
     "http://purl.obolibrary.org/obo/PR_P06685",
     "http://purl.obolibrary.org/obo/PR_O35054",
     "http://purl.obolibrary.org/obo/PR_Q06393",
+    "http://purl.obolibrary.org/obo/PR_Q06393",
     "http://purl.obolibrary.org/obo/PR_Q9Z0S6",
     "http://purl.obolibrary.org/obo/PR_F1LZ52",
     "http://purl.obolibrary.org/obo/PR_P15387",
+    "http://purl.obolibrary.org/obo/PR_P15387"
 ];
 
 var csvCounter = 0, xAxis = [], yAxis = [], csvname = [], csvArray = [], dataLen = 0;
 var tempxAxis = [], tempyAxis = [], counterRecreate = 0;
 var color = d3.scaleOrdinal(d3.schemeCategory10);
+var checkboxCounter = 0;
+var checkBox = [];
 
 // svg graph
-var svgDiagram = function (csvData, xDomain, yDomain, csvname, counterid) {
+var svgDiagramRecreate = function (csvData, xDomain, yDomain, csvname, counterid) {
 
     // make equal length of arrays in csvData
     for (var i = 1; i < csvData.length; i++) {
@@ -27,18 +31,25 @@ var svgDiagram = function (csvData, xDomain, yDomain, csvname, counterid) {
 
     console.log("xDomain, yDomain, and csvname: ", xDomain, yDomain, csvname);
 
-    var checkBox = [];
-
     var svgTag = document.createElement("div");
-    svgTag.innerHTML = '<svg id="svgRecreate' + counterid + '" width="960" height="500"></svg></div>';
+
+    if (counterid % 3 == 0) {
+        svgTag.innerHTML = '<svg id="svgRecreate' + counterid + '" width="480" height="250" style="margin-left: 0px"></svg></div>'; // 960 and 500
+    }
+    else if (counterid % 3 == 1) {
+        svgTag.innerHTML = '<svg id="svgRecreate' + counterid + '" width="480" height="250" style="margin-left: 480px; margin-top: -250px; position: absolute"></svg></div>';
+    }
+    else if (counterid % 3 == 2) {
+        svgTag.innerHTML = '<svg id="svgRecreate' + counterid + '" width="480" height="250" style="margin-left: 960px; margin-top: -250px; position: absolute"></svg></div>';
+    }
 
     var div = document.getElementById("recreateID");
     div.appendChild(svgTag);
 
     var svg = d3.select("#svgRecreate" + counterid),
         margin = {top: 20, right: 20, bottom: 30, left: 50},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom,
+        width = 480 - margin.left - margin.right,
+        height = 250 - margin.top - margin.bottom,
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var x = d3.scaleLinear()
@@ -57,6 +68,8 @@ var svgDiagram = function (csvData, xDomain, yDomain, csvname, counterid) {
 
     x.domain([xDomain[0], xDomain[1]]);
     y.domain([yDomain[0], yDomain[1]]);
+
+    x.label
 
     g.append("g")
         .attr("transform", "translate(0," + height + ")")
@@ -87,21 +100,23 @@ var svgDiagram = function (csvData, xDomain, yDomain, csvname, counterid) {
 
         g.append("path")
             .datum(csvData[i])
-            .attr("id", c)
+            .attr("id", checkboxCounter)
             .attr("fill", "none")
             .attr("stroke", function (d) {
 
                 if (csvname[i - 1] != undefined) {
-                    checkBox[c] = new d3CheckBox();
-                    checkBox[c].x(700).y(py).checked(true).clickEvent(update);
+                    checkBox[checkboxCounter] = new d3CheckBox();
+                    checkBox[checkboxCounter].x(240).y(py).checked(true).clickEvent(update);
 
-                    g.call(checkBox[c]);
+                    var txt = csvname[i - 1].slice(csvname[i - 1].indexOf("/") + 1);
+                    txt = txt.slice(0, txt.indexOf("_recreate"));
+                    g.call(checkBox[checkboxCounter]);
                     g.append("text")
-                        .style("font", "14px sans-serif")
+                        .style("font", "13px sans-serif")
                         .attr("stroke", color(c))
-                        .attr("x", 740)
-                        .attr("y", py + 15)
-                        .text(csvname[i - 1].slice(csvname[i - 1].indexOf("/") + 1));
+                        .attr("x", 260)
+                        .attr("y", py + 13)
+                        .text(txt);
 
                     return color(c);
                 }
@@ -112,9 +127,25 @@ var svgDiagram = function (csvData, xDomain, yDomain, csvname, counterid) {
             .attr("opacity", 1)
             .attr("d", line);
 
+        checkboxCounter = checkboxCounter + 1;
         c = c + 1;
         py = py + 20;
     }
+
+    // text label for the x axis
+    svg.append("text")
+        .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top + 30) + ")")
+        .style("text-anchor", "middle")
+        .text("Time");
+
+    // text label for the y axis
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0) // 0 - margin.left
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Concentration");
 };
 
 var reinitRecreate = function () {
@@ -175,7 +206,7 @@ var arrFunction = function (xaxis, yaxis, csv, csvCounter, tempOBJ, csvnamesvg) 
         if (csvCounter == tempOBJ.length - 1) {
             console.log("tempxAxis, tempyAxis and csvArray: ", tempxAxis, tempyAxis, csvArray);
 
-            svgDiagram(csvArray, minMax(tempxAxis), minMax(tempyAxis), csvnamesvg, counterRecreate);
+            svgDiagramRecreate(csvArray, minMax(tempxAxis), minMax(tempyAxis), csvnamesvg, counterRecreate);
 
             reinitRecreate();
             recreateModel();
@@ -220,12 +251,8 @@ var recreateModel = function () {
                     return;
                 }
                 else {
-
                     var sizeOfCSV = function (csvCounter) {
-
                         d3.csv(csvname[csvCounter], function (data) {
-                            console.log("data: ", data);
-
                             if (data == null) {
                                 xAxis.splice(csvCounter, 1);
                                 yAxis.splice(csvCounter, 1);

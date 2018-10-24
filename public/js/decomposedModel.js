@@ -1,8 +1,10 @@
 var csvCounter = 0, xAxis = [], yAxis = [], csvname = [], csvArray = [], dataLen = 0;
 var color = d3.scaleOrdinal(d3.schemeCategory10);
+var checkboxCounter = 0;
+var checkBox = [];
 
 // svg graph
-var svgdDecomposedDiagram = function (csvData, xDomain, yDomain, csvname, counter) {
+var svgDecomposedDiagram = function (csvData, xDomain, yDomain, csvname, counter) {
 
     // make equal length of arrays in csvData
     for (var i = 1; i < csvData.length; i++) {
@@ -14,18 +16,25 @@ var svgdDecomposedDiagram = function (csvData, xDomain, yDomain, csvname, counte
 
     console.log("xDomain, yDomain, and csvname: ", xDomain, yDomain, csvname);
 
-    var checkBox = [];
-
     var svgTag = document.createElement("div");
-    svgTag.innerHTML = '<svg id="svgDecomposed' + counter + '" width="960" height="500"></svg></div>';
+
+    if (counter % 3 == 0) {
+        svgTag.innerHTML = '<svg id="svgDecomposed' + counter + '" width="480" height="250" style="margin-left: 0px"></svg></div>'; // 960 and 500
+    }
+    else if (counter % 3 == 1) {
+        svgTag.innerHTML = '<svg id="svgDecomposed' + counter + '" width="480" height="250" style="margin-left: 480px; margin-top: -250px; position: absolute"></svg></div>';
+    }
+    else if (counter % 3 == 2) {
+        svgTag.innerHTML = '<svg id="svgDecomposed' + counter + '" width="480" height="250" style="margin-left: 960px; margin-top: -250px; position: absolute"></svg></div>';
+    }
 
     var div = document.getElementById("decomposedID");
     div.appendChild(svgTag);
 
     var svg = d3.select("#svgDecomposed" + counter),
         margin = {top: 20, right: 20, bottom: 30, left: 50},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom,
+        width = 480 - margin.left - margin.right,
+        height = 250 - margin.top - margin.bottom,
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     var x = d3.scaleLinear()
@@ -75,21 +84,21 @@ var svgdDecomposedDiagram = function (csvData, xDomain, yDomain, csvname, counte
 
         g.append("path")
             .datum(csvData[i])
-            .attr("id", c)
+            .attr("id", checkboxCounter)
             .attr("fill", "none")
             .attr("stroke", function (d) {
 
                 console.log("csvname[i]: ", csvname[i], csvname[i - 1]);
 
                 if (csvname[i - 1] != undefined) {
-                    checkBox[c] = new d3CheckBox();
-                    checkBox[c].x(700).y(py).checked(true).clickEvent(update);
+                    checkBox[checkboxCounter] = new d3CheckBox();
+                    checkBox[checkboxCounter].x(250).y(py).checked(true).clickEvent(update);
 
-                    g.call(checkBox[c]);
+                    g.call(checkBox[checkboxCounter]);
                     g.append("text")
-                        .style("font", "14px sans-serif")
+                        .style("font", "12px sans-serif")
                         .attr("stroke", color(c + counter))
-                        .attr("x", 740)
+                        .attr("x", 280)
                         .attr("y", py + 15)
                         .text(csvname[i - 1].slice(csvname[i - 1].indexOf("/") + 1));
 
@@ -102,13 +111,29 @@ var svgdDecomposedDiagram = function (csvData, xDomain, yDomain, csvname, counte
             .attr("opacity", 1)
             .attr("d", line);
 
+        checkboxCounter = checkboxCounter + 1;
         c = c + 1;
         py = py + 20;
     }
+
+    // text label for the x axis
+    svg.append("text")
+        .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top + 30) + ")")
+        .style("text-anchor", "middle")
+        .text("Concentration");
+
+    // text label for the y axis
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0) // 0 - margin.left
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Flux of Sodium");
 };
 
 // process x and y axis scale and call either svg function
-var arrDecomposedFunction = function (xaxis, yaxis, csv, csvCounter, tempOBJ, ploty, csvname, counter) {
+var arrDecomposedFunction = function (xaxis, yaxis, csv, csvname, counter) {
     d3.csv(csv, function (data) {
 
         var tempX = [], tempY = [];
@@ -133,18 +158,12 @@ var arrDecomposedFunction = function (xaxis, yaxis, csv, csvCounter, tempOBJ, pl
             csvArray.push(tempY);
         }
 
-        console.log("csvCounter: ", csvCounter);
+        console.log("tempx, tempy and csvArray: ", tempx, tempy, csvArray);
+        svgDecomposedDiagram(csvArray, minMax(tempx), minMax(tempy), csvname, counter);
 
-        if (csvCounter == tempOBJ.length - 1) {
-            console.log("tempx, tempy and csvArray: ", tempx, tempy, csvArray);
-            svgdDecomposedDiagram(csvArray, minMax(tempx), minMax(tempy), csvname, counter);
+        reinitDecomposed();
 
-            return;
-        }
-        else {
-            csvCounter = csvCounter + 1;
-            arrDecomposedFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, tempOBJ, ploty, csvname);
-        }
+        return;
     });
 };
 
@@ -154,7 +173,6 @@ var reinitDecomposed = function () {
     csvname = [];
     csvArray = [];
     dataLen = 0;
-    csvCounter = 0;
 };
 
 var decomposedModel = function (protocolName) {
@@ -175,7 +193,7 @@ var decomposedModel = function (protocolName) {
                 }
             }
 
-            console.log(proteinModel);
+            console.log("proteinModel: ", proteinModel);
 
             sendGetRequest(
                 sedmlWorkspaceName,
@@ -215,9 +233,7 @@ var decomposedModel = function (protocolName) {
 
                         console.log("xAxis, yAxis and csv: ", xAxis, yAxis, csvname);
 
-                        arrDecomposedFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, [proteinModel[i]], "ploty", csvname, i);
-
-                        reinitDecomposed();
+                        arrDecomposedFunction(xAxis[0], yAxis[0], csvname[0], csvname, i);
                     }
                 },
                 false);

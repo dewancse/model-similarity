@@ -1355,7 +1355,6 @@ var modelSimilarity = (function (global) {
     /*******************************************/
     /************ Decomposed Model *************/
     /*******************************************/
-    // select protocol from dropdown menu
     mainUtils.selectDecomposedProtocol = function () {
         console.log("option: ", $("#protocolDecomposed option"));
         for (var i = 0; i < $("#protocolDecomposed option").length; i++) {
@@ -1366,6 +1365,10 @@ var modelSimilarity = (function (global) {
                 if ($("#protocolDecomposed option")[i].innerText == "flux vs concentration 5A") {
                     $("#decomposedID").empty();
                     reinit();
+                    reinitDecomposed();
+                    reinitRecreate();
+                    checkboxCounter = 0;
+                    checkBox = [];
                     decomposedModel($("#protocolDecomposed option")[i].innerText);
                     $("#protocolDecomposed option")[i].selected = false;
                 }
@@ -1374,6 +1377,10 @@ var modelSimilarity = (function (global) {
                 if ($("#protocolDecomposed option")[i].innerText == "flux vs concentration 5B") {
                     $("#decomposedID").empty();
                     reinit();
+                    reinitDecomposed();
+                    reinitRecreate();
+                    checkboxCounter = 0;
+                    checkBox = [];
                     decomposedModel($("#protocolDecomposed option")[i].innerText);
                     $("#protocolDecomposed option")[i].selected = false;
                 }
@@ -2000,6 +2007,8 @@ var modelSimilarity = (function (global) {
         reinitDecomposed();
 
         counterRecreate = 0;
+        checkboxCounter = 0;
+        checkBox = [];
 
         sendGetRequest(
             recreateHtml,

@@ -482,7 +482,7 @@ var similarityMatrixEBI2 = function (identityMatrix, PID, enteredPrID, modelEnti
 
 function d3CheckBox() {
 
-    var size = 20,
+    var size = 14,
         x = 0,
         y = 0,
         rx = 0,
