@@ -1,12 +1,12 @@
 var proteinModel = [
     "http://purl.obolibrary.org/obo/PR_P55018",
     "http://purl.obolibrary.org/obo/PR_Q63633",
-    "http://purl.obolibrary.org/obo/PR_P37089",
+    // "http://purl.obolibrary.org/obo/PR_P37089", // TODO: G_mc_Na - uncomment this later. Also, check the annotation of this variable from SemGen
     "http://purl.obolibrary.org/obo/PR_P06685",
     "http://purl.obolibrary.org/obo/PR_O35054",
     "http://purl.obolibrary.org/obo/PR_Q06393",
     "http://purl.obolibrary.org/obo/PR_Q06393",
-    "http://purl.obolibrary.org/obo/PR_Q9Z0S6",
+    "http://purl.obolibrary.org/obo/PR_Q6Q760",
     "http://purl.obolibrary.org/obo/PR_F1LZ52",
     "http://purl.obolibrary.org/obo/PR_P15387",
     "http://purl.obolibrary.org/obo/PR_P15387"
@@ -35,11 +35,9 @@ var svgDiagramRecreate = function (csvData, xDomain, yDomain, csvname, counterid
 
     if (counterid % 3 == 0) {
         svgTag.innerHTML = '<svg id="svgRecreate' + counterid + '" width="480" height="250" style="margin-left: 0px"></svg></div>'; // 960 and 500
-    }
-    else if (counterid % 3 == 1) {
+    } else if (counterid % 3 == 1) {
         svgTag.innerHTML = '<svg id="svgRecreate' + counterid + '" width="480" height="250" style="margin-left: 480px; margin-top: -250px; position: absolute"></svg></div>';
-    }
-    else if (counterid % 3 == 2) {
+    } else if (counterid % 3 == 2) {
         svgTag.innerHTML = '<svg id="svgRecreate' + counterid + '" width="480" height="250" style="margin-left: 960px; margin-top: -250px; position: absolute"></svg></div>';
     }
 
@@ -82,8 +80,7 @@ var svgDiagramRecreate = function (csvData, xDomain, yDomain, csvname, counterid
         for (var i = 0; i < checkBox.length; i++) {
             if (checkBox[i].checked() == false) {
                 $("#" + i).css("opacity", 0);
-            }
-            else {
+            } else {
                 $("#" + i).css("opacity", 1);
             }
         }
@@ -194,8 +191,7 @@ var arrFunction = function (xaxis, yaxis, csv, csvCounter, tempOBJ, csvnamesvg) 
             }
 
             csvArray.push(tempY);
-        }
-        else {
+        } else {
             tempxAxis.push(tempx[0], tempx[1]);
             tempyAxis.push(tempy[0], tempy[1]);
             csvArray.push(tempY);
@@ -212,8 +208,7 @@ var arrFunction = function (xaxis, yaxis, csv, csvCounter, tempOBJ, csvnamesvg) 
             recreateModel();
 
             return;
-        }
-        else {
+        } else {
             csvCounter = csvCounter + 1;
             arrFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, tempOBJ, csvnamesvg);
         }
@@ -222,7 +217,9 @@ var arrFunction = function (xaxis, yaxis, csv, csvCounter, tempOBJ, csvnamesvg) 
 
 var recreateModel = function () {
     var innerRecreateModel = function (proteinModelElem) {
+        console.log("proteinModelElem: ", proteinModelElem);
         var query = mediatorSPARQLRecreate(proteinModelElem);
+        console.log("query: ", query);
         sendPostRequest(
             endpoint,
             query,
@@ -249,8 +246,7 @@ var recreateModel = function () {
 
                 if (counterRecreate == proteinModel.length - 1) {
                     return;
-                }
-                else {
+                } else {
                     var sizeOfCSV = function (csvCounter) {
                         d3.csv(csvname[csvCounter], function (data) {
                             if (data == null) {
@@ -259,8 +255,7 @@ var recreateModel = function () {
                                 csvname.splice(csvCounter, 1);
                                 tmpArray.splice(csvCounter, 1);
                                 csvCounter--;
-                            }
-                            else {
+                            } else {
                                 dataLen = data.length;
                             }
 
@@ -269,8 +264,7 @@ var recreateModel = function () {
                                 arrFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, tmpArray, csvname);
 
                                 return;
-                            }
-                            else {
+                            } else {
                                 csvCounter = csvCounter + 1;
                                 sizeOfCSV(csvCounter);
                             }

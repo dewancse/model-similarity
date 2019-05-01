@@ -3,16 +3,18 @@ function getRequestObject() {
     // code here
     if (window.XMLHttpRequest) {
         return (new XMLHttpRequest());
-    }
-    else if (window.ActiveXObject) {
+    } else if (window.ActiveXObject) {
         // For very old IE browsers (optional)
         return (new ActiveXObject("Microsoft.XMLHTTP"));
-    }
-    else {
+    } else {
         alert("Ajax is not supported!");
         return (null);
     }
 }
+
+var checkRequestUrl = function (url) {
+    return url.replace(abiOntoEndpointInternal, abiOntoEndpoint);
+};
 
 // Makes an Ajax GET request to 'requestUrl'
 var sendGetRequest = function (requestUrl, responseHandler, isJsonResponse) {
@@ -20,7 +22,10 @@ var sendGetRequest = function (requestUrl, responseHandler, isJsonResponse) {
     request.onreadystatechange = function () {
         handleResponse(request, responseHandler, isJsonResponse);
     };
-    request.open("GET", requestUrl, true);
+
+    var url = checkRequestUrl(requestUrl);
+
+    request.open("GET", url, true);
     request.send(null); // for POST only
 };
 
@@ -32,7 +37,9 @@ var sendPostRequest = function (requestUrl, query, responseHandler, isJsonRespon
         handleResponse(request, responseHandler, isJsonResponse);
     };
 
-    request.open("POST", requestUrl, true);
+    var url = checkRequestUrl(requestUrl);
+
+    request.open("POST", url, true);
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.setRequestHeader("Accept", "application/sparql-results+json");
 
@@ -47,7 +54,9 @@ var sendEBIPostRequest = function (requestUrl, query, responseHandler, isJsonRes
         handleResponse(request, responseHandler, isJsonResponse);
     };
 
-    request.open("POST", requestUrl, true);
+    var url = checkRequestUrl(requestUrl);
+
+    request.open("POST", url, true);
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     request.setRequestHeader("Accept", "text/plain");
 
@@ -75,13 +84,10 @@ function handleResponse(request, responseHandler, isJsonResponse) {
 
         if (isJsonResponse) {
             responseHandler(JSON.parse(request.responseText));
-        }
-        else {
+        } else {
             responseHandler(request.responseText);
         }
-    }
-
-    else if (request.readyState == 4) {
+    } else if (request.readyState == 4) {
         console.log("ERROR!");
         console.error(request.responseText);
     }
