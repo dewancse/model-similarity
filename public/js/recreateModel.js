@@ -224,6 +224,10 @@ var recreateModel = function () {
             endpoint,
             query,
             function (jsonObj) {
+
+                // Two cases: internet connection and PMR SPARQL engine
+                PMRdown(jsonObj, "#recreateID");
+
                 var tmpArray = [];
                 for (var i = 0; i < jsonObj.results.bindings.length; i++) {
                     var elem = jsonObj.results.bindings[i].modelEntity.value;
@@ -276,6 +280,5 @@ var recreateModel = function () {
             },
             true);
     };
-
     innerRecreateModel(proteinModel[counterRecreate]);
 };

@@ -90,5 +90,6 @@ function handleResponse(request, responseHandler, isJsonResponse) {
     } else if (request.readyState == 4) {
         console.log("ERROR!");
         console.error(request.responseText);
+        responseHandler(request);
     }
 }

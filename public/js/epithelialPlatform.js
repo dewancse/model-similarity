@@ -7741,6 +7741,9 @@ var radarplot = function () {
         function (jsonObj) {
             console.log("jsonObj: ", jsonObj);
 
+            // Two cases: internet connection and PMR SPARQL engine
+            PMRdown(jsonObj, "#chart");
+
             // TODO: remove semgen annotated models as they are not compatible to our modelling platform
             for (var i = 0; i < jsonObj.results.bindings.length; i++) {
                 var elem = jsonObj.results.bindings[i].modelname.value,
@@ -7806,6 +7809,9 @@ var radarplot = function () {
                 function (jsonObjPr) {
 
                     console.log("jsonObjPr: ", jsonObjPr);
+
+                    // Two cases: internet connection and PMR SPARQL engine
+                    PMRdown(jsonObjPr, "#chart");
 
                     // Insert mediator proteins in modelEntity
                     for (var i = 0; i < modelEntity.length; i++) {
@@ -7995,6 +8001,9 @@ var radarplot = function () {
                                     sendGetRequest(
                                         dbfectendpoint,
                                         function (psequence) {
+                                            // EBI database fetch (Dbfetch)
+                                            Dbfetchdown(psequence, "#chart");
+
                                             ProteinSeq += psequence;
 
                                             index++;
@@ -8012,7 +8021,10 @@ var radarplot = function () {
                                                     requestUrl,
                                                     requestData,
                                                     function (jobId) {
-                                                        // console.log("jobId: ", jobId); // jobId
+                                                        console.log("jobId: ", jobId); // jobId
+
+                                                        // EBI Clustal Omega
+                                                        Clustaldown(jobId, "#chart");
 
                                                         var chkJobStatus = function (jobId) {
                                                             var jobIdUrl = baseUrl + "/status/" + jobId;
@@ -8020,6 +8032,9 @@ var radarplot = function () {
                                                                 jobIdUrl,
                                                                 function (resultObj) {
                                                                     console.log("result: ", resultObj); // jobId status
+
+                                                                    // EBI Clustal Omega
+                                                                    Clustaldown(resultObj, "#chart");
 
                                                                     if (resultObj == "RUNNING") {
                                                                         setTimeout(function () {
@@ -8030,6 +8045,8 @@ var radarplot = function () {
                                                                         sendGetRequest(
                                                                             pimUrl,
                                                                             function (identityMatrix) {
+
+                                                                                Clustaldown(identityMatrix, "#chart");
 
                                                                                 // console.log("tempList: ", tempList);
                                                                                 console.log("identityMatrix: ", identityMatrix);
@@ -8168,6 +8185,9 @@ var radarplot = function () {
                                 function (jsonObjOLSMedPr) {
 
                                     console.log("jsonObjOLSMedPr: ", jsonObjOLSMedPr);
+
+                                    // Two cases: internet connection and Auckland OLS
+                                    OLSdown(jsonObjOLSMedPr, "#chart");
 
                                     var med_pr_text_syn;
                                     proteinName = jsonObjOLSMedPr._embedded.terms[0].label

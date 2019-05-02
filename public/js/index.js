@@ -122,6 +122,9 @@ var modelSimilarity = (function (global) {
 
                 console.log("jsonObjCons: ", jsonObj);
 
+                // Two cases: internet connection and PMR SPARQL engine
+                PMRdown(jsonObj, "#searchList");
+
                 var query = fluxOPBSPARQL();
                 sendPostRequest(
                     endpoint,
@@ -129,6 +132,9 @@ var modelSimilarity = (function (global) {
                     function (jsonObjFlux) {
 
                         console.log("jsonObjFlux: ", jsonObjFlux);
+
+                        // Two cases: internet connection and PMR SPARQL engine
+                        PMRdown(jsonObjFlux, "#searchList");
 
                         // CHEBI term and anatomical locations for a solute concentration
                         for (var i in modelEntity) {
@@ -512,6 +518,10 @@ var modelSimilarity = (function (global) {
                 sendGetRequest(
                     dbfectendpoint,
                     function (psequence) {
+
+                        // EBI database fetch (Dbfetch)
+                        Dbfetchdown(psequence, "#searchList");
+
                         ProteinSeq += psequence;
 
                         index++;
@@ -529,7 +539,10 @@ var modelSimilarity = (function (global) {
                                 requestUrl,
                                 requestData,
                                 function (jobId) {
-                                    // console.log("jobId: ", jobId); // jobId
+                                    console.log("jobId: ", jobId); // jobId
+
+                                    // EBI Clustal Omega
+                                    Clustaldown(jobId, "#searchList");
 
                                     var chkJobStatus = function (jobId) {
                                         var jobIdUrl = baseUrl + "/status/" + jobId;
@@ -537,6 +550,9 @@ var modelSimilarity = (function (global) {
                                             jobIdUrl,
                                             function (resultObj) {
                                                 console.log("result: ", resultObj); // jobId status
+
+                                                // EBI Clustal Omega
+                                                Clustaldown(resultObj, "#searchList");
 
                                                 if (resultObj == "RUNNING") {
                                                     setTimeout(function () {
@@ -547,6 +563,9 @@ var modelSimilarity = (function (global) {
                                                     sendGetRequest(
                                                         pimUrl,
                                                         function (identityMatrix) {
+
+                                                            Clustaldown(identityMatrix, "#searchList");
+
                                                             similarityMatrixEBI2(identityMatrix, PID, enteredPrID, modelEntity);
 
                                                             console.log("identityMatrix: ", identityMatrix);
@@ -1203,6 +1222,9 @@ var modelSimilarity = (function (global) {
     /*******************************************/
     // svg graph
     var svgDiagram = function (csvData, xDomain, yDomain, csvname) {
+
+        $("#svgidimage")[0].childNodes[0].remove();
+
         // make equal length of arrays in csvData
         for (var i = 1; i < csvData.length; i++) {
             var length = csvData[0].length;
@@ -1474,6 +1496,7 @@ var modelSimilarity = (function (global) {
 
     // process protocols information
     var protocol = function (protocolName) {
+        showLoading("#svgidimage");
         sendGetRequest(
             sedmlWorkspaceName,
             function (sedmlworkspaceHtml) {
@@ -1521,6 +1544,9 @@ var modelSimilarity = (function (global) {
                     function (jsonObjy) {
                         console.log("jsonObjy: ", jsonObjy);
 
+                        // Two cases: internet connection and PMR SPARQL engine
+                        PMRdown(jsonObjy, "#svgidimage");
+
                         // query for x axis
                         var query = sparqlOBJ[sparqlx];
 
@@ -1529,6 +1555,9 @@ var modelSimilarity = (function (global) {
                             query,
                             function (jsonObjx) {
                                 console.log("jsonObjx: ", jsonObjx);
+
+                                // Two cases: internet connection and PMR SPARQL engine
+                                PMRdown(jsonObjx, "#svgidimage");
 
                                 var tempOBJx = [], templistOfModelx = [];
                                 var tempOBJy = [], templistOfModely = [];
@@ -1602,6 +1631,10 @@ var modelSimilarity = (function (global) {
                                     sendGetRequest(
                                         cellmlWorkspaceName,
                                         function (cellmlWorkspaceHtml) {
+
+                                            // Two cases: internet connection and PMR SPARQL engine
+                                            PMRdown(jsonObjx, "#svgidimage");
+
                                             // CellML document
                                             var parserCellML = new DOMParser();
                                             var xmlCellMLDoc = parserCellML.parseFromString(cellmlWorkspaceHtml, "text/xml");
