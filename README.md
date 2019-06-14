@@ -19,12 +19,12 @@ And then http://localhost:80 should work.
 
 Presented in the screenshot below is an example of finding exact similarity and EBI similarity of models with respect to the selected model, `weinstein_1995.cellml`, from the dropdown menu. The similarity score demonstrates how similarity they are with respect to the `weinstein_1995.cellml` model in a scale of 1 for exact similarity and 100 for EBI similarity.
 
-![Example Model Discovery session](public/img/search-model.png) 
+![Search Model session](public/img/search-model.png) 
 *A screenshot illustrating an example MV session, where the user has selected "weinstein_1995.cellml" model from the dropdown menu.*
 
 Presented in the screenshot below demonstrates exact similarity between `weinstein_1995.cellml` and `weinstein_1995-human-baso.cellml` with distinct color based on the semantic annotation with biological information.
 
-![Example Model Discovery session](public/img/search-model2.png) 
+![Search Model 2 session](public/img/search-model2.png) 
 *A screenshot illustrating an example MV session (top two results for convenience), where the user has clicked on "weinstein_1995.cellml" and "weinstein_1995-human-baso.cellml".*
 
 #### Modelling Platform
@@ -45,29 +45,31 @@ For our purpose, we have considered the models presented below in the screenshot
 
 Presented below in the screenshot demonstrates the effect of external pH on sodium influx.
 
-![Example Recommender session](public/img/search-protocol.png)
+![Search Protocol session](public/img/search-protocol.png)
 *A screenshot illustrating an example MV session, where the user has selected "external pH vs sodium flux" protocol.*
 
 Presented below in the screenshot demonstrates how similar a model's simulated result with respect to an experimental data (dummy data at the moment).
 
-![Example Recommender session](public/img/search-protocol2.png)
+![Search Protocol 2 session](public/img/search-protocol2.png)
 *A screenshot illustrating an example MV session, where the user has selected "experimental" protocol with a view to displaying similarity of models' simulated experiments with respect to an experimental data (dummy data at the moment).*
 
 #### Model Similarity via Spiral or Radar Chart
-We have demonstrated model similarity feature via a radar chart. In the chart, each node represents a protein ID of the assembled epithelial model, as presented below in the screenshot. 
+We have demonstrated model similarity feature via a radar chart. In the chart, each node represents a protein ID of the assembled epithelial model, as presented below in the screenshot. The source code of this radar chart has been adjusted from the blog [Making the d3.js radar chart look a bit better by Nadieh Bremer](https://www.visualcinnamon.com/2013/09/making-d3-radar-chart-look-bit-better.html).
 
-![Example Load Model session](public/img/chart.png) 
+![Radar Chart session](public/img/chart.png) 
+
 *A screenshot illustrating similarity between the annotated models in PMR and the assembled epithelial model on the modelling platform. Each node in the chart represents a protein ID of the assembled epithelial model.*
 
 Presented below in the screenshot demonstrated that orange TSC model is 97.41% similar to red TSC model due to different species.
 
-![Example Load Model session](public/img/chart2.png) 
+![Radar Chart 2 session](public/img/chart2.png) 
+
 *A screenshot illustrating a similarity score due to different species, although both of these models, indicated as orange and red, are TSC protein model.*
 
 #### Model Similarity via Recreate Model
 By using this feature, users can easily find similarity based on simulated experiments (dummy at the moment) between the protein IDs in the annotated models in PMR and the proteins IDs in the assembled epithelial model, as presented below in the screenshot.
 
-![Example Model Similarity session](public/img/recreate.png) 
+![Recreate session](public/img/recreate.png) 
 *A screenshot illustrating model similarity feature based on simulated experiments (dummy at the moment) with respect to the protein IDs in the assembled epithelial model.*
 
 ## Docker Image in Nectar Cloud

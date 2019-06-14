@@ -1,3 +1,6 @@
+// This block of code is taken from the following blog
+// "Making the d3.js radar chart look a bit better" by Nadieh Bremer
+// URL: https://www.visualcinnamon.com/2013/09/making-d3-radar-chart-look-bit-better.html
 var RadarChart = {
     draw: function (id, d, options) {
         var cfg = {
