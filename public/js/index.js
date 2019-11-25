@@ -85,7 +85,7 @@ var modelSimilarity = (function (global) {
     var similarObj = [];
 
     var csvArray = [], tempxAxis = [], tempyAxis = [], tcsvArray = [];
-    var csvCounter = 0, xAxis = [], yAxis = [], csvname = [], dataLen = 0;
+    var csvCounter = 0, xAxis = [], yAxis = [], csvname = [], dataLen = [];
 
     /*******************************************/
     /*************** Home Page *****************/
@@ -1217,9 +1217,9 @@ var modelSimilarity = (function (global) {
         }
     };
 
-    /*******************************************/
-    /********* SED-ML based annotation *********/
-    /*******************************************/
+    /********************************************************/
+    /********* SED-ML based annotation using SPARQL *********/
+    /********************************************************/
     // svg graph
     var svgDiagram = function (csvData, xDomain, yDomain, csvname) {
 
@@ -1491,7 +1491,7 @@ var modelSimilarity = (function (global) {
         xAxis = [];
         yAxis = [];
         csvname = [];
-        dataLen = 0;
+        dataLen = [];
     };
 
     // process protocols information
@@ -1562,12 +1562,35 @@ var modelSimilarity = (function (global) {
                                 var tempOBJx = [], templistOfModelx = [];
                                 var tempOBJy = [], templistOfModely = [];
 
+                                var tempListOfModels = [
+                                    "chang_fujita_1999",
+                                    "chang_fujita_b_1999",
+                                    "chang_fujita_b_2_1999",
+                                    "chang_fujita_b_3_1999",
+                                    "weinstein_1995",
+                                    "mackenzie_1996",
+                                    "eskandari_2005"
+                                ];
+
                                 for (var i = 0; i < jsonObjy.results.bindings.length; i++) {
-                                    templistOfModely.push(jsonObjy.results.bindings[i].modelEntity.value);
+                                    var tempModel = jsonObjy.results.bindings[i].modelEntity.value;
+                                    for (var j = 0; j < tempListOfModels.length; j++) {
+                                        if (tempModel.indexOf(tempListOfModels[j]) != -1) {
+                                            templistOfModely.push(tempModel);
+                                            break;
+                                        }
+                                    }
                                 }
 
                                 for (var i = 0; i < jsonObjx.results.bindings.length; i++) {
-                                    templistOfModelx.push(jsonObjx.results.bindings[i].modelEntity.value);
+                                    var tempModel = jsonObjx.results.bindings[i].modelEntity.value;
+                                    console.log(tempModel);
+                                    for (var j = 0; j < tempListOfModels.length; j++) {
+                                        if (tempModel.indexOf(tempListOfModels[j]) != -1) {
+                                            templistOfModelx.push(tempModel);
+                                            break;
+                                        }
+                                    }
                                 }
 
                                 console.log("templistOfModelx: ", templistOfModelx);
@@ -1700,7 +1723,6 @@ var modelSimilarity = (function (global) {
 
                                                 // checking size of csv files are Equal or Not!
                                                 var sizeOfCSV = function (csvCounter) {
-
                                                     d3.csv(csvname[csvCounter], function (data) {
                                                         console.log("data: ", data);
 
@@ -1716,6 +1738,7 @@ var modelSimilarity = (function (global) {
                                                         }
 
                                                         if (csvCounter == tempOBJy.length - 1) {
+                                                            // dataLen = Math.min(...dataLen);
                                                             csvCounter = 0;
                                                             arrFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, tempOBJy, ploty);
 
@@ -1849,6 +1872,593 @@ var modelSimilarity = (function (global) {
     mainUtils.loadProtocolHtml = function () {
         sendGetRequest(
             drawSEDMLHtml,
+            function (drawSEDMLHtmlContent) {
+                $("#platform-content").html(drawSEDMLHtmlContent);
+            },
+            false);
+    };
+
+    /**********************************************************/
+    /********* SED-ML based annotation without SPARQL *********/
+    /**********************************************************/
+    /*
+    * SVG graph
+    *
+    * @param {} csvData
+    * @param {} xDomain
+    * @param {} yDomain
+    * @param {} csvname
+    * */
+    let svgDiagramCurrent = (csvData, xDomain, yDomain, csvname) => {
+
+        console.log("svgDiagramCurrent csvData, xDomain, yDomain, csvname: ", csvData, xDomain, yDomain, csvname);
+
+        // Customize csvname contents for better visualized texts
+        let uscoreregex = /_/gi, csvregex = /.csv/gi, dataregex = /data\//gi;
+        csvname = csvname.map(item => item.replace(dataregex, ""));
+        csvname = csvname.map(item => item.replace(uscoreregex, " "));
+        csvname = csvname.map(item => item.replace(csvregex, ""));
+        csvname = csvname.map(item => item.charAt(0).toUpperCase() + item.slice(1));
+
+        $("#svgidimage-current")[0].childNodes[0].remove();
+
+        // make equal length of arrays in csvData
+        csvData.forEach((element, i) => {
+                let length = csvData[0].length;
+                if (csvData[i].length != length) {
+                    csvData[i] = csvData[i].slice(0, length);
+                }
+            }
+        );
+
+        console.log("xDomain, yDomain, and csvname: ", xDomain, yDomain, csvname);
+
+        let checkBox = [];
+
+        let svg = d3.select("svg"),
+            margin = {top: 20, right: 20, bottom: 30, left: 50},
+            width = +svg.attr("width") - margin.left - margin.right,
+            height = +svg.attr("height") - margin.top - margin.bottom,
+            g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        let x = d3.scaleLinear()
+            .rangeRound([0, width]);
+
+        let y = d3.scaleLinear()
+            .rangeRound([height, 0]);
+
+        let color = d3.scaleOrdinal(d3.schemeCategory10);
+
+        let line = d3.line()
+            .x(function (d) {
+                return x(d["xaxis"]);
+            })
+            .y(function (d) {
+                return y(d["yaxis"]);
+            });
+
+        x.domain([xDomain[0], xDomain[1]]);
+        y.domain([yDomain[0], yDomain[1]]);
+
+        g.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x).ticks(10));
+
+        g.append("g")
+            .call(d3.axisLeft(y).ticks(10));
+
+        let update = () => {
+            checkBox.forEach(
+                (element, i) => {
+                    if (element.checked() == false)
+                        $("#" + i).css("opacity", 0);
+                    else
+                        $("#" + i).css("opacity", 1);
+                }
+            );
+        };
+
+        let c = 0, py = 5;
+        csvData.forEach(
+            (csvElement, i) => {
+                if (i == 0) return;
+
+                console.log("c, py and color(c): ", c, py, color(c));
+
+                csvElement.forEach(function (element, j) {
+                    csvData[i][j]["xaxis"] = csvData[0][j]["xaxis"];
+                });
+
+                g.append("path")
+                    .datum(csvElement)
+                    .attr("id", c)
+                    .attr("fill", "none")
+                    .attr("stroke", function (d) {
+                        checkBox[c] = new d3CheckBox();
+                        checkBox[c].x(700).y(py).checked(true).clickEvent(update);
+                        g.call(checkBox[c]);
+                        g.append("text")
+                            .style("font", "14px sans-serif")
+                            .attr("stroke", color(c))
+                            .attr("x", 740)
+                            .attr("y", py + 15)
+                            .text(csvname[i - 1].slice(csvname[i - 1].indexOf("/") + 1));
+
+                        return color(c);
+                    })
+                    .attr("stroke-linejoin", "round")
+                    .attr("stroke-linecap", "round")
+                    .attr("stroke-width", 1.5)
+                    .attr("opacity", 1)
+                    .attr("d", line);
+
+                c = c + 1;
+                py = py + 20;
+            }
+        );
+    };
+
+    /*
+    * Incorporate experimental data and calculate least-squares method
+    *
+    * @param {} xAxis
+    * @param {} yAxis
+    * @param {} csvname
+    * @param {} csvArray
+    * */
+    let expFunctionCurrent = (xAxis, yAxis, csvname, csvArray) => {
+        console.log("xAxis, yAxis, csvname, and csvArray: ", xAxis, yAxis, csvname, csvArray);
+
+        let csvCounter = 0, minResult = [];
+        let csvFunction = (csvarraydata) => {
+            d3.csv("dataSEDML/experimental.csv", function (data) {
+                console.log("csvarraydata: ", csvarraydata);
+                console.log("dataSEDML: ", data);
+                tcsvArray = data;
+
+                let result = [];
+                data.forEach((elementi, i) => {
+                    let sum = 0, initial = 1 / (2 * data.length);
+                    data.forEach(function (elementj, j) {
+                        sum = sum + Math.pow((data[j][i] - csvarraydata[j]["yaxis"]), 2);
+                    });
+
+                    sum = initial * sum;
+                    result.push([sum, i]);
+                });
+
+                console.log("result: ", result);
+
+                let min, minIndex;
+                minResult.push(d3.min(result, function (d, i) {
+                    if (i == 0) {
+                        min = d[0];
+                        minIndex = i;
+                    } else if (d[0] <= min) {
+                        min = d[0];
+                        minIndex = i;
+                    }
+
+                    if (i == result.length - 1)
+                        return [min, minIndex];
+                }));
+
+                csvCounter++;
+                if (csvCounter < csvArray.length - 1) {
+                    csvFunction(csvArray[csvCounter + 1]);
+                }
+
+                if (csvCounter == csvArray.length - 1) {
+                    console.log("minResult: ", minResult);
+
+                    let min2, minIndex2, pRESULT;
+                    pRESULT = d3.min(minResult, function (d, i) {
+                        if (i == 0) {
+                            min2 = d[0];
+                            minIndex2 = i;
+                        } else if (d[0] <= min2) {
+                            min2 = d[0];
+                            minIndex2 = i;
+                        }
+
+                        if (i == minResult.length - 1)
+                            return [min2, minIndex2];
+                    });
+
+                    csvArray.forEach((element, i) => {
+                        if (i <= pRESULT[1] + 1)
+                            return;
+
+                        csvArray.splice(i, 1);
+                    });
+
+                    csvArray = [csvArray[0], csvArray[csvArray.length - 1]];
+
+                    console.log("pRESULT: ", pRESULT);
+                    console.log("tcsvArray: ", tcsvArray);
+
+                    let temp = [];
+                    tcsvArray.forEach(element => {
+                        temp.push({yaxis: element[pRESULT[1]]});
+                    });
+
+                    csvArray.push(temp);
+                    console.log("csvArray: ", csvArray);
+
+                    csvname.forEach((element, i) => {
+                        if (i <= pRESULT[1])
+                            return;
+
+                        csvname.splice(i, 1);
+                    });
+
+                    csvname = [csvname[csvname.length - 1], "dataSEDML/experimental.csv"];
+
+                    console.log(csvname);
+                    svgDiagramCurrent(csvArray, minMax(tempxAxis), minMax(tempyAxis), csvname);
+                }
+            });
+        };
+
+        csvFunction(csvArray[csvCounter + 1]);
+    };
+
+    /*
+    * Process x and y axis scale and call either svg or experimental function
+    *
+    * @param {} axis
+    * @param {} yaxis
+    * @param {} csv
+    * @param {} csvCounter
+    * @param {} tempOBJ
+    * @param {} ploty
+    * */
+    let arrFunctionCurrent = (xaxis, yaxis, csv, csvCounter, tempOBJ, ploty) => {
+
+        d3.csv(csv, function (data) {
+
+            let tempX = [], tempY = [];
+
+            let tempx = d3.extent(data, (d, i) => {
+
+                if (i <= dataLen) {
+                    tempX.push({xaxis: d[xaxis]});
+                    return parseFloat(d[xaxis]);
+                }
+            });
+
+            let tempy = d3.extent(data, (d, j) => {
+
+                if (j < dataLen) {
+                    tempY.push({yaxis: d[yaxis]});
+                    return parseFloat(d[yaxis]);
+                }
+            });
+
+            if (csvCounter == 0) {
+                tempxAxis.push(tempx[0], tempx[1]);
+                tempyAxis.push(tempy[0], tempy[1]);
+
+                if (tempX.length == dataLen)
+                    csvArray.push(tempX);
+                else {
+                    tempX.splice(dataLen);
+                    csvArray.push(tempX);
+                }
+
+                csvArray.push(tempY);
+            } else {
+                tempxAxis.push(tempx[0], tempx[1]);
+                tempyAxis.push(tempy[0], tempy[1]);
+                csvArray.push(tempY);
+            }
+
+            console.log("csvCounter: ", csvCounter);
+
+            if (csvCounter == tempOBJ.length - 1) {
+
+                console.log("tempxAxis, tempyAxis and csvArray: ", tempxAxis, tempyAxis, csvArray);
+
+                if (ploty == "experimental") {
+                    expFunctionCurrent(xAxis, yAxis, csvname, csvArray, tempxAxis, tempyAxis);
+                } else {
+                    svgDiagramCurrent(csvArray, minMax(tempxAxis), minMax(tempyAxis), csvname);
+                }
+
+                return;
+            } else {
+                csvCounter = csvCounter + 1;
+                arrFunctionCurrent(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, tempOBJ, ploty);
+            }
+        });
+    };
+
+    /*
+    * Check that size of the selected models' csv columns are equal
+    * and then pass on to another helper function.
+    *
+    * @param {number} csvCounter A counter to traverse through rows in the selected models' csv column.
+    * @param {array} sedmlModels List of SED-ML models associated with a selected protocol.
+    * */
+    let sizeOfCSV = (csvCounter, sedmlModels) => {
+        d3.csv(csvname[csvCounter], data => {
+            console.log("dataSEDML: ", data);
+            if (data == null) {
+                xAxis.splice(csvCounter, 1);
+                yAxis.splice(csvCounter, 1);
+                csvname.splice(csvCounter, 1);
+                csvCounter--;
+            } else {
+                dataLen.push(data.length);
+            }
+
+            if (csvCounter == sedmlModels.length - 1) {
+                dataLen = Math.min(...dataLen);
+                csvCounter = 0;
+                arrFunctionCurrent(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, sedmlModels, "undefined"); // ploty
+                return;
+            } else {
+                csvCounter = csvCounter + 1;
+                // call back
+                sizeOfCSV(csvCounter, sedmlModels);
+            }
+        });
+    };
+
+    /*
+    * Extract units and then process relevant parameters to plot a SED-ML graph
+    *
+    * @param {number} counter
+    * @param {array} sedmlModels
+    * */
+    let cellmlWorkspaceFunctionCurrent = (counter, sedmlModels) => {
+
+        let cellmlWorkspaceName = sedmlModels[counter][8] + "/rawfile/HEAD/" + sedmlModels[counter][5];
+
+        sendGetRequest(
+            cellmlWorkspaceName,
+            function (cellmlWorkspaceHtml) {
+
+                // Two cases: internet connection and PMR SPARQL engine
+                // PMRdown(jsonObjx, "#svgidimage");
+
+                // CellML document
+                let parserCellML = new DOMParser()
+                    , xmlCellMLDoc = parserCellML.parseFromString(cellmlWorkspaceHtml, "text/xml");
+
+                console.log("xmlCellMLDoc: ", xmlCellMLDoc);
+
+                // store csv
+                csvname.push("dataSEDML/" + sedmlModels[counter][7]);
+
+                console.log("xmlCellMLDoc.getElementsByTagName(\"variable\") typeof: ", typeof xmlCellMLDoc.getElementsByTagName("variable"));
+                let unitsVar;
+                Object.values(xmlCellMLDoc.getElementsByTagName("variable")).forEach(function (element) {
+                    let cmetaAttribute = element.getAttribute("cmeta:id");
+                    if (cmetaAttribute == sedmlModels[counter][0] + "." + sedmlModels[counter][1]) {
+                        unitsVar = element.getAttribute("units");
+                        xAxis.push(sedmlModels[counter][0] + " | " + sedmlModels[counter][1] + " (" + unitsVar + ")");
+                    }
+
+                    if (cmetaAttribute == sedmlModels[counter][2] + "." + sedmlModels[counter][3]) {
+                        unitsVar = element.getAttribute("units");
+                        yAxis.push(sedmlModels[counter][2] + " | " + sedmlModels[counter][3] + " (" + unitsVar + ")");
+                    }
+                });
+
+                if (counter == sedmlModels.length - 1) {
+
+                    console.log("xAxis, yAxis and csv: ", xAxis, yAxis, csvname);
+                    /*
+                    * First call
+                    * Check that all cell columns are equal in size in the selected models' csv columns
+                    * */
+                    sizeOfCSV(csvCounter, sedmlModels);
+                }
+
+                counter++;
+
+                if (counter <= sedmlModels.length - 1)
+                    cellmlWorkspaceFunctionCurrent(counter, sedmlModels); // call back
+            },
+            false);
+    };
+
+    /*
+    * Process protocols information
+    *
+    * @param {} protocolName
+    * @param {} protocolText
+    * */
+    let protocolCurrent = (protocolName, protocolText) => {
+        showLoading("#svgidimage-current");
+        console.log("protocol name and text: ", protocolName, protocolText);
+        /*
+        * CellML and SED-ML models and their associated protocols as well as simulation data in CSV format
+        * Indices of the 'sedmlModels' array
+        * 0: componentx, 1: variablex, 2: componenty, 3: variabley, 4: protocol, 5: CellML, 6: SED-ML, 7: csv, 8: workspace
+        * */
+        let sedmlModels = [];
+
+        // let query = "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>\n"
+        //     + "PREFIX sedml: <http://sed-ml.org/sed-ml/level1/version3#>\n"
+        //     + "SELECT ?w ?model WHERE { GRAPH ?w { ?model ro:" + protocolName + " ?protocol. }}";
+
+        sendGetRequest(
+            myWorkspaceName + "rawfile/HEAD/SEDML/" + protocolName + ".sedml",
+            function (protocolNameHtml) {
+                // SEDML document
+                let parser = new DOMParser();
+                let xmlDoc = parser.parseFromString(protocolNameHtml, "text/xml");
+                console.log("protocolNameHtml: ", xmlDoc);
+
+                let id = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("id")
+                    , nameX = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("nameX")
+                    , nameY = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("nameY")
+                    , opbX = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("opbX")
+                    , opbY = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("opbY")
+                    , chebiX = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("chebiX")
+                    , chebiY = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("chebiY")
+                    , fmaX = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("fmaX")
+                    , fmaXsrc = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("fmaXsrc")
+                    , fmaXsnk = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("fmaXsnk")
+                    , fmaY = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("fmaY")
+                    , fmaYsrc = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("fmaYsrc")
+                    , fmaYsnk = xmlDoc.getElementsByTagName("Protocol")[0].getAttribute("fmaYsnk");
+
+                console.log("Test: ", id, nameX, nameY, opbX, opbY, chebiX, chebiY, fmaX, fmaXsrc, fmaXsnk, fmaY, fmaYsrc, fmaYsnk);
+
+                let query = "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#>\n" +
+                    "PREFIX sedml: <http://sed-ml.org/sed-ml/level1/version3#>\n" +
+                    "PREFIX opb: <https://bioportal.bioontology.org/ontologies/OPB#>\n" +
+                    "PREFIX chebi: <https://bioportal.bioontology.org/ontologies/CHEBI#>\n" +
+                    "PREFIX fma: <https://bioportal.bioontology.org/ontologies/FMA#>\n" +
+                    "\n" +
+                    "SELECT ?w ?model ?protocol \n" +
+                    "   WHERE { GRAPH ?w { \n" +
+                    "      ?model ro:Protocol ?protocol.\n" +
+                    "      ?protocol opb:x <" + opbX + ">.\n" +
+                    "      ?protocol opb:y <" + opbY + ">.\n" +
+                    "      ?protocol chebi:x <" + chebiX + ">.\n" +
+                    "      ?protocol chebi:y <" + chebiY + ">.\n" +
+                    "      ?protocol fma:x <" + fmaX + ">.\n" +
+                    "      ?protocol fma:xsrc <" + fmaXsrc + ">.\n" +
+                    "      ?protocol fma:xsnk <" + fmaXsnk + ">.\n" +
+                    "      ?protocol fma:y <" + fmaY + ">.   \n" +
+                    "      ?protocol fma:ysrc <" + fmaYsrc + ">.\n" +
+                    "      ?protocol fma:ysnk <" + fmaYsnk + ">\n" +
+                    "   }}\n";
+
+                console.log("query: ", query);
+
+                sendPostRequest(
+                    endpoint,
+                    query,
+                    function (jsonObj) {
+
+                        console.log("protocolCurrent jsonObj: ", jsonObj);
+
+                        // find SEDML models and associated CSV data wrt to a selected protocol
+                        let sedmlNcsvFunc = (w, model, counter) => {
+                            w = w.replace("https://models.physiomeproject.org/workspace/", "");
+                            let workspaceName = "/.api/workspace/" + w
+                                , workspace = workspaceName + "/rawfile/HEAD/" + model;
+
+                            console.log("workspace: ", workspace);
+                            sendGetRequest(
+                                workspace,
+                                function (xml) {
+                                    let parser = new DOMParser()
+                                        , xmlDoc = parser.parseFromString(xml, "text/xml");
+
+                                    console.log("xmlDoc: ", xmlDoc);
+
+                                    // Accessing list of variables in the SEDML model
+                                    let listOfVariables = xmlDoc.getElementsByTagName("listOfVariables");
+                                    // TODO: For now, assume that we have only two variables to plot a SEDML experiment
+                                    let varList = [];
+                                    for (let i = 0; i < listOfVariables.length; i++) {
+                                        console.log("listOfVariables[i]: ", listOfVariables[i]);
+                                        for (let j = 0; j < listOfVariables[i].childNodes.length; j++) {
+                                            console.log("listOfVariables[i].childNodes[j]: ", listOfVariables[i].childNodes[j]);
+                                            let attrValue = listOfVariables[i].childNodes[j].attributes;
+                                            if (attrValue != undefined) {
+                                                for (let k = 0; k < attrValue.length; k++) {
+                                                    if (attrValue[k].name == "target") {
+                                                        console.log("** target ** ", attrValue[k].value);
+                                                        varList.push(attrValue[k].value);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // SEDML models and associated CSV data
+                                    // Extract x axis component and variable name from varList[0]
+                                    let componentx = varList[0].slice(varList[0].indexOf("='") + 2, varList[0].length - 2);
+                                    componentx = componentx.slice(0, componentx.indexOf("']"));
+                                    let variablex = varList[0].slice(varList[0].lastIndexOf("='") + 2, varList[0].length - 2);
+
+                                    // Extract y axis component and variable name from varList[1]
+                                    let componenty = varList[1].slice(varList[1].indexOf("='") + 2, varList[1].length - 2);
+                                    componenty = componenty.slice(0, componenty.indexOf("']"));
+                                    let variabley = varList[1].slice(varList[1].lastIndexOf("='") + 2, varList[1].length - 2);
+
+                                    // Accessing list of CellML models in the SEDML model
+                                    let listOfModels = xmlDoc.getElementsByTagName("listOfModels");
+                                    // TODO: For now, consider only one model
+                                    let modelList = [];
+                                    for (let i = 0; i < listOfModels.length; i++) {
+                                        console.log("listOfModels[i]: ", listOfModels[i]);
+                                        for (let j = 0; j < listOfModels[i].childNodes.length; j++) {
+                                            console.log("listOfModels[i].childNodes[j]: ", listOfModels[i].childNodes[j]);
+                                            let attrValue = listOfModels[i].childNodes[j].attributes;
+                                            if (attrValue != undefined) {
+                                                for (let k = 0; k < attrValue.length; k++) {
+                                                    if (attrValue[k].name == "source") {
+                                                        console.log("** source ** ", attrValue[k].value);
+                                                        modelList.push(attrValue[k].value.replace("../", ""));
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    console.log("modelList: ", modelList);
+
+                                    let csvData = modelList[0].replace(".cellml", ".csv");
+                                    sedmlModels.push([componentx, variablex, componenty, variabley, model, modelList[0], model, csvData, workspaceName]);
+
+                                    // Insert experimental data
+                                    // let csvDataExp = modelList[0].replace(".cellml", "_experimental.csv");
+                                    // sedmlModels.push([componentx, variablex, componenty, variabley, model, modelList[0], model, csvDataExp, workspaceName]);
+
+                                    if (counter == jsonObj.results.bindings.length - 1) {
+                                        cellmlWorkspaceFunctionCurrent(0, sedmlModels); // first call
+                                        return;
+                                    } else {
+                                        // call back
+                                        counter++;
+                                        let element = jsonObj.results.bindings[counter];
+                                        sedmlNcsvFunc(element.w.value, element.model.value, counter);
+                                    }
+                                },
+                                false);
+                        };
+
+                        // first call
+                        let element = jsonObj.results.bindings[0];
+                        sedmlNcsvFunc(element.w.value, element.model.value, 0);
+                    },
+                    true);
+            },
+            false);
+    };
+
+    /* Select protocol from dropdown menu */
+    mainUtils.selectProtocolCurrent = () => {
+        // iterate over the items under the list of options menu
+        Object.values($("#protocol-current option")).forEach(function (element) {
+            // option value
+            let value = $("#protocol-current").val();
+            // check that selected element is TRUE as well as NOT "...select a Protocol"
+            if (element.selected == true && value != "...select a Protocol") {
+                // empty the svg space
+                $("#svgid-current").empty();
+                // reinitialize variables
+                reinit();
+                // process relevant SEDML protocols and visualize on the web interface
+                protocolCurrent(value, element.innerText);
+                // make the selected item false for next round of selction
+                element.selected = false;
+            }
+        });
+    };
+
+    /* SEDML based annotation and visualization of protocols */
+    mainUtils.loadProtocolHtmlCurrent = () => {
+        sendGetRequest(
+            drawSEDMLHtmlCurrent,
             function (drawSEDMLHtmlContent) {
                 $("#platform-content").html(drawSEDMLHtmlContent);
             },

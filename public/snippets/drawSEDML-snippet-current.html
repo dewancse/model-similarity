@@ -1,0 +1,14 @@
+<div class="container">
+    SELECT a Protocol
+
+    <select id="protocol-current" name="protocol-current" onclick="$mainUtils.selectProtocolCurrent();">
+        <option value="...select a Protocol" selected>...select a Protocol</option>
+        <option value="protocol1">Protocol 1: concentration vs time</option>
+        <option value="protocol2">Protocol 2: V vs time</option>
+        <option value="protocol3">Protocol 3: flux vs time</option>
+    </select>
+</div>
+<div id="svgidimage-current"></div>
+<hr/>
+
+<svg id="svgid-current" width="1000" height="500"></svg>

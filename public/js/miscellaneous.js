@@ -965,6 +965,19 @@ var dictionary = [
     }
 ];
 
+// SEDML models and associated data in CSV
+var listOfSEDML = [
+    "eskandari_2005_data.csv",
+    "mackenzie_1996_data.csv",
+    "protocol1_eskandari_2005.sedml",
+    "protocol1_mackenzie_1996.sedml",
+    "protocol1_weinstein_1995.sedml",
+    "protocol2_eskandari_2005.sedml",
+    "protocol2_mackenzie_1996.sedml",
+    "protocol3_weinstein_1995.sedml",
+    "weinstein_1995_data.csv"
+];
+
 // epithelial cell identifiers used in the biological annotation in PMR
 var epithelialcellID = [
     "http://purl.obolibrary.org/obo/CL_0000066",
@@ -1021,6 +1034,7 @@ var homeHtml = "./snippets/home-snippet.html";
 var searchHtml = "./snippets/search-snippet.html";
 var similarityHtml = "./snippets/similarity-snippet.html";
 var drawSEDMLHtml = "./snippets/drawSEDML-snippet.html";
+var drawSEDMLHtmlCurrent = "./snippets/drawSEDML-snippet-current.html";
 var drawDecomposedSEDMLHtml = "./snippets/drawDecomposedSEDML-snippet.html";
 var epithelialHtml = "./snippets/epithelial-snippet.html";
 var chartHtml = "./snippets/chart-snippet.html";

@@ -1,0 +1,10 @@
+environment | time (second),rate_constants | Na_o (M),ion_concentrations | V (volt),ion_concentrations | Na_o (M)
+1,0.2,0.26,0.2
+2,0.27,0.2,0.27
+3,0.49,0.55,0.49
+4,0.78,0.67,0.78
+5,1,2,1
+6,1.5,1.9,1.5
+7,1.99,1.6,1.99
+8,3.2,3,3.2
+9,3.97,5,3.97
