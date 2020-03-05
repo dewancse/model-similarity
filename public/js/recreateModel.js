@@ -143,6 +143,10 @@ var svgDiagramRecreate = function (csvData, xDomain, yDomain, csvname, counterid
         .attr("dy", "1em")
         .style("text-anchor", "middle")
         .text("Concentration");
+
+    console.log("checkBox: ", checkBox);
+    console.log("svgTag: ", svgTag);
+    console.log("g: ", g);
 };
 
 var reinitRecreate = function () {

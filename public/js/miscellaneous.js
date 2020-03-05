@@ -7,7 +7,8 @@ var endpoint = "/.api/pmr/sparql";
 var abiOntoEndpointInternal = "http://ontology.cer.auckland.ac.nz/ols-boot/api/ontologies";
 
 // var abiOntoEndpoint = "http://ontology.cer.auckland.ac.nz/ols-boot/api/ontologies";
-var abiOntoEndpoint = "/.api/ols/ontologies";
+// var abiOntoEndpoint = "/.api/ols/ontologies";
+var abiOntoEndpoint = "/.api/ebi/ols/ontologies"; // TODO: remove this line and use the above line..now using because ABI OLS is down!
 
 // var ebiOntoEndpoint = "https://www.ebi.ac.uk/ols/api/ontologies";
 var ebiOntoEndpoint = "/.api/ebi/ols/ontologies";
@@ -1034,10 +1035,10 @@ var homeHtml = "./snippets/home-snippet.html";
 var searchHtml = "./snippets/search-snippet.html";
 var similarityHtml = "./snippets/similarity-snippet.html";
 var drawSEDMLHtml = "./snippets/drawSEDML-snippet.html";
-var drawSEDMLHtmlCurrent = "./snippets/drawSEDML-snippet-current.html";
 var drawDecomposedSEDMLHtml = "./snippets/drawDecomposedSEDML-snippet.html";
 var epithelialHtml = "./snippets/epithelial-snippet.html";
 var chartHtml = "./snippets/chart-snippet.html";
+var chartHtmlSEDML = "./snippets/chart-snippet-sedml.html";
 var platformHtml = "./snippets/platform-snippet.html";
 var recreateHtml = "./snippets/recreate-snippet.html";
 
@@ -1680,7 +1681,7 @@ function d3CheckBox() {
         clickEvent,
         xtext = 0,
         ytext = 0,
-        text = "Empty";
+        text = ""; // text = "Empty"
 
     function checkBox(selection) {
         var g = selection.append("g"),
@@ -1695,8 +1696,8 @@ function d3CheckBox() {
                     "fill-opacity": 0,
                     "stroke-width": boxStrokeWidth,
                     "stroke": "black"
-                }),
-            txt = g.append("text").attr("x", xtext).attr("y", ytext).text("" + text + "");
+                });
+            // txt = g.append("text").attr("x", xtext).attr("y", ytext).text("" + text + "");
 
         //Data to represent the check mark
         var coordinates = [
