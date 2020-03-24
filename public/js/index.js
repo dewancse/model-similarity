@@ -1242,13 +1242,13 @@ var modelSimilarity = (function (global) {
         $("#svgidimage")[0].childNodes[0].remove();
 
         // make equal length of arrays in csvData
-        csvData.forEach((element, i) => {
-                let length = csvData[0].length;
-                if (csvData[i].length != length) {
-                    csvData[i] = csvData[i].slice(0, length);
-                }
-            }
-        );
+        // csvData.forEach((element, i) => {
+        //         let length = csvData[0].length;
+        //         if (csvData[i].length != length) {
+        //             csvData[i] = csvData[i].slice(0, length);
+        //         }
+        //     }
+        // );
 
         console.log("xDomain, yDomain, and csvname: ", xDomain, yDomain, csvname);
 
@@ -1437,19 +1437,13 @@ var modelSimilarity = (function (global) {
             let tempX = [], tempY = [];
 
             let tempx = d3.extent(data, (d, i) => {
-
-                if (i <= dataLen) {
-                    tempX.push({xaxis: d[xaxis]});
-                    return parseFloat(d[xaxis]);
-                }
+                tempX.push({xaxis: d[xaxis]});
+                return parseFloat(d[xaxis]);
             });
 
             let tempy = d3.extent(data, (d, j) => {
-
-                if (j <= dataLen) {
-                    tempY.push({yaxis: d[yaxis]});
-                    return parseFloat(d[yaxis]);
-                }
+                tempY.push({yaxis: d[yaxis]});
+                return parseFloat(d[yaxis]);
             });
 
             tempxAxis.push(tempx[0], tempx[1]);
@@ -1460,16 +1454,7 @@ var modelSimilarity = (function (global) {
                 tempX[i].yaxis = tempY[i].yaxis;
             });
 
-            if (csvCounter == 0) {
-                if (tempX.length == dataLen)
-                    csvArray.push(tempX);
-                else {
-                    tempX.splice(dataLen);
-                    csvArray.push(tempX);
-                }
-            } else {
-                csvArray.push(tempX);
-            }
+            csvArray.push(tempX);
 
             console.log("csvCounter: ", csvCounter);
 
@@ -1481,38 +1466,6 @@ var modelSimilarity = (function (global) {
             } else {
                 csvCounter = csvCounter + 1;
                 csvFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, sedmlModels, protocolText);
-            }
-        });
-    };
-
-    /*
-    * Check that size of the selected models' csv columns are equal
-    * and then pass on to another helper function.
-    *
-    * @param {number} csvCounter A counter to traverse through rows in the selected models' csv column.
-    * @param {array} sedmlModels List of SED-ML models associated with a selected protocol.
-    * */
-    let sizeOfCSV = (csvCounter, sedmlModels, protocolText) => {
-        d3.csv(csvname[csvCounter], data => {
-            console.log("dataSEDML: ", data);
-            if (data == null) {
-                xAxis.splice(csvCounter, 1);
-                yAxis.splice(csvCounter, 1);
-                csvname.splice(csvCounter, 1);
-                csvCounter--;
-            } else {
-                dataLen.push(data.length);
-            }
-
-            if (csvCounter == sedmlModels.length - 1) {
-                dataLen = Math.min(...dataLen);
-                csvCounter = 0;
-                csvFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, sedmlModels, protocolText); // ploty
-                return;
-            } else {
-                csvCounter = csvCounter + 1;
-                // call back
-                sizeOfCSV(csvCounter, sedmlModels, protocolText);
             }
         });
     };
@@ -1572,12 +1525,24 @@ var modelSimilarity = (function (global) {
 
                 if (counter == sedmlModels.length - 1) {
 
-                    console.log("xAxis, yAxis and csv: ", xAxis, yAxis, csvname);
-                    /*
-                    * First call
-                    * Check that all cell columns are equal in size in the selected models' csv columns
-                    * */
-                    sizeOfCSV(csvCounter, sedmlModels, protocolText);
+                    // TODO: Inserting x and y axes values for Machine Learning algorithms
+                    var mlAlgorithm = ["Polynomial_Regression", "Decision_Tree_Regression", "Random_Forest_Regression"];
+                    if (protocolText.indexOf("Protocol 2A") != -1) {
+                        for (var m = 1; m <= mlAlgorithm.length; m++) {
+                            xAxis[sedmlModels.length - m] = "X";
+                            yAxis[sedmlModels.length - m] = "Y";
+                            csvname[sedmlModels.length - m] = "data/" + mlAlgorithm[m - 1] + "_2A.csv";
+                        }
+                    }
+                    if (protocolText.indexOf("Protocol 11") != -1) {
+                        for (var m = 1; m <= mlAlgorithm.length; m++) {
+                            xAxis[sedmlModels.length - m] = "X";
+                            yAxis[sedmlModels.length - m] = "Y";
+                            csvname[sedmlModels.length - m] = "data/" + mlAlgorithm[m - 1] + "_11.csv";
+                        }
+                    }
+                    console.log("xAxis, yAxis, csv and sedmlModels: ", xAxis, yAxis, csvname, sedmlModels);
+                    csvFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, sedmlModels, protocolText); // ploty
                 }
 
                 counter++;
@@ -1786,6 +1751,15 @@ var modelSimilarity = (function (global) {
 
                                                 console.log("sedmlModels2: ", sedmlModels2);
                                                 console.log("sedmlModels: ", sedmlModels);
+
+                                                // TODO: Inserting x and y axes values for Machine Learning algorithms
+                                                var mlAlgorithm = ["Polynomial_Regression", "Decision_Tree_Regression", "Random_Forest_Regression"];
+                                                var t = sedmlModels[sedmlModels.length - 1];
+                                                if (protocolText.indexOf("Protocol 2A") != -1 || protocolText.indexOf("Protocol 11") != -1) {
+                                                    for (var m = 0; m < mlAlgorithm.length; m++) {
+                                                        sedmlModels.push([t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8]]);
+                                                    }
+                                                }
 
                                                 cellmlWorkspaceFunction(0, sedmlModels, protocolText); // first call
                                                 return;
