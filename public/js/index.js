@@ -1460,9 +1460,78 @@ var modelSimilarity = (function (global) {
 
             if (csvCounter == sedmlModels.length - 1) {
                 console.log("tempxAxis, tempyAxis and csvArray: ", tempxAxis, tempyAxis, csvArray);
-                svgDiagram(csvArray, minMax(tempxAxis), minMax(tempyAxis), csvname, protocolText);
 
-                return;
+                var data = []
+                for (var i = 0; i < csvArray.length; i++) {
+                    for (var j = 0; j < csvArray[i].length; j++) {
+                        data.push({"xaxis": csvArray[i][j].xaxis, "yaxis": csvArray[i][j].yaxis})
+                    }
+                }
+
+                var helperCSV = function (jsonobj, csvfile) {
+                    let tempX = [], tempY = [];
+
+                    let tempx = d3.extent(jsonobj, (d, i) => {
+                        tempX.push({xaxis: d["xaxis"]});
+                        return parseFloat(d["xaxis"]);
+                    });
+
+                    let tempy = d3.extent(jsonobj, (d, j) => {
+                        tempY.push({yaxis: d["yaxis"]});
+                        return parseFloat(d["yaxis"]);
+                    });
+
+                    tempxAxis.push(tempx[0], tempx[1]);
+                    tempyAxis.push(tempy[0], tempy[1]);
+
+                    csvArray.push(jsonobj);
+                    csvname.push(csvfile);
+
+                    console.log("tempxAxis: ", tempxAxis);
+                    console.log("tempyAxis: ", tempyAxis);
+
+                    console.log("csvArray: ", csvArray);
+                    console.log("csvname: ", csvname);
+                };
+
+                var url = "/.api/mas/polyML";
+                sendPostRequest(
+                    url,
+                    JSON.stringify(data),
+                    function (content) {
+                        console.log("Polynomial content and typeof: ", content, typeof content);
+                        console.log("JSON.parse(content): ", JSON.parse(content));
+
+                        helperCSV(JSON.parse(content), "data/Polynomial_Regression.csv");
+
+                        var url = "/.api/mas/decisionML";
+                        sendPostRequest(
+                            url,
+                            JSON.stringify(data),
+                            function (content) {
+                                console.log("Decision content and typeof: ", content, typeof content);
+                                console.log("JSON.parse(content): ", JSON.parse(content));
+
+                                helperCSV(JSON.parse(content), "data/Decision_Tree_Regression.csv");
+
+                                var url = "/.api/mas/forestML";
+                                sendPostRequest(
+                                    url,
+                                    JSON.stringify(data),
+                                    function (content) {
+                                        console.log("Forest content and typeof: ", content, typeof content);
+                                        console.log("JSON.parse(content): ", JSON.parse(content));
+
+                                        helperCSV(JSON.parse(content), "data/Random_Forest_Regression.csv");
+
+                                        svgDiagram(csvArray, minMax(tempxAxis), minMax(tempyAxis), csvname, protocolText);
+                                        return;
+                                    },
+                                    false);
+                            },
+                            false);
+                    },
+                    false);
             } else {
                 csvCounter = csvCounter + 1;
                 csvFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, sedmlModels, protocolText);
@@ -1525,22 +1594,22 @@ var modelSimilarity = (function (global) {
 
                 if (counter == sedmlModels.length - 1) {
 
-                    // TODO: Inserting x and y axes values for Machine Learning algorithms
-                    var mlAlgorithm = ["Polynomial_Regression", "Decision_Tree_Regression", "Random_Forest_Regression"];
-                    if (protocolText.indexOf("Protocol 2A") != -1) {
-                        for (var m = 1; m <= mlAlgorithm.length; m++) {
-                            xAxis[sedmlModels.length - m] = "X";
-                            yAxis[sedmlModels.length - m] = "Y";
-                            csvname[sedmlModels.length - m] = "data/" + mlAlgorithm[m - 1] + "_2A.csv";
-                        }
-                    }
-                    if (protocolText.indexOf("Protocol 11") != -1) {
-                        for (var m = 1; m <= mlAlgorithm.length; m++) {
-                            xAxis[sedmlModels.length - m] = "X";
-                            yAxis[sedmlModels.length - m] = "Y";
-                            csvname[sedmlModels.length - m] = "data/" + mlAlgorithm[m - 1] + "_11.csv";
-                        }
-                    }
+                    // // TODO: Inserting x and y axes values for Machine Learning algorithms
+                    // var mlAlgorithm = ["Polynomial_Regression", "Decision_Tree_Regression", "Random_Forest_Regression"];
+                    // if (protocolText.indexOf("Protocol 2A") != -1) {
+                    //     for (var m = 1; m <= mlAlgorithm.length; m++) {
+                    //         xAxis[sedmlModels.length - m] = "X";
+                    //         yAxis[sedmlModels.length - m] = "Y";
+                    //         csvname[sedmlModels.length - m] = "data/" + mlAlgorithm[m - 1] + "_2A.csv";
+                    //     }
+                    // }
+                    // if (protocolText.indexOf("Protocol 11") != -1) {
+                    //     for (var m = 1; m <= mlAlgorithm.length; m++) {
+                    //         xAxis[sedmlModels.length - m] = "X";
+                    //         yAxis[sedmlModels.length - m] = "Y";
+                    //         csvname[sedmlModels.length - m] = "data/" + mlAlgorithm[m - 1] + "_11.csv";
+                    //     }
+                    // }
                     console.log("xAxis, yAxis, csv and sedmlModels: ", xAxis, yAxis, csvname, sedmlModels);
                     csvFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, sedmlModels, protocolText); // ploty
                 }
@@ -1752,15 +1821,14 @@ var modelSimilarity = (function (global) {
                                                 console.log("sedmlModels2: ", sedmlModels2);
                                                 console.log("sedmlModels: ", sedmlModels);
 
-                                                // TODO: Inserting x and y axes values for Machine Learning algorithms
-                                                var mlAlgorithm = ["Polynomial_Regression", "Decision_Tree_Regression", "Random_Forest_Regression"];
-                                                var t = sedmlModels[sedmlModels.length - 1];
-                                                if (protocolText.indexOf("Protocol 2A") != -1 || protocolText.indexOf("Protocol 11") != -1) {
-                                                    for (var m = 0; m < mlAlgorithm.length; m++) {
-                                                        sedmlModels.push([t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8]]);
-                                                    }
-                                                }
-
+                                                // // TODO: Inserting x and y axes values for Machine Learning algorithms
+                                                // var mlAlgorithm = ["Polynomial_Regression", "Decision_Tree_Regression", "Random_Forest_Regression"];
+                                                // var t = sedmlModels[sedmlModels.length - 1];
+                                                // if (protocolText.indexOf("Protocol 2A") != -1 || protocolText.indexOf("Protocol 11") != -1) {
+                                                //     for (var m = 0; m < mlAlgorithm.length; m++) {
+                                                //         sedmlModels.push([t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8]]);
+                                                //     }
+                                                // }
                                                 cellmlWorkspaceFunction(0, sedmlModels, protocolText); // first call
                                                 return;
                                             } else {

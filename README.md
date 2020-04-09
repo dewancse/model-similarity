@@ -8,7 +8,14 @@ If you have Docker and git installed on your machine, then the following should 
 ```
 git clone https://github.com/dewancse/model-verification
 docker build -f Dockerfile -t unique-name/mdt-nginx .
-docker run -d -p 80:80 unique-name/mdt-nginx
+docker run -d -p 80:80 -p 8000:8000 unique-name/mdt-nginx
+```
+Here MV is running at port 80 and machine learning server is running at port 8000. Due to have technical issues, users have to login to the docker container and manually execute the python script in the background to initiate nginx and python server. Note that python server receives the assembled models, which are visualized on the modelling platform of the EMP, and then performs model composition.
+```
+docker ps (to see the container_id)
+docker exec -it container_id /bin/sh
+python3 severML.py &
+enter and exit 
 ```
 And then http://localhost:80 should work.
 
