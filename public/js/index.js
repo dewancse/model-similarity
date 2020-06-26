@@ -506,6 +506,11 @@ var modelSimilarity = (function (global) {
                 }
             }
 
+            // Temporary fix
+            // Pushing PID at the end
+            PID.push(enteredPrID);
+            PID.splice(0,1);
+
             console.log("PID AFTER: ", PID);
 
             // https://www.ebi.ac.uk/seqdb/confluence/pages/viewpage.action?pageId=48923608
@@ -565,6 +570,11 @@ var modelSimilarity = (function (global) {
                                                         function (identityMatrix) {
 
                                                             Clustaldown(identityMatrix, "#searchList");
+
+                                                            console.log("before identityMatrix: ", identityMatrix);
+                                                            console.log("before PID: ", PID);
+                                                            console.log("before enteredPrID: ", enteredPrID);
+                                                            console.log("before modelEntity: ", modelEntity);
 
                                                             similarityMatrixEBI2(identityMatrix, PID, enteredPrID, modelEntity);
 
@@ -1241,15 +1251,6 @@ var modelSimilarity = (function (global) {
 
         $("#svgidimage")[0].childNodes[0].remove();
 
-        // make equal length of arrays in csvData
-        // csvData.forEach((element, i) => {
-        //         let length = csvData[0].length;
-        //         if (csvData[i].length != length) {
-        //             csvData[i] = csvData[i].slice(0, length);
-        //         }
-        //     }
-        // );
-
         console.log("xDomain, yDomain, and csvname: ", xDomain, yDomain, csvname);
 
         let checkBox = [];
@@ -1486,12 +1487,6 @@ var modelSimilarity = (function (global) {
 
                     csvArray.push(jsonobj);
                     csvname.push(csvfile);
-
-                    console.log("tempxAxis: ", tempxAxis);
-                    console.log("tempyAxis: ", tempyAxis);
-
-                    console.log("csvArray: ", csvArray);
-                    console.log("csvname: ", csvname);
                 };
 
                 var url = "/.api/mas/polyML";
@@ -1500,8 +1495,6 @@ var modelSimilarity = (function (global) {
                     JSON.stringify(data),
                     function (content) {
                         console.log("Polynomial content and typeof: ", content, typeof content);
-                        console.log("JSON.parse(content): ", JSON.parse(content));
-
                         helperCSV(JSON.parse(content), "data/Polynomial_Regression.csv");
 
                         var url = "/.api/mas/decisionML";
@@ -1510,8 +1503,6 @@ var modelSimilarity = (function (global) {
                             JSON.stringify(data),
                             function (content) {
                                 console.log("Decision content and typeof: ", content, typeof content);
-                                console.log("JSON.parse(content): ", JSON.parse(content));
-
                                 helperCSV(JSON.parse(content), "data/Decision_Tree_Regression.csv");
 
                                 var url = "/.api/mas/forestML";
@@ -1520,8 +1511,6 @@ var modelSimilarity = (function (global) {
                                     JSON.stringify(data),
                                     function (content) {
                                         console.log("Forest content and typeof: ", content, typeof content);
-                                        console.log("JSON.parse(content): ", JSON.parse(content));
-
                                         helperCSV(JSON.parse(content), "data/Random_Forest_Regression.csv");
 
                                         svgDiagram(csvArray, minMax(tempxAxis), minMax(tempyAxis), csvname, protocolText);
@@ -1593,23 +1582,6 @@ var modelSimilarity = (function (global) {
                 });
 
                 if (counter == sedmlModels.length - 1) {
-
-                    // // TODO: Inserting x and y axes values for Machine Learning algorithms
-                    // var mlAlgorithm = ["Polynomial_Regression", "Decision_Tree_Regression", "Random_Forest_Regression"];
-                    // if (protocolText.indexOf("Protocol 2A") != -1) {
-                    //     for (var m = 1; m <= mlAlgorithm.length; m++) {
-                    //         xAxis[sedmlModels.length - m] = "X";
-                    //         yAxis[sedmlModels.length - m] = "Y";
-                    //         csvname[sedmlModels.length - m] = "data/" + mlAlgorithm[m - 1] + "_2A.csv";
-                    //     }
-                    // }
-                    // if (protocolText.indexOf("Protocol 11") != -1) {
-                    //     for (var m = 1; m <= mlAlgorithm.length; m++) {
-                    //         xAxis[sedmlModels.length - m] = "X";
-                    //         yAxis[sedmlModels.length - m] = "Y";
-                    //         csvname[sedmlModels.length - m] = "data/" + mlAlgorithm[m - 1] + "_11.csv";
-                    //     }
-                    // }
                     console.log("xAxis, yAxis, csv and sedmlModels: ", xAxis, yAxis, csvname, sedmlModels);
                     csvFunction(xAxis[csvCounter], yAxis[csvCounter], csvname[csvCounter], csvCounter, sedmlModels, protocolText); // ploty
                 }
@@ -1676,7 +1648,8 @@ var modelSimilarity = (function (global) {
                 console.log("Test: ", id, nameX, nameY, opbX, opbY, chebiX, chebiY, fmaX, fmaXsrc, fmaXsnk, fmaY, fmaYsrc, fmaYsnk, sparqlX, sparqlY);
 
                 // sparql x
-                let query = protocolOBJ[sparqlX];
+                // let query = protocolOBJ[sparqlX];
+                let query = protocolOBJ[protocolName + "X"];
                 sendPostRequest(
                     endpoint,
                     query,
@@ -1685,7 +1658,8 @@ var modelSimilarity = (function (global) {
                         console.log("jsonOBJx: ", jsonOBJx);
 
                         // sparql y
-                        let query = protocolOBJ[sparqlY];
+                        // let query = protocolOBJ[sparqlY];
+                        let query = protocolOBJ[protocolName + "Y"];
                         sendPostRequest(
                             endpoint,
                             query,
@@ -1704,7 +1678,8 @@ var modelSimilarity = (function (global) {
                                             let modelV = jsonY[spy].model.value,
                                                 modelY = modelV.slice(modelV.indexOf("SEDML/") + 6, modelV.indexOf("#"));
                                             console.log("modelV, modelY: ", modelV, modelY);
-                                            if (modelV.indexOf(id) != -1 && jsonX[spx].model.value.indexOf(modelY) != -1) {
+                                            // modelV.indexOf(id) != -1 && jsonX[spx].model.value.indexOf(modelY) != -1) {
+                                            if (modelV.indexOf(protocolName) != -1 && jsonX[spx].model.value.indexOf(modelY) != -1) {
                                                 console.log("test1: ", modelY, jsonX[spx], jsonY[spy]);
                                                 modelOBJ.push(modelY);
                                                 workspaceOBJ.push(jsonY[spy].w.value);
@@ -1821,14 +1796,6 @@ var modelSimilarity = (function (global) {
                                                 console.log("sedmlModels2: ", sedmlModels2);
                                                 console.log("sedmlModels: ", sedmlModels);
 
-                                                // // TODO: Inserting x and y axes values for Machine Learning algorithms
-                                                // var mlAlgorithm = ["Polynomial_Regression", "Decision_Tree_Regression", "Random_Forest_Regression"];
-                                                // var t = sedmlModels[sedmlModels.length - 1];
-                                                // if (protocolText.indexOf("Protocol 2A") != -1 || protocolText.indexOf("Protocol 11") != -1) {
-                                                //     for (var m = 0; m < mlAlgorithm.length; m++) {
-                                                //         sedmlModels.push([t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8]]);
-                                                //     }
-                                                // }
                                                 cellmlWorkspaceFunction(0, sedmlModels, protocolText); // first call
                                                 return;
                                             } else {
@@ -1885,6 +1852,20 @@ var modelSimilarity = (function (global) {
             drawSEDMLHtml,
             function (drawSEDMLHtmlContent) {
                 $("#platform-content").html(drawSEDMLHtmlContent);
+            },
+            false);
+    };
+
+    /**********************************************************/
+    /****************** SED-ML based Test annotation ***************/
+    /**********************************************************/
+
+    /* SEDML based annotation and visualization of protocols */
+    mainUtils.loadProtocolTestHtml = () => {
+        sendGetRequest(
+            drawSEDMLTestHtml,
+            function (drawSEDMLTestHtmlContent) {
+                $("#platform-content").html(drawSEDMLTestHtmlContent);
             },
             false);
     };

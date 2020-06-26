@@ -1,5 +1,5 @@
 ### Model Verification (MV)
-Model Verification is a web-based platform for testing the [Epithelial Modelling Platform (EMP)](https://github.com/dewancse/epithelial-modelling-platform). It allows users to discover [SED-ML](http://sed-ml.org/) based annotation (dummy data at the moment) and to find similarities between the assembled model on the EMP and the annotated models in [PMR](https://models.physiomeproject.org). This tool is deployed at this address: http://130.216.216.60.
+Model Verification is a web-based tool to perform software verification of the [Epithelial Modelling Platform (EMP)](https://github.com/dewancse/epithelial-modelling-platform). It allows users to discover [SED-ML](http://sed-ml.org/) based annotations in order to find similarities between the assembled protein models from the EMP and the annotated models in the [PMR](https://models.physiomeproject.org). The tool is deployed at this address: http://130.216.216.60.
 
 ### Installing MV
 This tool makes use of webservices provided by [PMR](https://models.physiomeproject.org) as well as several services from the [European Bioinformatics Institute (EBI)](https://www.ebi.ac.uk/services). In oder to develop web applications which make use of services in this way, it is best to make use of a reverse proxy to ensure the web application plays nicely with modern web browsers. In this project, we use a Docker-based [NGINX](http://nginx.org/) reverse proxy for this purpose, which makes it reasonably easy to get this demonstration up and running locally as well as deploying it on various cloud platforms.
@@ -10,7 +10,7 @@ git clone https://github.com/dewancse/model-verification
 docker build -f Dockerfile -t unique-name/mdt-nginx .
 docker run -d -p 80:80 -p 8000:8000 unique-name/mdt-nginx
 ```
-Here MV is running at port 80 and machine learning server is running at port 8000. Due to have technical issues, users have to login to the docker container and manually execute the python script in the background to initiate nginx and python server. Note that python server receives the assembled models, which are visualized on the modelling platform of the EMP, and then performs model composition.
+Here MV is running at port 80 and python server should run at port 8000. However, due to technical issues, users have to login to the docker container and manually execute the python server in the background.
 ```
 docker ps (to see the container_id)
 docker exec -it container_id /bin/sh
@@ -22,7 +22,7 @@ And then http://localhost:80 should work.
 ### MV workflow
 
 #### Search Model
-`SEARCH MODEL` allows users to select a model from the dropdown menu. This will display two things: exact similarity and EBI similarity. Exact similarity is calculated based on the semantic annotation with biological information of each model, whereas EBI similarity is calculated by the [Clustalo Omega](https://www.ebi.ac.uk/Tools/msa/clustalo/) webservice at the EBI based on the protein sequences provided by this platform.
+`SEARCH MODEL` allows users to select a model from the dropdown menu. This will display two things: exact similarity and EBI similarity. Exact similarity is calculated based on the semantic annotation with biological information of each model, whereas EBI similarity is calculated by the [Clustalo Omega](https://www.ebi.ac.uk/Tools/msa/clustalo/) webservice at the EBI based on the protein sequences provided by this tool.
 
 Presented in the screenshot below is an example of finding exact similarity and EBI similarity of models with respect to the selected model, `weinstein_1995.cellml`, from the dropdown menu. The similarity score demonstrates how similarity they are with respect to the `weinstein_1995.cellml` model in a scale of 1 for exact similarity and 100 for EBI similarity.
 
@@ -34,7 +34,7 @@ Presented in the screenshot below demonstrates exact similarity between `weinste
 ![Search Model 2 session](public/img/search-model2.png) 
 *A screenshot illustrating an example MV session (top two results for convenience), where the user has clicked on "weinstein_1995.cellml" and "weinstein_1995-human-baso.cellml".*
 
-#### Modelling Platform
+#### Modelling Platform of the EMP
 Following screenshoot illustrates an instance of the generated models’ component with circles, polygons and line with arrows. This platform consists of three membranes: apical, basolateral and capillary; and five compartments: luminal, cytosol, paracellular pathway, interstitial fluid and blood capillary. Each of these has been depicted with a unique color on the top-right corner of the platform.
 
 Solutes of concentrations float within a specific compartment and solutes of fluxes have been placed on either apical, basolateral, or capillary membrane based on the annotated information in PMR. For example, presented below in the screenshot, flux of Na+ and flux of Cl- are flowing from luminal to cytosol compartment across apical membrane and through NaCl cotransporter. In order to distinguish physical entities and processes, we have represented them with the following shapes:
@@ -58,7 +58,7 @@ Presented below in the screenshot demonstrates the effect of external pH on sodi
 Presented below in the screenshot demonstrates how similar a model's simulated result with respect to an experimental data (dummy data at the moment).
 
 ![Search Protocol 2 session](public/img/search-protocol2.png)
-*A screenshot illustrating an example MV session, where the user has selected "experimental" protocol with a view to displaying similarity of models' simulated experiments with respect to an experimental data (dummy data at the moment).*
+*A screenshot illustrating an example MV session, where the user has selected a protocol with a view to displaying weinstein model's simulated experiments with respect to an experimental data as well as machine learning algorithms' data.*
 
 #### Model Similarity via Spiral or Radar Chart
 We have demonstrated model similarity feature via a radar chart. In the chart, each node represents a protein ID of the assembled epithelial model, as presented below in the screenshot. The source code of this radar chart has been adjusted from the blog [Making the d3.js radar chart look a bit better by Nadieh Bremer](https://www.visualcinnamon.com/2013/09/making-d3-radar-chart-look-bit-better.html).

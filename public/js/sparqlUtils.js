@@ -123,31 +123,6 @@ var protocolOBJ = {
         "             ?entityMED ro:part_of ?entityMED2. " +
         "             ?entityMED2 semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84666>. " +
         "}}\n",
-    // protocol1FX2: "PREFIX bqbiol: <http://biomodels.net/biology-qualifiers/> " +
-    //     "SELECT DISTINCT ?w ?model " +
-    //     "  WHERE { GRAPH ?w { " +
-    //     "        ?model bqbiol:is <http://identifiers.org/opb/OPB_01023>. " +
-    //     "}}\n",
-    // protocol1FY2: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> " +
-    //     "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> " +
-    //     "   SELECT DISTINCT ?w ?model " +
-    //     "         WHERE { GRAPH ?w { " +
-    //     "             ?model semsim:isComputationalComponentFor ?property. " +
-    //     "             ?property semsim:physicalPropertyOf ?process. " +
-    //     "             ?process semsim:hasSourceParticipant ?source. " +
-    //     "             ?process semsim:hasSinkParticipant ?sink. " +
-    //     "             ?process semsim:hasMediatorParticipant ?mediator. " +
-    //     "             ?source semsim:hasPhysicalEntityReference ?entitySRC. " +
-    //     "             ?entitySRC semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_29101>. " +
-    //     "             ?entitySRC ro:part_of ?entity11. " +
-    //     "             ?entity11 semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_280791>. " +
-    //     "             ?sink semsim:hasPhysicalEntityReference ?entityDST. " +
-    //     "             ?entityDST ro:part_of ?entity22. " +
-    //     "             ?entity22 semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_66836>. " +
-    //     "             ?mediator semsim:hasPhysicalEntityReference ?entityMED. " +
-    //     "             ?entityMED ro:part_of ?entityMED2. " +
-    //     "             ?entityMED2 semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84666>. " +
-    //     "}}\n",
     protocol1GX: "PREFIX bqbiol: <http://biomodels.net/biology-qualifiers/> " +
         "SELECT DISTINCT ?w ?model " +
         "  WHERE { GRAPH ?w { " +
@@ -195,6 +170,47 @@ var protocolOBJ = {
         "        ?entity22 semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_66836>. " +
         "        ?mediator semsim:hasPhysicalEntityReference ?entityMED. " +
         "        ?entityMED semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84669>. " +
+        "}}\n",
+    protocol1IX: "PREFIX bqbiol: <http://biomodels.net/biology-qualifiers/> " +
+        "SELECT DISTINCT ?w ?model " +
+        "  WHERE { GRAPH ?w { " +
+        "        ?model bqbiol:is <http://identifiers.org/opb/OPB_01023>. " +
+        "}}\n",
+    protocol1IY: "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> " +
+        "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> " +
+        "SELECT DISTINCT ?w ?model " +
+        "  WHERE { GRAPH ?w { " +
+        "        ?model semsim:isComputationalComponentFor ?property. " +
+        "        ?property semsim:hasPhysicalDefinition <http://identifiers.org/opb/OPB_00340>. " +
+        "        ?property semsim:physicalPropertyOf ?entity. " +
+        "        ?entity ro:part_of ?entity2. " +
+        "        ?entity semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_29101>. " +
+        "        ?entity2 semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_280791>. " +
+        "}}\n",
+    protocol1JX: "PREFIX bqbiol: <http://biomodels.net/biology-qualifiers/> " +
+        "SELECT DISTINCT ?w ?model " +
+        "  WHERE { GRAPH ?w { " +
+        "        ?model bqbiol:is <http://identifiers.org/opb/OPB_01023>. " +
+        "}}\n",
+    protocol1JY: "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> " +
+        "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> " +
+        "   SELECT DISTINCT ?w ?model " +
+        "         WHERE { GRAPH ?w { " +
+        "             ?model semsim:isComputationalComponentFor ?property. " +
+        "             ?property semsim:physicalPropertyOf ?process. " +
+        "             ?process semsim:hasSourceParticipant ?source. " +
+        "             ?process semsim:hasSinkParticipant ?sink. " +
+        "             ?process semsim:hasMediatorParticipant ?mediator. " +
+        "             ?source semsim:hasPhysicalEntityReference ?entitySRC. " +
+        "             ?entitySRC semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/CHEBI_29101>. " +
+        "             ?entitySRC ro:part_of ?entity11. " +
+        "             ?entity11 semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_280791>. " +
+        "             ?sink semsim:hasPhysicalEntityReference ?entityDST. " +
+        "             ?entityDST ro:part_of ?entity22. " +
+        "             ?entity22 semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_66836>. " +
+        "             ?mediator semsim:hasPhysicalEntityReference ?entityMED. " +
+        "             ?entityMED ro:part_of ?entityMED2. " +
+        "             ?entityMED2 semsim:hasPhysicalDefinition <http://purl.obolibrary.org/obo/FMA_84666>. " +
         "}}\n",
     protocol2AX: "PREFIX ro: <http://www.obofoundry.org/ro/ro.owl#> " +
         "PREFIX semsim: <http://www.bhi.washington.edu/SemSim#> " +

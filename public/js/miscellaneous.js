@@ -1035,6 +1035,7 @@ var homeHtml = "./snippets/home-snippet.html";
 var searchHtml = "./snippets/search-snippet.html";
 var similarityHtml = "./snippets/similarity-snippet.html";
 var drawSEDMLHtml = "./snippets/drawSEDML-snippet.html";
+var drawSEDMLTestHtml = "./snippets/drawSEDMLTest-snippet.html";
 var drawDecomposedSEDMLHtml = "./snippets/drawDecomposedSEDML-snippet.html";
 var epithelialHtml = "./snippets/epithelial-snippet.html";
 var chartHtml = "./snippets/chart-snippet.html";
@@ -1518,30 +1519,92 @@ var similarityMatrixEBI = function (identityMatrix, PID, draggedMedPrID, membran
     return similarityOBJ;
 };
 
-// process EBI similarity matrix
+var similarityMatrixEBI2 = function (identityMatrix, PID, enteredPrID, modelEntity) {
+    console.log("Identity Matrix: ", identityMatrix);
+    console.log("enteredPrID: ", enteredPrID);
+    console.log("PID: ", PID);
+    console.log("modelEntity: ", modelEntity);
+
+    var indexOfColon = identityMatrix.search("1:"), m, n, i, j;
+    identityMatrix = identityMatrix.slice(indexOfColon - 1, identityMatrix.length);
+
+    console.log("Identity Matrix: ", identityMatrix);
+
+    var matrixArray = identityMatrix.match(/[(\w\:)*\d\.]+/gi), twoDMatrix = [];
+    for (var i = 0; i < matrixArray.length; i++) {
+        if (matrixArray[i].indexOf(".") == -1) {
+            matrixArray.splice(i, 1);
+            i--;
+        }
+    }
+
+    console.log("matrixArray: ", matrixArray);
+
+    // convert 1D to 2D array
+    while (matrixArray.length) {
+        twoDMatrix.push(matrixArray.splice(0, PID.length));
+    }
+
+    console.log("twoDMatrix: ", twoDMatrix);
+    console.log("modelEntity: ", modelEntity);
+
+    modelEntity[0].scoreEBI = 100;
+
+    for (var i = 0; i < twoDMatrix.length - 1; i++) {
+        modelEntity[i+1].scoreEBI = twoDMatrix[i][PID.length - 1];
+    }
+
+    console.log("modelEntity After: ", modelEntity);
+};
+
 // var similarityMatrixEBI2 = function (identityMatrix, PID, enteredPrID, modelEntity) {
 //     console.log("Identity Matrix: ", identityMatrix);
 //     console.log("enteredPrID: ", enteredPrID);
+//     console.log("PID: ", PID);
+//     console.log("modelEntity: ", modelEntity);
 //
 //     var indexOfColon = identityMatrix.search("1:"), m, n, i, j;
+//
+//     console.log("index1stBar: ", identityMatrix.slice(indexOfColon - 1, identityMatrix.length));
 //     identityMatrix = identityMatrix.slice(indexOfColon - 1, identityMatrix.length);
 //
 //     console.log("Identity Matrix: ", identityMatrix);
 //
-//     var matrixArray = identityMatrix.match(/[(\w\:)*\d\.]+/gi), twoDMatrix = [];
-//
-//     for (var i = 0; i < matrixArray.length; i++) {
-//         if (matrixArray[i].indexOf(".") == -1) {
-//             matrixArray.splice(i, 1);
-//             i--;
-//         }
-//     }
+//     var matrixArray = identityMatrix.match(/[(\w\:)*\d\.]+/gi),
+//         proteinIndex = [],
+//         twoDMatrix = [];
 //
 //     console.log("matrixArray: ", matrixArray);
 //
-//     // convert 1D to 2D array
+//     for (i = 0; i < matrixArray.length; i = i + PID.length + 3) // +3 for digit:, PID, and Genes and Species
+//         matrixArray.splice(i, 1);
+//
+//     for (i = 0; i < matrixArray.length; i = i + PID.length + 2) // +2 for PID and Genes and Species
+//         matrixArray.splice(i, 1);
+//
+//     for (i = 1; i < matrixArray.length; i = i + PID.length + 1) // +1 for PID
+//         matrixArray.splice(i, 1);
+//
+//     console.log("After matrixArray: ", matrixArray);
+//
+//     for (i = 0; i < matrixArray.length; i++) {
+//         if (matrixArray[i].charAt(0).match(/[A-Za-z]/gi)) {
+//             proteinIndex.push([matrixArray[i], i]);
+//         }
+//     }
+//
+//     console.log("proteinIndex: ", proteinIndex);
+//
+//     // 1D to 2D array
 //     while (matrixArray.length) {
-//         twoDMatrix.push(matrixArray.splice(0, PID.length));
+//         matrixArray.splice(0, 1); // remove protein ID
+//         twoDMatrix.push(matrixArray.splice(0, proteinIndex.length));
+//     }
+//
+//     for (i = 0; i < twoDMatrix.length; i++) {
+//         for (j = 0; j < twoDMatrix[i].length; j++) {
+//             twoDMatrix[i][j] = parseFloat(twoDMatrix[i][j]);
+//         }
 //     }
 //
 //     console.log("twoDMatrix: ", twoDMatrix);
@@ -1581,92 +1644,6 @@ var similarityMatrixEBI = function (identityMatrix, PID, draggedMedPrID, membran
 //         }
 //     }
 // };
-
-var similarityMatrixEBI2 = function (identityMatrix, PID, enteredPrID, modelEntity) {
-    console.log("Identity Matrix: ", identityMatrix);
-    console.log("enteredPrID: ", enteredPrID);
-
-    var indexOfColon = identityMatrix.search("1:"), m, n, i, j;
-
-    console.log("index1stBar: ", identityMatrix.slice(indexOfColon - 1, identityMatrix.length));
-    identityMatrix = identityMatrix.slice(indexOfColon - 1, identityMatrix.length);
-
-    console.log("Identity Matrix: ", identityMatrix);
-
-    var matrixArray = identityMatrix.match(/[(\w\:)*\d\.]+/gi),
-        proteinIndex = [],
-        twoDMatrix = [];
-
-    console.log("matrixArray: ", matrixArray);
-
-    for (i = 0; i < matrixArray.length; i = i + PID.length + 3) // +3 for digit:, PID, and Genes and Species
-        matrixArray.splice(i, 1);
-
-    for (i = 0; i < matrixArray.length; i = i + PID.length + 2) // +2 for PID and Genes and Species
-        matrixArray.splice(i, 1);
-
-    for (i = 1; i < matrixArray.length; i = i + PID.length + 1) // +1 for PID
-        matrixArray.splice(i, 1);
-
-    // console.log("matrixArray: ", matrixArray);
-
-    for (i = 0; i < matrixArray.length; i++) {
-        if (matrixArray[i].charAt(0).match(/[A-Za-z]/gi)) {
-            proteinIndex.push([matrixArray[i], i]);
-        }
-    }
-
-    // console.log("proteinIndex: ", proteinIndex);
-
-    // 1D to 2D array
-    while (matrixArray.length) {
-        matrixArray.splice(0, 1); // remove protein ID
-        twoDMatrix.push(matrixArray.splice(0, proteinIndex.length));
-    }
-
-    for (i = 0; i < twoDMatrix.length; i++) {
-        for (j = 0; j < twoDMatrix[i].length; j++) {
-            twoDMatrix[i][j] = parseFloat(twoDMatrix[i][j]);
-        }
-    }
-
-    console.log("twoDMatrix: ", twoDMatrix);
-
-    var similarityOBJ = [];
-    for (i = 0; i < twoDMatrix.length; i++) {
-        for (j = 0; j < twoDMatrix.length; j++) {
-            if (i == j || j < i) continue;
-
-            similarityOBJ.push({
-                "PID1": proteinIndex[i][0],
-                "PID2": proteinIndex[j][0],
-                "similarity": twoDMatrix[i][j]
-            })
-        }
-    }
-
-    console.log("similarityOBJ: ", similarityOBJ);
-    console.log("enteredPrID: ", enteredPrID);
-
-    // length is empty when 100% matching
-    // appended a 0 bit after its protein id and make a comparision
-    if (similarityOBJ.length != 0) {
-        for (m = 0; m < modelEntity.length; m++) {
-
-            if (modelEntity[m].protein == "") continue;
-
-            if (splitPR(modelEntity[m].protein) == enteredPrID)
-                modelEntity[m].scoreEBI = 100;
-
-            for (n = 0; n < similarityOBJ.length; n++) {
-                if ((splitPR(modelEntity[m].protein) == similarityOBJ[n].PID1 && enteredPrID == similarityOBJ[n].PID2) ||
-                    (splitPR(modelEntity[m].protein) == similarityOBJ[n].PID2 && enteredPrID == similarityOBJ[n].PID1)) {
-                    modelEntity[m].scoreEBI = similarityOBJ[n].similarity;
-                }
-            }
-        }
-    }
-};
 
 function d3CheckBox() {
 
